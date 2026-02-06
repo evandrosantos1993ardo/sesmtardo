@@ -305,6 +305,14 @@
             color: white;
             font-weight: bold;
         }
+        @media print {
+        .logo-pdf {
+            max-width: 60mm;
+            height: auto;
+            display: block;
+            margin: 0 auto 6mm auto;
+        }
+}
     </style>
 </head>
 <body>
@@ -660,6 +668,7 @@
             const html = `
                 <div class="documento">
                     <div class="doc-header no-split">
+                            ${logoPDF()}
                         <div class="doc-title">ORDEM DE SERVIÇO - NR 01</div>
                         <div class="doc-subtitle">TRANSPORTES ARDO LTDA</div>
                         <div class="doc-subtitle">CNPJ: 76.107.440/0001-04</div>
@@ -734,6 +743,7 @@
             const html = `
                 <div class="documento">
                     <div class="doc-header no-split">
+                            ${logoPDF()}
                         <div class="doc-title">LISTA DE PRESENÇA EM TREINAMENTO</div>
                         <div class="doc-subtitle">Segurança – Boas Práticas – Procedimentos</div>
                         <div class="doc-subtitle">TRANSPORTES ARDO LTDA</div>
@@ -763,6 +773,7 @@
             const html = `
                 <div class="documento">
                     <div class="doc-header no-split">
+                            ${logoPDF()}
                         <div class="doc-title">BOAS PRÁTICAS – MANUAL DE INSTRUÇÃO</div>
                         <div class="doc-subtitle">DECLARAÇÃO DE CIÊNCIA E COMPROMETIMENTO</div>
                     </div>
@@ -798,6 +809,7 @@
             const html = `
                 <div class="documento">
                     <div class="doc-header no-split">
+                            ${logoPDF()}
                         <div class="doc-title">TERMO DE RESPONSABILIDADE – VELOCIDADE</div>
                         <div class="doc-subtitle">ISO 9001:2015</div>
                     </div>
@@ -841,6 +853,7 @@
             const html = `
                 <div class="documento">
                     <div class="doc-header no-split">
+                            ${logoPDF()}
                         <div class="doc-title">TRANSPORTE DE CARGA VIVA</div>
                     </div>
                     <div class="doc-section no-split">
@@ -915,6 +928,15 @@
     })
     .from(elemento)
     .save();
+}
+function logoPDF() {
+    return `
+        <img 
+            src="LogoArdo70anos.png"
+            alt="Logo TransArdo 70 anos"
+            class="logo-pdf"
+        >
+    `;
 }
     </script>
 </body>
