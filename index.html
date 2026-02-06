@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Ordem de Serviço - PGR</title>
     <style>
+        .no-split {
+                break-inside: avoid;
+                page-break-inside: avoid;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -303,7 +307,7 @@
                     <p><strong>Cargo:</strong> <span id="selectedCargo"></span></p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
                     <div class="os-section-title">DADOS DO FUNCIONÁRIO</div>
                     <div class="os-grid">
                         <div class="os-field">
@@ -337,7 +341,7 @@
             <div class="step" id="step4">
                 <div class="no-print" style="margin-bottom: 20px;">
                     <button class="btn btn-secondary" onclick="prevStep(3)">← Voltar e Editar</button>
-                    <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+                    <button class="btn" onclick="gerarPDF()">📄 Gerar PDF</button>
                     <button class="btn" onclick="resetForm()">🔄 Nova Ordem</button>
                 </div>
 
@@ -651,12 +655,14 @@
                     <div class="os-subtitle" style="margin-top: 10px;">${dataAtual}</div>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">DISPOSIÇÕES GERAIS</div>
                     <p class="os-content">Em observância a letra c) do item 1.4.1 Norma Regulamentadora nº 1 Portaria 3.214/78, Ordem de serviço de segurança e saúde no trabalho são instruções por escrito quanto às precauções para evitar acidentes do trabalho ou doenças ocupacionais.</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">DADOS DO FUNCIONÁRIO</div>
                     <div class="os-grid">
                         <div><strong>NOME:</strong> ${nome.toUpperCase()}</div>
@@ -670,22 +676,26 @@
                     </div>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">DESCRIÇÃO DA FUNÇÃO</div>
                     <p class="os-content">${cargo.descricao}</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">AGENTES ASSOCIADOS À ATIVIDADE</div>
                     <p class="os-content">${cargo.agentes}</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">MEDIDAS DE PROTEÇÃO</div>
                     <p class="os-content">${cargo.medidas}</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">RECOMENDAÇÕES</div>
                     <p class="os-content"><strong>ATOS INSEGUROS</strong>
 
@@ -698,14 +708,16 @@
 • Comparecer ao departamento médico para exames periódicos.</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">PROCEDIMENTO EM CASO DE ACIDENTES</div>
                     <p class="os-content">Todo e qualquer acidente de trabalho deverá ser comunicado para o superior imediato, na falta deste para o Técnico de Segurança, membro da CIPA e/ou ao DP, para que possa ser providenciada a emissão da CAT – Comunicação de Acidente do Trabalho, cujo prazo é de 24 horas.
 
 <strong>Obs.:</strong> O acidente não comunicado não será considerado para efeitos legais.</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">OBRIGAÇÕES</div>
                     <p class="os-content"><strong>CABE AO EMPREGADOR:</strong>
 a) Cumprir e fazer cumprir as disposições legais e regulamentares sobre segurança e medicina do trabalho;
@@ -722,7 +734,8 @@ d) Colaborar com a empresa na aplicação das Normas Regulamentadoras - NRs.
 <strong>Importante:</strong> Constitui ato faltoso a recusa injustificada do empregado ao cumprimento do disposto acima.</p>
                 </div>
 
-                <div class="os-section">
+                <div class="os-section no-split">
+
                     <div class="os-section-title">DECLARAÇÃO</div>
                     <p class="os-content">Declaro que recebi do Técnico de Segurança do Trabalho - TransArdo, as orientações que fazem parte deste documento, bem como, cópia do mesmo, comprometendo-me a seguir as orientações nele contidas e reconhecendo serem elas indispensáveis à minha segurança e à de meus colegas de trabalho. Também afirmo ter recebido os EPIs de utilização obrigatória na minha função e comprometo-me a utilizá-los durante toda a minha jornada de trabalho, solicitando sua substituição sempre que necessário.</p>
                     
@@ -749,6 +762,58 @@ d) Colaborar com a empresa na aplicação das Normas Regulamentadoras - NRs.
             document.getElementById('btnStep2').disabled = true;
             nextStep(1);
         }
+        function ajustarQuebrasAutomaticasOS() {
+    const pageHeightPx = 1122; // A4 em px (96dpi)
+    const topMarginPx = 40;   // margem superior da OS
+    const bottomMarginPx = 40;
+
+    const usablePageHeight = pageHeightPx - topMarginPx - bottomMarginPx;
+
+    const sections = document.querySelectorAll('.ordem-servico .no-split');
+
+    sections.forEach(section => {
+        section.style.pageBreakBefore = 'auto';
+
+        const rect = section.getBoundingClientRect();
+        const sectionTop = rect.top + window.scrollY;
+        const sectionHeight = rect.height;
+
+        const positionInPage = sectionTop % pageHeightPx;
+        const spaceLeft = usablePageHeight - positionInPage;
+
+        if (sectionHeight > spaceLeft) {
+            section.style.pageBreakBefore = 'always';
+        }
+    });
+}
+        function gerarPDF() {
+    const elemento = document.getElementById('ordemServico');
+
+    const opt = {
+        margin: 10,
+        filename: 'ordem-de-servico.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+        },
+        pagebreak: {
+            mode: ['css', 'avoid-all'],
+            avoid: ['.no-split']
+        }
+    };
+
+    html2pdf().set(opt).from(elemento).save();
+}
     </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 </body>
 </html>
