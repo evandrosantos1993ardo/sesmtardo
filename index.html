@@ -1,1 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Ordem de Serviço - PGR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .card.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        /* Ordem de Serviço Styles */
+        .ordem-servico {
+            background: white;
+            padding: 40px;
+            max-width: 210mm;
+            margin: 0 auto;
+        }
+
+        .os-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .os-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .os-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .os-section {
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .os-section-title {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            margin: -20px -20px 15px -20px;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .os-field {
+            margin-bottom: 15px;
+        }
+
+        .os-field label {
+            display: block;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .os-field input,
+        .os-field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .os-field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .os-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .os-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .signature-box {
+            border-top: 2px solid #2c3e50;
+            padding-top: 10px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .content {
+                padding: 0;
+            }
+
+            .navigation,
+            .btn,
+            .no-print {
+                display: none !important;
+            }
+
+            .ordem-servico {
+                padding: 20px;
+            }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Gerador de Ordem de Serviço - NR01</h1>
+            <p>TRANSPORTES ARDO LTDA - Sistema de Gestão de Segurança do Trabalho</p>
+        </header>
+
+        <div class="content">
+            <!-- Passo 1: Escolher Setor -->
+            <div class="step active" id="step1">
+                <h2 class="section-title">1️⃣ Escolha o Setor</h2>
+                <div class="grid" id="setoresGrid"></div>
+                <div class="navigation">
+                    <div></div>
+                    <button class="btn" onclick="nextStep(2)" id="btnStep1" disabled>Próximo →</button>
+                </div>
+            </div>
+
+            <!-- Passo 2: Escolher Cargo -->
+            <div class="step" id="step2">
+                <h2 class="section-title">2️⃣ Escolha o Cargo</h2>
+                <div class="info-box">
+                    <p><strong>Setor Selecionado:</strong> <span id="selectedSetor"></span></p>
+                </div>
+                <div class="grid" id="cargosGrid"></div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevStep(1)">← Voltar</button>
+                    <button class="btn" onclick="nextStep(3)" id="btnStep2" disabled>Próximo →</button>
+                </div>
+            </div>
+
+            <!-- Passo 3: Dados do Funcionário -->
+            <div class="step" id="step3">
+                <h2 class="section-title">3️⃣ Dados do Funcionário</h2>
+                <div class="info-box">
+                    <p><strong>Setor:</strong> <span id="selectedSetor2"></span></p>
+                    <p><strong>Cargo:</strong> <span id="selectedCargo"></span></p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">DADOS DO FUNCIONÁRIO</div>
+                    <div class="os-grid">
+                        <div class="os-field">
+                            <label>Nome Completo:</label>
+                            <input type="text" id="nome" required>
+                        </div>
+                        <div class="os-field">
+                            <label>CPF:</label>
+                            <input type="text" id="cpf" placeholder="000.000.000-00" required>
+                        </div>
+                    </div>
+                    <div class="os-grid">
+                        <div class="os-field">
+                            <label>Data de Admissão:</label>
+                            <input type="date" id="dataAdmissao" required>
+                        </div>
+                        <div class="os-field">
+                            <label>CBO:</label>
+                            <input type="text" id="cbo" value="" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">← Voltar</button>
+                    <button class="btn" onclick="gerarOrdem()">Gerar Ordem de Serviço →</button>
+                </div>
+            </div>
+
+            <!-- Passo 4: Ordem de Serviço Gerada -->
+            <div class="step" id="step4">
+                <div class="no-print" style="margin-bottom: 20px;">
+                    <button class="btn btn-secondary" onclick="prevStep(3)">← Voltar e Editar</button>
+                    <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+                    <button class="btn" onclick="resetForm()">🔄 Nova Ordem</button>
+                </div>
+
+                <div class="ordem-servico" id="ordemServico">
+                    <!-- Conteúdo será gerado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados extraídos do PGR
+        const pgrData = {
+            "01 - ADMINISTRATIVO": {
+                "setor": "ADMINISTRATIVO",
+                "descricao": "Estrutura em alvenaria, pé direito de 4 m. piso em alto trafego, forro em laje.",
+                "cargos": {
+                    "AUXILIAR ADMINISTRATIVO": {
+                        "descricao": "Realiza registro Fiscal e contábil das notas fiscais de combustível, luz, telefone, atender e fazer ligações telefônicas, lançamento de pedágios, controle de consumo de combustíveis dos carros administrativos.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo ou intermitente (59,3 dB(A)) - abaixo do nível de ação\n\nAgentes Ergonômicos:\n• Postura sentada por longos períodos, podendo causar fadiga muscular, cervicalgia e lombalgia\n\nRiscos de Acidente:\n• Batida contra objetos\n• Queda de mesmo nível em piso molhado ou irregular",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Manutenção da organização e limpeza do ambiente\n• Sinalização de áreas molhadas ou irregulares\n\nMedidas Administrativas:\n• Treinamento de integração e ordem de serviço\n• Orientações posturais\n• Pausas durante a jornada\n• Ginástica laboral\n\nEquipamentos de Proteção Individual:\n• Não se aplica para as atividades administrativas básicas\n\nRecomendações Ergonômicas:\n• Ajustar altura da cadeira e monitor\n• Manter postura adequada\n• Realizar pausas a cada 2 horas\n• Exercícios de alongamento"
+                    },
+                    "AUXILIAR DE CONTABILIDADE": {
+                        "descricao": "Auxílio no encerramento de balanços e balancetes, conferência de registros contábeis mensais e anuais, escrituração fiscal, envios de fechamentos mensais nas plataformas do governo e arquivamento de documentos contábeis.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo ou intermitente (59,3 dB(A)) - abaixo do nível de ação\n\nAgentes Ergonômicos:\n• Postura sentada por longos períodos\n• Movimentos repetitivos com mouse e teclado\n\nRiscos de Acidente:\n• Batida contra objetos\n• Queda de mesmo nível",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Iluminação adequada\n• Mobiliário ergonômico\n• Organização do ambiente\n\nMedidas Administrativas:\n• Pausas regulares\n• Orientações posturais\n• Ginástica laboral\n\nEquipamentos de Proteção Individual:\n• Não se aplica"
+                    },
+                    "DIRETOR ADMINISTRATIVO": {
+                        "descricao": "Realiza aquisição de veículos e outros imobilizados, Contratação de investimentos, Aquisição de insumos de maior valor, Vendas do imobilizado, Acompanhamento financeiro e administrativo, Liderança e comprometimento com o SGQ.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo ou intermitente (59,3 dB(A)) - abaixo do nível de ação\n\nAgentes Ergonômicos:\n• Postura sentada por longos períodos\n• Jornada prolongada\n\nRiscos Psicossociais:\n• Pressão por resultados\n• Responsabilidade decisória",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Ambiente de trabalho adequado\n• Tecnologia de suporte\n\nMedidas Administrativas:\n• Gestão de tempo\n• Pausas regulares\n• Apoio psicossocial\n\nEquipamentos de Proteção Individual:\n• Não se aplica"
+                    }
+                }
+            },
+            "02 - LIMPEZA": {
+                "setor": "LIMPEZA",
+                "descricao": "Realiza limpeza em todos os setores administrativos da empresa, salão de festas, almoxarifado e sala de treinamento.",
+                "cargos": {
+                    "SERVENTE": {
+                        "descricao": "Realiza a limpeza geral, limpando chão, paredes, janela, móveis, prateleiras, limpam banheiros, faz a retirada de lixo, preparam café. Trabalham seguindo normas e procedimentos de higiene e segurança.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo ou intermitente (69 dB(A)) - abaixo do nível de ação\n\nAgentes Químicos:\n• Produtos domissanitários (água sanitária, sabão, desinfetante)\n• Possível irritação de pele e vias respiratórias\n\nAgentes Biológicos:\n• Exposição a microrganismos durante limpeza de sanitários\n• Bactérias, vírus, fungos\n\nAgentes Ergonômicos:\n• Postura inadequada (flexão de tronco)\n• Movimentos repetitivos\n• Esforço físico moderado\n\nRiscos de Acidente:\n• Queda de mesmo nível (piso escorregadio)\n• Batida contra objetos",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Sinalização de piso molhado\n• Ventilação adequada dos ambientes\n• Armazenamento adequado de produtos químicos\n\nMedidas Administrativas:\n• Treinamento sobre uso de produtos químicos\n• Orientação sobre técnicas corretas de limpeza\n• Pausas durante a jornada\n\nEquipamentos de Proteção Individual:\n• Calçado de segurança tipo A (CA: 44644)\n• Luva para proteção contra agentes mecânicos e químicos (CA: 38090)\n• Luva de PVC para limpeza de sanitários (CA: 21420)\n\nRecomendações:\n• Manter postura adequada durante as atividades\n• Alternar atividades para evitar sobrecarga\n• Higienizar as mãos frequentemente\n• Não misturar produtos químicos diferentes"
+                    }
+                }
+            },
+            "03 - TRANSPORTES": {
+                "setor": "TRANSPORTE",
+                "descricao": "Área externa, pátio da empresa e nas dependências de clientes. Trabalho realizado dentro do caminhão.",
+                "cargos": {
+                    "MOTORISTA CARRETEIRO": {
+                        "descricao": "Manobrar e conduzir os veículos da frota, inspecionar através do checklist do veículo e carreta, conferir documentação pessoal antes de seguir viagem, conferir documentação do veículo antes de seguir viagem, cumprir as normas de trânsito, cumprir regras e normas internas da empresa, respeitar a proibição da entrada em câmera fria do veículo, utilizar uniforme durante expediente de trabalho, acompanhar carga e descarga, relatar situações de risco e falhas na segurança para evitar possíveis acidentes, conferir lacres da carga, conferir Temperatura de refrigeração da carreta, conforme especificação do cliente no antes de iniciar a viagem e máximo a cada 4 horas, conferir documentação da carga, manter comunicação diária com a empresa, manter comunicação com o cliente, solicitar para a empresa autorização para abastecimento do veículo e motor de refrigeração.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo e intermitente (67 dB(A)) - motor do veículo e tráfego\n• Vibração de corpo inteiro durante a condução\n• Radiação não ionizante (solar) durante atividades externas\n\nAgentes Ergonômicos:\n• Postura sentada prolongada\n• Movimentos repetitivos (pedais, marcha, volante)\n\nRiscos de Acidente:\n• Condução de veículo em vias públicas (colisão, tombamento, capotagem)\n• Queda de mesmo nível\n• Batida contra objetos",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Manutenção preventiva dos veículos\n• Cabines com isolamento acústico\n• Assentos ergonômicos com suspensão\n\nMedidas Administrativas:\n• CNH válida e atualizada\n• Treinamento de Direção Defensiva\n• Cumprimento de jornada e pausas (Lei 13.103)\n• Procedimentos de inspeção veicular\n• Proibição de uso de celular ao dirigir\n• Controle de fadiga e sono\n\nEquipamentos de Proteção Individual:\n• Calçado de segurança quando fora do veículo\n• Protetor solar para atividades externas\n• Óculos de proteção UV\n\nRecomendações:\n• Usar sempre cinto de segurança\n• Respeitar limites de velocidade\n• Manter distância segura\n• Não dirigir cansado ou com sono\n• Realizar pausas conforme legislação\n• Comunicar problemas mecânicos imediatamente"
+                    },
+                    "MOTORISTA TRUCK RAÇÃO": {
+                        "descricao": "Transportam, coletam e entregam cargas, dirigem veículos, manipulando os comandos de marcha e direção e conduzindo o veículo no trajeto indicado, seguindo as regras de trânsito, para transporte de cargas de ração. Eventualmente quando necessário realizam serviços para o setor de transporte de Suínos. Vistoria o caminhão, verificando o estado dos pneus, o nível de combustível, água e óleo de motor, vistoriam cargas além de verificar documentação do veículo e de cargas, seguem orientações da logística para verificação de carregamento e rotas a serem percorridas, zelam pela manutenção do veículo, comunicando falhas e solicitando reparos, para assegurar seu perfeito estado, Supervisionar a carga e a descarga nos clientes, confere notas fiscais e conhecimentos, realiza trabalho em altura.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo e intermitente (67 dB(A)) - motor do veículo e tráfego\n• Vibração de corpo inteiro durante a condução\n• Radiação não ionizante (solar) durante atividades externas\n• Poeira de ração durante carga/descarga\n\nAgentes Químicos:\n• Poeira de ração (partículas orgânicas)\n• Gases de combustão diesel\n• Contato com óleos e graxas\n\nAgentes Ergonômicos:\n• Postura sentada prolongada\n• Esforço físico durante carga/descarga\n\nRiscos de Acidente:\n• Condução de veículo em vias públicas\n• Trabalho em altura (acesso à carroceria)\n• Queda de mesmo nível\n• Prensamento durante manobras",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Manutenção preventiva dos veículos\n• Sinalização em áreas de carga/descarga\n• Plataformas e acessos seguros\n\nMedidas Administrativas:\n• CNH válida categoria C ou superior\n• Treinamento NR-35 (Trabalho em Altura)\n• Treinamento de Direção Defensiva\n• Cumprimento da Lei 13.103 (jornada)\n• Procedimentos de segurança para carga/descarga\n• Comunicação de condições inseguras\n\nEquipamentos de Proteção Individual:\n• Calçado de segurança\n• Luvas de proteção\n• Óculos de segurança\n• Máscara PFF2 para ambientes com poeira\n• Protetor solar\n• Cinto de segurança para trabalho em altura (quando aplicável)\n\nRecomendações Específicas:\n• Utilizar sempre o cinto de segurança do veículo\n• Não acessar carroceria sem equipamentos adequados\n• Respeitar limites de velocidade\n• Manter distância segura de outros veículos\n• Não dirigir sob efeito de álcool ou drogas\n• Comunicar fadiga ou problemas de saúde\n• Realizar inspeção do veículo antes de cada viagem\n• Acompanhar carga/descarga mantendo distância segura"
+                    },
+                    "MOTORISTA MANOBREIRO": {
+                        "descricao": "Realiza manobra de veículos da empresa para o pátio/cliente, manobra para carregamento, acompanhamento do carregamento dos clientes, retira veículo carregado para balança, acompanhamento de notas fiscais, retorna com o veículo carregado para o pátio da empresa, regular o equipamento de refrigeração na temperatura solicitada pelo cliente, acompanha a limpeza interna da carreta, responsável pelo equipamento interno e externo da carreta, responsável pela mercadoria devolvida e documentação até a entrega ao setor responsável.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente de veículos e equipamentos\n• Vibração durante manobras\n• Radiação solar\n\nAgentes Ergonômicos:\n• Movimentos repetitivos\n• Entrada e saída frequente do veículo\n\nRiscos de Acidente:\n• Manobras em espaço confinado\n• Atropelamento\n• Colisão com estruturas",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Sinalização do pátio\n• Espelhos e câmeras nos veículos\n• Iluminação adequada\n\nMedidas Administrativas:\n• Treinamento específico de manobras\n• Comunicação visual e sonora\n• Procedimentos de segurança\n\nEquipamentos de Proteção Individual:\n• Calçado de segurança\n• Colete refletivo"
+                    }
+                }
+            },
+            "04 - BORRACHARIA": {
+                "setor": "BORRACHARIA",
+                "descricao": "Estrutura em alvenaria, pé direito de 10 m, piso em cimento, teto em estrutura metálica.",
+                "cargos": {
+                    "BORRACHEIRO": {
+                        "descricao": "Realizam montagem e desmontagem de pneu e alinhamento. Controlam vida útil e utilização do pneu. Trocam pneus. Consertam pneus a frio e a quente, reparam câmara de ar e balanceiam conjunto de rodas e pneu.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo e intermitente (91 dB(A)) - acima do limite de tolerância\n• Vibração localizada de mão e braço (ferramentas pneumáticas)\n\nAgentes Ergonômicos:\n• Esforço físico intenso ao manusear pneus e rodas\n• Postura inadequada (flexão de tronco e membros)\n• Levantamento de peso\n\nRiscos de Acidente:\n• Batida contra objetos\n• Queda de mesmo nível\n• Risco de explosão de pneus",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Enclausuramento de fontes de ruído\n• Isolamento acústico\n• Ventilação adequada\n• Gaiola de segurança para calibragem\n\nMedidas Administrativas:\n• Treinamento sobre procedimentos seguros\n• Técnicas de levantamento de peso\n• Pausas durante a jornada\n• Manutenção preventiva de equipamentos\n\nEquipamentos de Proteção Individual:\n• Protetor auricular tipo plug ou concha (CA: 48054 / 18189) - USO OBRIGATÓRIO\n• Botina de segurança tipo B (CA: 44696)\n• Óculos de segurança (CA: 11268)\n• Luvas de proteção mecânica\n\nRecomendações:\n• Sempre usar protetor auricular quando na área de trabalho\n• Utilizar técnicas adequadas de levantamento\n• Solicitar ajuda para pneus pesados\n• Calibrar pneus dentro da gaiola de segurança\n• Verificar condições do pneu antes de trabalhar\n• Manter área organizada e livre de obstáculos"
+                    },
+                    "AUXILIAR DE BORRACHEIRO": {
+                        "descricao": "Realizam manutenção de equipamentos, montagem e desmontagem de pneu e alinhamento. Controlam vida útil e utilização do pneu. Trocam pneus. Consertam pneus a frio e a quente, reparam câmara de ar e balanceiam conjunto de rodas e pneu.",
+                        "agentes": "Agentes Físicos:\n• Ruído contínuo e intermitente (91 dB(A))\n• Vibração localizada (ferramentas pneumáticas)\n\nAgentes Ergonômicos:\n• Esforço físico ao manusear pneus\n• Postura inadequada\n\nRiscos de Acidente:\n• Batida contra objetos\n• Queda de mesmo nível",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Gaiola de segurança\n• Ventilação adequada\n\nMedidas Administrativas:\n• Treinamento contínuo\n• Supervisão adequada\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (CA: 48054)\n• Botina de segurança (CA: 44696)\n• Óculos de segurança (CA: 11268)\n• Luvas de proteção"
+                    }
+                }
+            },
+            "05 - MANUTENÇÃO": {
+                "setor": "MANUTENÇÃO",
+                "descricao": "Estrutura em alvenaria, pé direito de 10 m, piso em cimento, teto em estrutura metálica",
+                "cargos": {
+                    "MECÂNICO": {
+                        "descricao": "Executa serviço de manutenção de motores, sistemas e de veículos automotores, substitui peças, reparam e testam desempenho de componentes, e sistemas de veículos, fazem troca de óleo, lavagem e lubrificações de peças, troca de lona de freio nos veículos da frota, substituição de peças nos veículos da frota, regulagem e reparo de motor, revisão de todas as peças nos caminhões da frota, serviços de manutenção em refrigeração (câmara fria). Eventualmente realiza trabalho em altura.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (77,2 dB(A)) - abaixo do nível de ação\n• Vibração localizada de mão e braço (ferramentas manuais)\n\nAgentes Químicos:\n• Óleo mineral, graxa e lubrificantes\n• Querosene para limpeza de peças\n• Possível irritação de pele e vias respiratórias\n\nAgentes Ergonômicos:\n• Esforço físico ao manusear peças pesadas\n• Postura inadequada (flexão de tronco e membros)\n• Trabalho em posições desconfortáveis\n\nRiscos de Acidente:\n• Batida contra objetos\n• Cortes e perfurações\n• Prensamento de membros\n• Trabalho em altura (eventual)",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Bancadas ergonômicas\n• Iluminação adequada\n• Ventilação/exaustão para vapores\n• Organização de ferramentas\n\nMedidas Administrativas:\n• Treinamento em manutenção segura\n• Procedimentos de bloqueio de energia (LOTO)\n• Técnicas corretas de levantamento\n• Pausas durante a jornada\n• Treinamento NR-35 quando aplicável\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (CA: 48054 / 18189) - quando necessário\n• Botina de segurança tipo B (CA: 44696)\n• Luvas para proteção mecânica e química (CA: 11769 / 38090 / 43773)\n• Óculos de segurança (CA: 11268)\n• Creme protetor de segurança (CA: 43802)\n• Cinto de segurança para trabalho em altura (quando aplicável)\n\nRecomendações:\n• Manter área de trabalho organizada\n• Não usar joias ou acessórios soltos\n• Bloquear fontes de energia antes de manutenção\n• Utilizar ferramentas adequadas\n• Solicitar ajuda para peças pesadas\n• Fazer pausas para alongamento"
+                    },
+                    "AUXILIAR DE MECÂNICO": {
+                        "descricao": "Auxilia nos serviços de manutenção de motores, sistemas e de veículos automotores, substitui peças, reparam e testam desempenho de componentes, auxilia na troca de óleo, lavagem e lubrificações de peças, auxilia na troca de lona de freio, engraxar veículos da frota. Eventualmente realiza trabalho em altura.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (77,2 dB(A))\n• Vibração localizada (ferramentas)\n\nAgentes Químicos:\n• Óleo, graxa e lubrificantes\n• Produtos de limpeza\n\nAgentes Ergonômicos:\n• Esforço físico\n• Postura inadequada\n\nRiscos de Acidente:\n• Batida contra objetos\n• Trabalho em altura (eventual)",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Bancadas adequadas\n• Ventilação do ambiente\n\nMedidas Administrativas:\n• Treinamento e supervisão\n• Técnicas de trabalho seguro\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (quando necessário)\n• Botina de segurança (CA: 44696)\n• Luvas de proteção (CA: 38090)\n• Óculos de segurança (CA: 11268)\n• Creme protetor (CA: 43802)"
+                    }
+                }
+            },
+            "06 - ELETRICISTA": {
+                "setor": "MANUTENÇÃO",
+                "descricao": "Estrutura em alvenaria, pé direito de 10 m, piso em cimento, teto em estrutura metálica",
+                "cargos": {
+                    "ELETRICISTA": {
+                        "descricao": "Executam serviços de manutenção elétrica em veículos. Responsável em realizar serviços de revisão do motor de partida, revisão de motor alternador, troca de lâmpada dos veículos da frota, revisões instalações elétricas nos veículos da frota, revisão do motor de refrigeração, substituição de bateria, nas carretas, troca de correia do motor de refrigeração. Trabalham em conformidade com normas e procedimentos técnicos.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (67,7 dB(A)) - abaixo do nível de ação\n• Vibração localizada de mão e braço (ferramentas elétricas)\n\nAgentes Ergonômicos:\n• Postura inadequada (flexão de tronco e membros)\n• Trabalho em posições desconfortáveis\n• Movimentos repetitivos\n\nRiscos de Acidente:\n• Choque elétrico durante manutenção\n• Batida contra objetos\n• Objetos cortantes e perfurantes\n• Queda de mesmo nível",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Ferramentas isoladas\n• Sinalização de trabalho elétrico\n• Iluminação adequada\n• Bancadas isoladas\n\nMedidas Administrativas:\n• Treinamento NR-10 (Segurança em Instalações Elétricas)\n• Procedimentos de bloqueio de energia\n• Verificação de ausência de tensão\n• Uso de ferramentas adequadas\n• Trabalho individual quando em baixa tensão\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (CA: 48054 / 18189) - quando necessário\n• Luvas isolantes para eletricista (CA: 20601)\n• Botina de segurança com solado isolante\n• Óculos de segurança (CA: 11268)\n\nRecomendações Críticas:\n• NUNCA trabalhar em circuitos energizados\n• Sempre verificar ausência de tensão\n• Utilizar ferramentas isoladas\n• Bloquear fontes de energia\n• Sinalizar área de trabalho\n• Não usar adornos metálicos\n• Manter ferramentas em bom estado\n• Trabalhar em piso seco"
+                    },
+                    "AUXILIAR ELETRICISTA": {
+                        "descricao": "Auxilia nos serviços de manutenção elétrica em veículos. Auxilia em realizar serviços de revisão do motor alternador, troca de lâmpada, revisões e instalações elétricas, revisão do motor de refrigeração, substitui baterias e troca de correia.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (67,7 dB(A))\n• Vibração localizada\n\nAgentes Ergonômicos:\n• Postura inadequada\n• Movimentos repetitivos\n\nRiscos de Acidente:\n• Choque elétrico\n• Objetos cortantes\n• Batida contra objetos",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Ferramentas isoladas\n• Sinalização adequada\n\nMedidas Administrativas:\n• Treinamento NR-10\n• Supervisão constante\n• Procedimentos seguros\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (quando necessário)\n• Luvas isolantes (CA: 20601)\n• Botina de segurança isolante\n• Óculos de segurança (CA: 11268)"
+                    }
+                }
+            },
+            "07 - ABASTECIMENTO": {
+                "setor": "ABASTECIMENTO",
+                "descricao": "Estrutura metálica, medindo aproximadamente 180 m² x 10m de altura.",
+                "cargos": {
+                    "FRENTISTA": {
+                        "descricao": "Realiza abastecimentos dos veículos cavalos e carretas, recebe e analisa combustível diesel e acompanha descarga, análise de disco de tacógrafo, gera relatório dos dados levantados nos discos de tacógrafo, controle diesel, registra os dados no mapa e no sistema informatizado, treinamento para colocação de discos de Tacógrafo, auxilia na conscientização sobre cumprimento das normas interna e do Trânsito, inspeção nos veículos cavalos/carretas dos equipamentos obrigatórios, higiene e conservação do setor, teste prático com motoristas em avaliação para admissão (Diurno), cálculo das médias de combustível por veículo a cada abastecimento.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (68 dB(A)) - tráfego de veículos\n\nAgentes Químicos:\n• Benzeno (componente da gasolina/diesel)\n• Óleo diesel - vapores e contato dérmico\n• Possível irritação de pele e vias respiratórias\n• Risco de intoxicação por inalação prolongada\n\nRiscos de Acidente:\n• Incêndio e explosão (risco alto)\n• Batida contra objetos\n• Queda de mesmo nível\n• Atropelamento",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Sistema de combate a incêndio (extintores classe ABC e B)\n• Sinalização de segurança\n• Piso antiderrapante\n• Canaletas de contenção\n• Proibição de fumo e celular\n• Aterramento de equipamentos\n• Sistema de drenagem\n\nMedidas Administrativas:\n• Treinamento de combate a incêndio\n• Procedimentos de emergência\n• Inspeção periódica de equipamentos\n• Proibição de fontes de ignição\n• Controle de acesso\n• Manutenção preventiva dos tanques\n\nEquipamentos de Proteção Individual:\n• Luvas para proteção química (CA: 38090) - USO OBRIGATÓRIO\n• Creme protetor de segurança (CA: 43802)\n• Respirador PFF2 (CA: 41515) - para atividades prolongadas\n• Calçado de segurança antiestático\n• Óculos de segurança\n\nRecomendações Críticas:\n• NUNCA fumar na área de abastecimento\n• NUNCA usar celular durante abastecimento\n• Manter extintores acessíveis\n• Evitar derramamento de combustível\n• Limpar imediatamente qualquer vazamento\n• Não reabastecer com motor ligado\n• Manter área ventilada\n• Comunicar qualquer anormalidade"
+                    },
+                    "COORDENADOR DE ABASTECIMENTO": {
+                        "descricao": "Coordena abastecimento externo dos veículos, cotação de preço de combustível, autorização para abastecimento externo, controle de média de consumo, análise de novos fornecedores, abastecimento dos veículos, receber e analisar combustível diesel, análise de disco de tacógrafo, controle diesel, manobras dos caminhões, treinamento para colocação de discos de tacógrafo, inspeção nos veículos.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (68 dB(A))\n\nAgentes Químicos:\n• Benzeno e vapores de diesel\n\nRiscos de Acidente:\n• Incêndio e explosão\n• Atropelamento durante manobras",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Sistema de combate a incêndio\n• Sinalização de segurança\n\nMedidas Administrativas:\n• Treinamento em emergências\n• Supervisão de procedimentos\n• Gestão de fornecedores\n\nEquipamentos de Proteção Individual:\n• Luvas químicas (CA: 38090)\n• Creme protetor (CA: 43802)\n• Respirador PFF2 (CA: 41515)\n• Calçado antiestático"
+                    }
+                }
+            },
+            "08 - LAVADOR DE VEICULOS": {
+                "setor": "LAVADOR",
+                "descricao": "Executa a realização de lavagens de veículos da frota da empresa.",
+                "cargos": {
+                    "LAVADOR DE VEÍCULOS": {
+                        "descricao": "Executa a realização de lavagens de veículos da frota da empresa como lavagem cavalos e carretas, lavagem de carros pequenos (eventual), limpeza interna dos veículos, lavagem dos veículos cavalo e carreta na escova e bombas e compressor para a lavagem, trabalha seguindo normas que lhe são atribuídos. Limpeza das valas abertas.",
+                        "agentes": "Agentes Físicos:\n• Radiação não ionizante (solar) - exposição ao sol\n• Ruído contínuo e intermitente (98,9 dB(A)) - ACIMA DO LIMITE DE TOLERÂNCIA\n• Umidade constante durante as atividades\n• Vibração localizada de mão e braço (mangueiras de alta pressão)\n\nAgentes Químicos:\n• Detergentes e produtos de limpeza automotiva\n• Produtos biodegradáveis (Soluforte, Intercap)\n• Shampoo concentrado\n\nRiscos de Acidente:\n• Queda de mesmo nível (piso molhado)\n• Trabalho em altura (lavagem de veículos altos)\n• Jato de água sob pressão",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Piso antiderrapante e com escoamento\n• Proteção solar (cobertura)\n• Área ventilada\n• Sinalização de piso molhado\n\nMedidas Administrativas:\n• Treinamento sobre produtos químicos\n• Treinamento NR-35 (Trabalho em Altura)\n• Pausas regulares\n• Fornecimento de protetor solar\n• Rodízio de atividades\n\nEquipamentos de Proteção Individual:\n• Protetor auricular tipo concha (CA: 18189) - USO OBRIGATÓRIO\n• Calçado tipo bota impermeável (CA: 37773)\n• Luvas para proteção química (CA: 38090)\n• Óculos de segurança (CA: 11268)\n• Avental impermeável (CA: 44668)\n• Máscara PFF2 (CA: 41515) - ambientes com produtos químicos\n• Protetor solar FPS 30+ (fornecido pela empresa)\n\nRecomendações:\n• SEMPRE usar protetor auricular na área\n• Aplicar protetor solar antes do início do turno\n• Manter postura adequada durante lavagem\n• Não direcionar jato de água contra pessoas\n• Usar calçado impermeável sempre\n• Atenção ao caminhar em piso molhado\n• Hidratar-se regularmente\n• Comunicar problemas com equipamentos"
+                    },
+                    "AUXILIAR DE LAVADOR DE VEÍCULOS": {
+                        "descricao": "Auxilia na realização de lavagens de veículos da frota, utilizando bombas e compressor para a lavagem, trabalha seguindo normas. Limpeza das valas abertas.",
+                        "agentes": "Agentes Físicos:\n• Radiação solar\n• Ruído intenso (98,9 dB(A))\n• Umidade\n• Vibração localizada\n\nAgentes Químicos:\n• Produtos de limpeza\n\nRiscos de Acidente:\n• Queda de mesmo nível\n• Trabalho em altura",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Piso antiderrapante\n• Cobertura para sol\n\nMedidas Administrativas:\n• Treinamento contínuo\n• Supervisão adequada\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (CA: 18189)\n• Bota impermeável (CA: 37773)\n• Luvas químicas (CA: 38090)\n• Óculos (CA: 11268)\n• Avental (CA: 44668)\n• Protetor solar"
+                    }
+                }
+            },
+            "09 - TRANSPORTES DE SUINOS": {
+                "setor": "TRANSPORTE",
+                "descricao": "Área externa, pátio da empresa e nas dependências de clientes. Trabalho realizado dentro do caminhão.",
+                "cargos": {
+                    "MOTORISTA TRUCK SUÍNOS": {
+                        "descricao": "Transportam, coletam e entregam cargas vivas (suínos), dirigem veículos seguindo regras de trânsito. Eventualmente realizam serviços de transporte de Ração. Vistoriam caminhão, verificam estado dos pneus, nível de combustível, água e óleo, documentação dos veículos e de cargas, seguem orientações da logística, zelam pela manutenção do veículo, supervisionam carga e descarga, conferem notas fiscais, realizam trabalho em altura.",
+                        "agentes": "Agentes Físicos:\n• Radiação não ionizante (solar)\n• Ruído contínuo e intermitente (75 dB(A))\n• Vibração de corpo inteiro\n\nAgentes Ergonômicos:\n• Postura sentada prolongada\n• Jornada prolongada\n\nRiscos de Acidente:\n• Condução de veículo em vias públicas\n• Trabalho em altura\n• Contato com animais",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Manutenção preventiva dos veículos\n• Sistemas de acesso seguro\n\nMedidas Administrativas:\n• CNH categoria adequada\n• Treinamento NR-35\n• Direção Defensiva\n• Lei 13.103 (jornada)\n• Procedimentos de manejo de animais\n\nEquipamentos de Proteção Individual:\n• Calçado de segurança\n• Luvas de proteção\n• Protetor solar\n• Cinto de segurança para altura\n\nRecomendações:\n• Cuidado no manejo de animais\n• Higienização após atividades\n• Respeitar jornada de trabalho"
+                    }
+                }
+            },
+            "10 - SOLDA": {
+                "setor": "MANUTENÇÃO",
+                "descricao": "Estrutura em alvenaria, pé direito de 10 m, piso em cimento, teto em estrutura metálica",
+                "cargos": {
+                    "MECÂNICO SOLDADOR": {
+                        "descricao": "Realiza o corte de peças metálicas usando processos de soldagem e corte com eletrodo, mig e oxigênio. Prepara equipamentos, acessórios, peças, partes de aço para serem soldados.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (90 dB(A)) - acima do nível de ação\n• Vibração localizada de mão e braço\n• Radiação não ionizante (arco elétrico)\n\nAgentes Químicos:\n• Fumos metálicos (ferro, manganês, cromo)\n• Óleo mineral e graxas\n• Vapores de solda\n\nAgentes Ergonômicos:\n• Postura inadequada durante soldagem\n• Trabalho em posições forçadas\n\nRiscos de Acidente:\n• Queimaduras por respingos de solda\n• Projeção de partículas\n• Batida contra objetos\n• Choque elétrico",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Exaustão de fumos de solda\n• Isolamento de área de trabalho\n• Biombos de proteção\n• Ventilação adequada\n\nMedidas Administrativas:\n• Treinamento NR-18 (Soldagem e Corte)\n• Procedimentos de trabalho seguro\n• Inspeção de equipamentos\n• Pausas durante jornada\n• APR antes de atividades\n\nEquipamentos de Proteção Individual:\n• Protetor auricular tipo plug ou concha (CA: 48054 / 18189) - USO OBRIGATÓRIO\n• Máscara de solda com escurecimento automático (CA: 45147)\n• Respirador PFF2 para fumos metálicos (CA: 41515)\n• Luvas de raspa para soldador\n• Avental de raspa\n• Perneira de raspa\n• Mangote de raspa\n• Botina de segurança (CA: 44696)\n• Óculos de segurança (CA: 11268)\n\nRecomendações Críticas:\n• SEMPRE usar máscara de solda\n• Verificar cabos e conexões antes de soldar\n• Manter área livre de materiais inflamáveis\n• Não soldar próximo a produtos químicos\n• Ventilar área após soldagem\n• Ter extintor próximo\n• Comunicar trabalhos a quente\n• Isolar área de trabalho"
+                    }
+                }
+            },
+            "11 - GEOMETRISTA": {
+                "setor": "MANUTENÇÃO",
+                "descricao": "Estrutura em alvenaria, pé direito de 10 m, piso em cimento, teto em estrutura metálica",
+                "cargos": {
+                    "GEOMETRISTA": {
+                        "descricao": "Realiza geometria nos veículos da frota, cavalos, carretas e veículos da empresa, auxilia no setor de borracharia (eventual), serviços de suspensão dos veículos da frota.",
+                        "agentes": "Agentes Físicos:\n• Ruído intermitente (91 dB(A)) - acima do limite de tolerância\n• Vibração localizada (ferramentas pneumáticas)\n\nAgentes Ergonômicos:\n• Postura inadequada (flexão de tronco)\n• Trabalho agachado ou ajoelhado\n\nRiscos de Acidente:\n• Batida contra objetos\n• Queda de mesmo nível\n• Prensamento",
+                        "medidas": "Medidas de Proteção Coletiva:\n• Fosso com proteção adequada\n• Iluminação direcionada\n• Ferramentas em bom estado\n\nMedidas Administrativas:\n• Treinamento específico\n• Procedimentos de segurança\n• Pausas regulares\n\nEquipamentos de Proteção Individual:\n• Protetor auricular (CA: 48054 / 18189) - USO OBRIGATÓRIO\n• Botina de segurança (CA: 44696)\n• Óculos de segurança (CA: 11268)\n• Luvas de proteção mecânica\n\nRecomendações:\n• Usar protetor auricular sempre\n• Atenção ao trabalhar sob veículos\n• Calçar veículos adequadamente\n• Manter área organizada"
+                    }
+                }
+            }
+        };
+
+        let selectedSetor = null;
+        let selectedCargo = null;
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSetores();
+        });
+
+        function loadSetores() {
+            const grid = document.getElementById('setoresGrid');
+            grid.innerHTML = '';
+            
+            Object.keys(pgrData).forEach(gheName => {
+                const ghe = pgrData[gheName];
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => selectSetor(gheName);
+                
+                const totalCargos = Object.keys(ghe.cargos).length;
+                
+                card.innerHTML = `
+                    <h3>${ghe.setor}</h3>
+                    <p>${totalCargos} cargo${totalCargos > 1 ? 's' : ''}</p>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function selectSetor(gheName) {
+            // Remover seleção anterior
+            document.querySelectorAll('#setoresGrid .card').forEach(c => c.classList.remove('selected'));
+            
+            // Selecionar novo
+            event.target.closest('.card').classList.add('selected');
+            selectedSetor = gheName;
+            
+            // Habilitar botão
+            document.getElementById('btnStep1').disabled = false;
+        }
+
+        function loadCargos() {
+            const grid = document.getElementById('cargosGrid');
+            grid.innerHTML = '';
+            
+            const ghe = pgrData[selectedSetor];
+            document.getElementById('selectedSetor').textContent = ghe.setor;
+            document.getElementById('selectedSetor2').textContent = ghe.setor;
+            
+            Object.keys(ghe.cargos).forEach(cargoName => {
+                const cargo = ghe.cargos[cargoName];
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => selectCargo(cargoName);
+                
+                card.innerHTML = `
+                    <h3>${cargoName}</h3>
+                    <p>${cargo.descricao.substring(0, 100)}...</p>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function selectCargo(cargoName) {
+            // Remover seleção anterior
+            document.querySelectorAll('#cargosGrid .card').forEach(c => c.classList.remove('selected'));
+            
+            // Selecionar novo
+            event.target.closest('.card').classList.add('selected');
+            selectedCargo = cargoName;
+            
+            // Atualizar displays
+            document.getElementById('selectedCargo').textContent = cargoName;
+            
+            // Habilitar botão
+            document.getElementById('btnStep2').disabled = false;
+        }
+
+        function nextStep(step) {
+            // Esconder todos os passos
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            
+            // Mostrar passo atual
+            document.getElementById('step' + step).classList.add('active');
+            
+            // Carregar dados se necessário
+            if (step === 2) {
+                loadCargos();
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function prevStep(step) {
+            nextStep(step);
+        }
+
+        function gerarOrdem() {
+            // Validar campos
+            const nome = document.getElementById('nome').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+            const dataAdmissao = document.getElementById('dataAdmissao').value;
+            const cbo = document.getElementById('cbo').value.trim();
+            
+            if (!nome || !cpf || !dataAdmissao || !cbo) {
+                alert('Por favor, preencha todos os campos do funcionário.');
+                return;
+            }
+            
+            const ghe = pgrData[selectedSetor];
+            const cargo = ghe.cargos[selectedCargo];
+            
+            // Formatar data
+            const dataFormatada = new Date(dataAdmissao).toLocaleDateString('pt-BR');
+            const dataAtual = new Date().toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            // Gerar HTML da ordem de serviço
+            const ordemHTML = `
+                <div class="os-header">
+                    <div class="os-title">ORDEM DE SERVIÇO - NR 01</div>
+                    <div class="os-subtitle">TRANSPORTES ARDO LTDA</div>
+                    <div class="os-subtitle">CNPJ: 76.107.440/0001-04</div>
+                    <div class="os-subtitle">AV DOS PIONEIROS, 2998 - Carambeí/PR</div>
+                    <div class="os-subtitle" style="margin-top: 10px;">${dataAtual}</div>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">DISPOSIÇÕES GERAIS</div>
+                    <p class="os-content">Em observância a letra c) do item 1.4.1 Norma Regulamentadora nº 1 Portaria 3.214/78, Ordem de serviço de segurança e saúde no trabalho são instruções por escrito quanto às precauções para evitar acidentes do trabalho ou doenças ocupacionais.</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">DADOS DO FUNCIONÁRIO</div>
+                    <div class="os-grid">
+                        <div><strong>NOME:</strong> ${nome.toUpperCase()}</div>
+                        <div><strong>CPF:</strong> ${cpf}</div>
+                        <div><strong>DATA DE ADMISSÃO:</strong> ${dataFormatada}</div>
+                        <div><strong>CBO:</strong> ${cbo}</div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>FUNÇÃO:</strong> ${selectedCargo}<br>
+                        <strong>SETOR:</strong> ${ghe.setor}
+                    </div>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">DESCRIÇÃO DA FUNÇÃO</div>
+                    <p class="os-content">${cargo.descricao}</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">AGENTES ASSOCIADOS À ATIVIDADE</div>
+                    <p class="os-content">${cargo.agentes}</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">MEDIDAS DE PROTEÇÃO</div>
+                    <p class="os-content">${cargo.medidas}</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">RECOMENDAÇÕES</div>
+                    <p class="os-content"><strong>ATOS INSEGUROS</strong>
+
+• Comunique a CIPA qualquer irregularidade que possa colocar você ou seus companheiros em risco de acidentes.
+• Não remova ou ultrapasse as proteções existentes na área.
+• Use os EPIs designados a sua função.
+• Sua área de trabalho pode apresentar riscos, respeite as sinalizações de segurança.
+• Em caso de princípio de incêndio, utilize os extintores, comunique o Técnico de segurança ou membros da CIPA.
+• Preservação ao meio ambiente, separe os resíduos em recipientes apropriados.
+• Comparecer ao departamento médico para exames periódicos.</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">PROCEDIMENTO EM CASO DE ACIDENTES</div>
+                    <p class="os-content">Todo e qualquer acidente de trabalho deverá ser comunicado para o superior imediato, na falta deste para o Técnico de Segurança, membro da CIPA e/ou ao DP, para que possa ser providenciada a emissão da CAT – Comunicação de Acidente do Trabalho, cujo prazo é de 24 horas.
+
+<strong>Obs.:</strong> O acidente não comunicado não será considerado para efeitos legais.</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">OBRIGAÇÕES</div>
+                    <p class="os-content"><strong>CABE AO EMPREGADOR:</strong>
+a) Cumprir e fazer cumprir as disposições legais e regulamentares sobre segurança e medicina do trabalho;
+b) Elaborar ordens de serviço sobre segurança e medicina do trabalho;
+c) Informar aos trabalhadores os riscos profissionais que possam originar-se nos locais de trabalho;
+d) Permitir que representantes dos trabalhadores acompanhem a fiscalização.
+
+<strong>CABE AO EMPREGADO:</strong>
+a) Cumprir as disposições legais, regulamentares sobre segurança e medicina do trabalho;
+b) Usar o EPI fornecido pelo empregador;
+c) Submeter-se aos exames médicos previstos PCMSO;
+d) Colaborar com a empresa na aplicação das Normas Regulamentadoras - NRs.
+
+<strong>Importante:</strong> Constitui ato faltoso a recusa injustificada do empregado ao cumprimento do disposto acima.</p>
+                </div>
+
+                <div class="os-section">
+                    <div class="os-section-title">DECLARAÇÃO</div>
+                    <p class="os-content">Declaro que recebi do Técnico de Segurança do Trabalho - TransArdo, as orientações que fazem parte deste documento, bem como, cópia do mesmo, comprometendo-me a seguir as orientações nele contidas e reconhecendo serem elas indispensáveis à minha segurança e à de meus colegas de trabalho. Também afirmo ter recebido os EPIs de utilização obrigatória na minha função e comprometo-me a utilizá-los durante toda a minha jornada de trabalho, solicitando sua substituição sempre que necessário.</p>
+                    
+                    <div class="signature-box">
+                        __________________________<br>
+                        <strong>${nome.toUpperCase()}</strong><br>
+                        ${selectedCargo}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('ordemServico').innerHTML = ordemHTML;
+            nextStep(4);
+        }
+
+        function resetForm() {
+            selectedSetor = null;
+            selectedCargo = null;
+            document.getElementById('nome').value = '';
+            document.getElementById('cpf').value = '';
+            document.getElementById('dataAdmissao').value = '';
+            document.getElementById('cbo').value = '';
+            document.getElementById('btnStep1').disabled = true;
+            document.getElementById('btnStep2').disabled = true;
+            nextStep(1);
+        }
+    </script>
+</body>
+</html>
