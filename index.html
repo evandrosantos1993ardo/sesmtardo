@@ -733,6 +733,7 @@
                             <strong>${dadosFuncionario.nome.toUpperCase()}</strong><br>${cargoSelecionado}
                         </div>
                     </div>
+                    ${assinaturaTST()}
                 </div>
             `;
             document.getElementById('documentoConteudo').innerHTML = html;
@@ -794,10 +795,10 @@
                         <p class="doc-content">Comprometo-me a cumprir integralmente o manual. O descumprimento caracteriza ato faltoso.</p>
                         <p style="text-align:center;margin-top:12px;">Carambeí, ${dataAtual}</p>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:25px;">
-                            <div class="signature-box">_________________________<br><strong>Evandro dos Santos</strong><br>TST - 128070/PR</div>
-                            <div class="signature-box">_________________________<br><strong>${dadosFuncionario.nome.toUpperCase()}</strong><br>${cargoSelecionado}</div>
+                           <div class="signature-box">_________________________<br><strong>${dadosFuncionario.nome.toUpperCase()}</strong><br>${cargoSelecionado}</div>
                         </div>
                     </div>
+                    ${assinaturaTST()}
                 </div>
             `;
             document.getElementById('documentoConteudo').innerHTML = html;
@@ -838,10 +839,10 @@
                         <p class="doc-content">1.Orientação 2.Advertência 1ª 3.Advertência 2ª 4.Advertência 3ª 5.Suspensão 5 dias 6.Demissão justa causa</p>
                         <p style="text-align:center;margin-top:12px;">Carambeí, ${dataAtual}</p>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:25px;">
-                            <div class="signature-box">_________________________<br><strong>Evandro dos Santos</strong><br>TST - 128070/PR</div>
                             <div class="signature-box">_________________________<br><strong>${dadosFuncionario.nome.toUpperCase()}</strong><br>${cargoSelecionado}</div>
                         </div>
                     </div>
+                    ${assinaturaTST()}
                 </div>
             `;
             document.getElementById('documentoConteudo').innerHTML = html;
@@ -889,10 +890,10 @@
                         <p class="doc-content">Não cumprimento caracteriza não conformidade do SGI.</p>
                         <p style="text-align:center;margin-top:12px;">Carambeí, ${dataAtual}</p>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:25px;">
-                            <div class="signature-box">_________________________<br><strong>Evandro dos Santos</strong><br>TST - 128070/PR</div>
                             <div class="signature-box">_________________________<br><strong>${dadosFuncionario.nome.toUpperCase()}</strong><br>${cargoSelecionado}</div>
                         </div>
                     </div>
+                    ${assinaturaTST()}
                 </div>
             `;
             document.getElementById('documentoConteudo').innerHTML = html;
@@ -938,6 +939,16 @@ function logoPDF() {
         >
     `;
 }
+        function assinaturaTST() {
+            return `
+                <div class="signature-box no-split" style="margin-top:30px;">
+                    _________________________<br>
+                    <strong>Evandro dos Santos</strong><br>
+                    Técnico em Segurança do Trabalho<br>
+                    REG: 128070/PR
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
