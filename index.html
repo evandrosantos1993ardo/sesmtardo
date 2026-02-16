@@ -1,1 +1,323 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SESMT – Transportes Ardo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1a2060;
+      --red:    #cc1a2a;
+      --silver: #c8cdd8;
+      --dark:   #0d1235;
+      --light:  #f4f5f9;
+      --white:  #ffffff;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--white);
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26,32,96,.7) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 90%, rgba(204,26,42,.25) 0%, transparent 55%),
+        linear-gradient(160deg, #0b0f2a 0%, #111640 50%, #0f0c24 100%);
+    }
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 1; opacity: .07;
+      background-image:
+        linear-gradient(var(--silver) 1px, transparent 1px),
+        linear-gradient(90deg, var(--silver) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .bg-stripe {
+      position: fixed; left: -10%; top: 0; width: 55%; height: 100%;
+      z-index: 2; opacity: .04;
+      background: repeating-linear-gradient(
+        -55deg,
+        var(--white) 0, var(--white) 2px,
+        transparent 2px, transparent 28px
+      );
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative; z-index: 10;
+      padding: 28px 48px 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-wrap img {
+      height: 72px;
+      filter: drop-shadow(0 4px 18px rgba(204,26,42,.45));
+      animation: logoIn .9s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes logoIn {
+      from { opacity: 0; transform: translateX(-32px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .badge {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50px;
+      padding: 8px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600; font-size: .85rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--silver);
+      animation: fadeUp .8s .3s both;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 10;
+      padding: 60px 48px 0;
+      max-width: 780px;
+      animation: fadeUp .8s .15s both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .8rem; letter-spacing: .25em; font-weight: 600;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 14px;
+    }
+    .eyebrow::before {
+      content: ''; display: inline-block;
+      width: 28px; height: 2px; background: var(--red);
+      vertical-align: middle; margin-right: 10px;
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      line-height: .95; letter-spacing: .02em;
+      color: var(--white);
+    }
+    h1 span { color: var(--red); }
+    .subtitle {
+      margin-top: 18px;
+      font-size: 1.05rem; font-weight: 300; color: var(--silver);
+      max-width: 480px; line-height: 1.65;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      position: relative; z-index: 10;
+      margin: 48px 48px 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--red) 0%, rgba(26,32,96,.6) 50%, transparent 100%);
+      animation: fadeUp .6s .35s both;
+    }
+
+    /* ── CARDS GRID ── */
+    .grid {
+      position: relative; z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      padding: 48px 48px 72px;
+      animation: fadeUp .7s .45s both;
+    }
+
+    .card {
+      position: relative;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 40px 32px 36px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .3s cubic-bezier(.22,1,.36,1),
+                  border-color .3s, box-shadow .3s;
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(26,32,96,.55) 0%, rgba(204,26,42,.12) 100%);
+      opacity: 0; transition: opacity .35s;
+      border-radius: inherit;
+    }
+    .card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--navy));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .35s cubic-bezier(.22,1,.36,1);
+    }
+    .card:hover { transform: translateY(-8px); border-color: rgba(204,26,42,.5); box-shadow: 0 24px 48px rgba(0,0,0,.45), 0 0 0 1px rgba(204,26,42,.2); }
+    .card:hover::before { opacity: 1; }
+    .card:hover::after { transform: scaleX(1); }
+
+    .card-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      background: rgba(204,26,42,.15);
+      border: 1px solid rgba(204,26,42,.25);
+      position: relative; z-index: 1;
+      transition: background .3s, transform .3s;
+    }
+    .card:hover .card-icon { background: rgba(204,26,42,.3); transform: scale(1.08); }
+
+    .card-num {
+      position: absolute; top: 20px; right: 24px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem; color: rgba(255,255,255,.04);
+      line-height: 1; pointer-events: none;
+      transition: color .3s;
+    }
+    .card:hover .card-num { color: rgba(204,26,42,.12); }
+
+    .card-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.6rem; font-weight: 700;
+      letter-spacing: .03em; line-height: 1.1;
+      color: var(--white); position: relative; z-index: 1;
+    }
+    .card-desc {
+      font-size: .88rem; font-weight: 300;
+      color: var(--silver); line-height: 1.6;
+      position: relative; z-index: 1;
+    }
+    .card-arrow {
+      margin-top: auto;
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .82rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--red);
+      font-weight: 600; position: relative; z-index: 1;
+      opacity: 0; transform: translateX(-8px);
+      transition: opacity .3s, transform .3s;
+    }
+    .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+    .card-arrow svg { width: 16px; height: 16px; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 10;
+      text-align: center;
+      padding: 0 48px 36px;
+      font-size: .78rem; color: rgba(200,205,216,.35);
+      letter-spacing: .06em;
+    }
+    footer strong { color: rgba(200,205,216,.55); }
+
+    /* ── ANIMATED DIAGONAL ACCENT ── */
+    .accent-bar {
+      position: fixed; right: -60px; top: 0;
+      width: 160px; height: 100vh; z-index: 3;
+      background: linear-gradient(180deg, rgba(204,26,42,.08) 0%, transparent 100%);
+      transform: skewX(-8deg);
+      pointer-events: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 20px 24px 0; flex-direction: column; align-items: flex-start; gap: 14px; }
+      .hero { padding: 40px 24px 0; }
+      .divider { margin: 36px 24px 0; }
+      .grid { padding: 36px 24px 56px; gap: 16px; }
+      footer { padding: 0 24px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-layer"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-stripe"></div>
+  <div class="accent-bar"></div>
+
+  <header>
+    <div class="logo-wrap">
+      <img src="LogoArdo70anos.png" alt="Transportes Ardo – 70 anos" />
+    </div>
+    <div class="badge">SESMT · Portal Interno</div>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Segurança do Trabalho</p>
+    <h1>Bem-vindo ao<br/><span>Portal</span> SESMT</h1>
+    <p class="subtitle">Gerencie inspeções, integrações, DDS e investigações de forma ágil e centralizada. Selecione um módulo para começar.</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <main class="grid">
+
+    <a href="#" class="card">
+      <div class="card-num">01</div>
+      <div class="card-icon">🔍</div>
+      <div class="card-label">Inspeções</div>
+      <div class="card-desc">Registro e acompanhamento de inspeções de segurança, equipamentos e ambientes de trabalho.</div>
+      <div class="card-arrow">
+        Acessar
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </div>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-num">02</div>
+      <div class="card-icon">👷</div>
+      <div class="card-label">Integração</div>
+      <div class="card-desc">Gestão do processo de integração de novos colaboradores com as normas e procedimentos internos.</div>
+      <div class="card-arrow">
+        Acessar
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </div>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-num">03</div>
+      <div class="card-icon">📋</div>
+      <div class="card-label">DDS</div>
+      <div class="card-desc">Diálogo Diário de Segurança — planejamento, registro e histórico de reuniões de segurança.</div>
+      <div class="card-arrow">
+        Acessar
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </div>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-num">04</div>
+      <div class="card-icon">⚠️</div>
+      <div class="card-label">Investigação</div>
+      <div class="card-desc">Análise e investigação de incidentes, acidentes e quase-acidentes com plano de ação corretiva.</div>
+      <div class="card-arrow">
+        Acessar
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 8h10M9 4l4 4-4 4"/>
+        </svg>
+      </div>
+    </a>
+
+  </main>
+
+  <footer>
+    <strong>Transportes Ardo</strong> &nbsp;·&nbsp; SESMT &nbsp;·&nbsp; Uso interno exclusivo
+  </footer>
+
+</body>
+</html>
