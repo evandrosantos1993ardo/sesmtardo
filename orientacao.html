@@ -1,1 +1,99 @@
+16+26<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Termo de Orientacao</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e3c72,#2a5298,#c94b4b);
+  margin:0;
+  padding:20px;
+}
+.container{
+  max-width:1000px;
+  margin:auto;
+  background:#fff;
+  border-radius:12px;
+  padding:30px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+h1{color:#1e3c72;text-align:center;margin-bottom:20px;}
+.form-group{margin-bottom:15px;}
+label{font-weight:bold;color:#1e3c72;display:block;margin-bottom:5px;}
+input,textarea{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:2px solid #e9ecef;
+}
+textarea{min-height:100px;}
+.btn{
+  background:#1e3c72;
+  color:#fff;
+  border:none;
+  padding:15px 30px;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:20px;
+}
+.documento{
+  margin-top:30px;
+  padding:20px;
+  border:1px solid #ddd;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Termo de Orientacao</h1>
 
+<div class="form-group">
+<label>Funcionario</label>
+<input id="funcionario">
+</div>
+
+<div class="form-group">
+<label>Setor</label>
+<input id="setor">
+</div>
+
+<div class="form-group">
+<label>Responsavel pelo setor</label>
+<input id="responsavel">
+</div>
+
+<div class="form-group">
+<label>Descricao da orientacao</label>
+<textarea id="descricao"></textarea>
+</div>
+
+<button class="btn" onclick="gerar()">Gerar Termo</button>
+
+<div id="resultado" class="documento"></div>
+</div>
+
+<script>
+function gerar(){
+ const func=document.getElementById('funcionario').value;
+ const setor=document.getElementById('setor').value;
+ const resp=document.getElementById('responsavel').value;
+ const desc=document.getElementById('descricao').value;
+
+ document.getElementById('resultado').innerHTML=`
+ <h2 style='text-align:center'>TERMO DE ORIENTACAO</h2>
+ <p><b>Funcionario:</b> ${func}</p>
+ <p><b>Setor:</b> ${setor}</p>
+ <p><b>Responsavel:</b> ${resp}</p>
+ <p><b>Descricao:</b> ${desc}</p>
+ <br>
+ <p>O funcionario foi orientado quanto ao cumprimento das normas internas da empresa e da legislacao vigente. A reincidencia podera gerar advertencia ou outras medidas disciplinares.</p>
+ <br><br>
+ <p>__________________________________________<br>Funcionario</p>
+ <p>__________________________________________<br>Responsavel</p>
+ `;
+}
+</script>
+</body>
+</html>
