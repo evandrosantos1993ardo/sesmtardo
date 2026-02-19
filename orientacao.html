@@ -1,99 +1,463 @@
-16+26<!DOCTYPE html>
+14+06<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Termo de Orientacao</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#1e3c72,#2a5298,#c94b4b);
-  margin:0;
-  padding:20px;
-}
-.container{
-  max-width:1000px;
-  margin:auto;
-  background:#fff;
-  border-radius:12px;
-  padding:30px;
-  box-shadow:0 20px 60px rgba(0,0,0,.3);
-}
-h1{color:#1e3c72;text-align:center;margin-bottom:20px;}
-.form-group{margin-bottom:15px;}
-label{font-weight:bold;color:#1e3c72;display:block;margin-bottom:5px;}
-input,textarea{
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:2px solid #e9ecef;
-}
-textarea{min-height:100px;}
-.btn{
-  background:#1e3c72;
-  color:#fff;
-  border:none;
-  padding:15px 30px;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:20px;
-}
-.documento{
-  margin-top:30px;
-  padding:20px;
-  border:1px solid #ddd;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termo de Orientação - TransArdo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @media print {
+            @page { size: A4; margin: 10mm; }
+            body { background: white; padding: 0; margin: 0; }
+            .container { box-shadow: none; border-radius: 0; max-width: 100%; }
+            .no-print, header, .navigation { display: none !important; }
+            .content { padding: 0 !important; }
+            .documento { padding: 0 !important; margin: 0 !important; }
+            .no-split { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .no-split { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #c94b4b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header img { max-width: 280px; height: auto; margin-bottom: 15px; }
+        header h1 { font-size: 24px; margin-bottom: 6px; }
+        header p { opacity: 0.85; font-size: 14px; }
+
+        .content { padding: 35px; }
+
+        .step { display: none; }
+        .step.active { display: block; }
+
+        .section-title {
+            color: #1e3c72;
+            font-size: 22px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #c94b4b;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.3s;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .btn {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px 5px;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(30,60,114,0.4); }
+
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { box-shadow: 0 10px 25px rgba(108,117,125,0.4); }
+
+        .btn-danger { background: linear-gradient(135deg, #c94b4b, #a03030); }
+        .btn-danger:hover { box-shadow: 0 10px 25px rgba(201,75,75,0.4); }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        /* ===== DOCUMENTO PDF ===== */
+        .documento {
+            background: white;
+            padding: 15mm;
+            max-width: 190mm;
+            margin: 0 auto;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+
+        .doc-header {
+            text-align: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1e3c72;
+        }
+
+        .doc-title {
+            font-size: 14pt;
+            color: #1e3c72;
+            font-weight: bold;
+            margin-top: 6px;
+            letter-spacing: 1px;
+        }
+
+        .doc-section {
+            margin-bottom: 10px;
+            border: 1px solid #dde2ea;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .doc-section-title {
+            background: #1e3c72;
+            color: white;
+            padding: 5px 8px;
+            font-weight: bold;
+            font-size: 9pt;
+        }
+
+        .doc-section-body {
+            padding: 8px;
+            font-size: 9pt;
+        }
+
+        .doc-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .doc-info-cell {
+            padding: 6px 8px;
+            font-size: 9pt;
+            border-right: 1px solid #dde2ea;
+        }
+
+        .doc-info-cell:last-child { border-right: none; }
+
+        .doc-info-label { font-weight: bold; color: #1e3c72; font-size: 8pt; display: block; margin-bottom: 2px; }
+
+        .doc-content {
+            white-space: pre-wrap;
+            line-height: 1.45;
+            font-size: 9.5pt;
+        }
+
+        .signature-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .signature-box {
+            text-align: center;
+            font-size: 8.5pt;
+            padding-top: 8px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-bottom: 6px;
+            padding-top: 4px;
+        }
+
+        .logo-pdf {
+            width: 75mm;
+            height: auto;
+            display: block;
+            margin: 0 auto 8px auto;
+        }
+
+        .preview-actions {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+
+        .alert-required {
+            color: #c94b4b;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error select {
+            border-color: #c94b4b;
+        }
+
+        .form-group.error .alert-required { display: block; }
+    </style>
 </head>
 <body>
 <div class="container">
-<h1>Termo de Orientacao</h1>
+    <header>
+        <img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" onerror="this.style.display='none'">
+        <h1>Termo de Orientação</h1>
+        <p>TransArdo – Gestão de Documentos</p>
+    </header>
 
-<div class="form-group">
-<label>Funcionario</label>
-<input id="funcionario">
-</div>
+    <div class="content">
 
-<div class="form-group">
-<label>Setor</label>
-<input id="setor">
-</div>
+        <!-- STEP 1: Formulário -->
+        <div class="step active" id="step1">
+            <h2 class="section-title">📋 Preencha os Dados da Orientação</h2>
 
-<div class="form-group">
-<label>Responsavel pelo setor</label>
-<input id="responsavel">
-</div>
+            <div class="form-row">
+                <div class="form-group" id="fg-nome">
+                    <label for="nome">Nome do Funcionário *</label>
+                    <input type="text" id="nome" placeholder="Nome completo do funcionário">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-setor">
+                    <label for="setor">Setor *</label>
+                    <input type="text" id="setor" placeholder="Ex: Logística, Manutenção...">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+            </div>
 
-<div class="form-group">
-<label>Descricao da orientacao</label>
-<textarea id="descricao"></textarea>
-</div>
+            <div class="form-row">
+                <div class="form-group" id="fg-responsavel">
+                    <label for="responsavel">Responsável pelo Setor *</label>
+                    <input type="text" id="responsavel" placeholder="Nome e cargo do responsável">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group">
+                    <label for="cargo">Cargo do Funcionário</label>
+                    <input type="text" id="cargo" placeholder="Ex: Motorista, Auxiliar...">
+                </div>
+            </div>
 
-<button class="btn" onclick="gerar()">Gerar Termo</button>
+            <div class="form-group" id="fg-descricao">
+                <label for="descricao">Descrição da Orientação *</label>
+                <textarea id="descricao" rows="3" placeholder="Descreva brevemente o motivo da orientação (ex: Velocidade acima do permitido)"></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
 
-<div id="resultado" class="documento"></div>
+            <div class="form-group" id="fg-justificativa">
+                <label for="justificativa">Justificativa para a Orientação *</label>
+                <textarea id="justificativa" rows="7" placeholder="Descreva detalhadamente a justificativa, consequências, normas e orientações fornecidas ao funcionário..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group">
+                <label for="localData">Local e Data</label>
+                <input type="text" id="localData" placeholder="Ex: Carambeí, 06 de janeiro de 2026">
+            </div>
+
+            <div class="navigation">
+                <div></div>
+                <button class="btn" onclick="gerarDocumento()">Gerar Termo de Orientação →</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Preview do Documento -->
+        <div class="step" id="step2">
+            <div class="preview-actions no-print">
+                <button class="btn btn-secondary" onclick="voltarFormulario()">← Editar Dados</button>
+                <button class="btn btn-danger" onclick="gerarPDF()">⬇ Baixar PDF</button>
+                <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+
+            <div id="documentoConteudo"></div>
+
+            <div class="preview-actions no-print" style="padding-bottom:20px;">
+                <button class="btn btn-secondary" onclick="voltarFormulario()">← Editar Dados</button>
+                <button class="btn btn-danger" onclick="gerarPDF()">⬇ Baixar PDF</button>
+                <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
-function gerar(){
- const func=document.getElementById('funcionario').value;
- const setor=document.getElementById('setor').value;
- const resp=document.getElementById('responsavel').value;
- const desc=document.getElementById('descricao').value;
+    function mostrarStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
- document.getElementById('resultado').innerHTML=`
- <h2 style='text-align:center'>TERMO DE ORIENTACAO</h2>
- <p><b>Funcionario:</b> ${func}</p>
- <p><b>Setor:</b> ${setor}</p>
- <p><b>Responsavel:</b> ${resp}</p>
- <p><b>Descricao:</b> ${desc}</p>
- <br>
- <p>O funcionario foi orientado quanto ao cumprimento das normas internas da empresa e da legislacao vigente. A reincidencia podera gerar advertencia ou outras medidas disciplinares.</p>
- <br><br>
- <p>__________________________________________<br>Funcionario</p>
- <p>__________________________________________<br>Responsavel</p>
- `;
-}
+    function voltarFormulario() {
+        mostrarStep(1);
+    }
+
+    function validarCampo(id) {
+        const el = document.getElementById(id);
+        const fg = document.getElementById('fg-' + id);
+        if (!fg) return true;
+        if (!el.value.trim()) {
+            fg.classList.add('error');
+            return false;
+        }
+        fg.classList.remove('error');
+        return true;
+    }
+
+    function gerarDocumento() {
+        const v1 = validarCampo('nome');
+        const v2 = validarCampo('setor');
+        const v3 = validarCampo('responsavel');
+        const v4 = validarCampo('descricao');
+        const v5 = validarCampo('justificativa');
+
+        if (!v1 || !v2 || !v3 || !v4 || !v5) {
+            const firstError = document.querySelector('.form-group.error input, .form-group.error textarea');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        const nome        = document.getElementById('nome').value.trim();
+        const setor       = document.getElementById('setor').value.trim();
+        const responsavel = document.getElementById('responsavel').value.trim();
+        const cargo       = document.getElementById('cargo').value.trim();
+        const descricao   = document.getElementById('descricao').value.trim();
+        const justificativa = document.getElementById('justificativa').value.trim();
+        const localData   = document.getElementById('localData').value.trim() ||
+                            'Carambeí, ' + new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const html = `
+        <div class="documento">
+
+            <div class="doc-header no-split">
+                ${logoPDF()}
+                <div class="doc-title">TERMO DE ORIENTAÇÃO</div>
+            </div>
+
+            <div class="doc-section no-split">
+                <div class="doc-section-title">DADOS DO FUNCIONÁRIO E DO SETOR</div>
+                <div class="doc-info-grid">
+                    <div class="doc-info-cell">
+                        <span class="doc-info-label">Funcionário:</span>
+                        <strong>${nome.toUpperCase()}</strong>${cargo ? ' – ' + cargo : ''}
+                    </div>
+                    <div class="doc-info-cell">
+                        <span class="doc-info-label">Setor:</span>
+                        ${setor}
+                    </div>
+                </div>
+                <div style="border-top:1px solid #dde2ea;">
+                    <div class="doc-info-cell">
+                        <span class="doc-info-label">Responsável pelo Setor:</span>
+                        ${responsavel}
+                    </div>
+                </div>
+            </div>
+
+            <div class="doc-section no-split">
+                <div class="doc-section-title">DESCRIÇÃO DA ORIENTAÇÃO</div>
+                <div class="doc-section-body">
+                    <p class="doc-content">${escapeHtml(descricao)}</p>
+                </div>
+            </div>
+
+            <div class="doc-section no-split">
+                <div class="doc-section-title">JUSTIFICATIVA PARA A ORIENTAÇÃO</div>
+                <div class="doc-section-body">
+                    <p class="doc-content">${escapeHtml(justificativa)}</p>
+                </div>
+            </div>
+
+            <div class="doc-section no-split">
+                <div class="doc-section-title">ASSINATURAS</div>
+                <div class="doc-section-body">
+                    <p style="text-align:center; margin-bottom:10px; font-size:9pt;">${escapeHtml(localData)}</p>
+                    <div class="signature-area">
+                        <div class="signature-box">
+                            <div class="signature-line">___________________________</div>
+                            <strong>${escapeHtml(responsavel.split('\n')[0])}</strong><br>
+                            Responsável pelo Setor
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-line">___________________________</div>
+                            <strong>Tatiana T L Mello</strong><br>
+                            Tec. Segurança do Trabalho
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-line">___________________________</div>
+                            <strong>${escapeHtml(nome.toUpperCase())}</strong><br>
+                            Funcionário
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>`;
+
+        document.getElementById('documentoConteudo').innerHTML = html;
+        mostrarStep(2);
+    }
+
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function logoPDF() {
+        return `<img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" class="logo-pdf" onerror="this.style.display='none'">`;
+    }
+
+    function gerarPDF() {
+        const nome = document.getElementById('nome').value.trim().toLowerCase().replace(/\s+/g, '-');
+        const elemento = document.getElementById('documentoConteudo');
+
+        html2pdf().set({
+            margin: [12, 12, 12, 12],
+            filename: `termo-orientacao-${nome}.pdf`,
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 1.5, useCORS: true, scrollX: 0, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css'], avoid: '.no-split' }
+        }).from(elemento).save();
+    }
 </script>
 </body>
 </html>
