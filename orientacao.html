@@ -1,4 +1,4 @@
-14+06<!DOCTYPE html>
+14+16<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -219,6 +219,63 @@
             padding: 20px 0 10px;
         }
 
+        /* ===== TEMPLATE SELECTION ===== */
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .template-card {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 30px 25px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #2a5298;
+        }
+
+        .template-card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .template-card h3 {
+            font-size: 18px;
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+
+        .template-card p {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .template-card.velocidade {
+            border-color: #c94b4b;
+            background: #fff5f5;
+        }
+
+        .template-card.velocidade:hover {
+            border-color: #c94b4b;
+            background: #fee;
+            box-shadow: 0 15px 35px rgba(201,75,75,0.2);
+        }
+
+        .template-card.nova {
+            border-color: #1e3c72;
+        }
+
         .alert-required {
             color: #c94b4b;
             font-size: 12px;
@@ -245,9 +302,28 @@
 
     <div class="content">
 
+        <!-- STEP 0: Escolha do Tipo -->
+        <div class="step active" id="step0">
+            <h2 class="section-title">📄 Selecione o Tipo de Orientação</h2>
+            <p style="color:#6c757d; margin-bottom:10px; font-size:14px;">Escolha o modelo que deseja emitir:</p>
+
+            <div class="template-grid">
+                <div class="template-card nova" onclick="selecionarTemplate('nova')">
+                    <span class="icon">✏️</span>
+                    <h3>Nova Orientação</h3>
+                    <p>Preencha todos os campos livremente para qualquer tipo de orientação</p>
+                </div>
+                <div class="template-card velocidade" onclick="selecionarTemplate('velocidade')">
+                    <span class="icon">🚨</span>
+                    <h3>Orientação Velocidade</h3>
+                    <p>Modelo pré-preenchido para excesso de velocidade — basta informar o funcionário e setor</p>
+                </div>
+            </div>
+        </div>
+
         <!-- STEP 1: Formulário -->
-        <div class="step active" id="step1">
-            <h2 class="section-title">📋 Preencha os Dados da Orientação</h2>
+        <div class="step" id="step1">
+            <h2 class="section-title" id="formTitulo">📋 Preencha os Dados da Orientação</h2>
 
             <div class="form-row">
                 <div class="form-group" id="fg-nome">
@@ -276,23 +352,18 @@
 
             <div class="form-group" id="fg-descricao">
                 <label for="descricao">Descrição da Orientação *</label>
-                <textarea id="descricao" rows="3" placeholder="Descreva brevemente o motivo da orientação (ex: Velocidade acima do permitido)"></textarea>
+                <textarea id="descricao" rows="3" placeholder="Descreva brevemente o motivo da orientação"></textarea>
                 <span class="alert-required">Campo obrigatório</span>
             </div>
 
             <div class="form-group" id="fg-justificativa">
                 <label for="justificativa">Justificativa para a Orientação *</label>
-                <textarea id="justificativa" rows="7" placeholder="Descreva detalhadamente a justificativa, consequências, normas e orientações fornecidas ao funcionário..."></textarea>
+                <textarea id="justificativa" rows="10" placeholder="Descreva detalhadamente a justificativa..."></textarea>
                 <span class="alert-required">Campo obrigatório</span>
             </div>
 
-            <div class="form-group">
-                <label for="localData">Local e Data</label>
-                <input type="text" id="localData" placeholder="Ex: Carambeí, 06 de janeiro de 2026">
-            </div>
-
             <div class="navigation">
-                <div></div>
+                <button class="btn btn-secondary" onclick="mostrarStep(0)">← Voltar</button>
                 <button class="btn" onclick="gerarDocumento()">Gerar Termo de Orientação →</button>
             </div>
         </div>
@@ -318,10 +389,44 @@
 </div>
 
 <script>
+    const DESCRICAO_VELOCIDADE = `Velocidade Acima do Permitido: Em decorrência dos excessos de velocidade evidenciados em relatórios de fita diagrama, orientamos de acordo com os procedimentos e normas da empresa, que a velocidade permitida é de 80Km/h em dias secos e 60Km/h em dias de chuva.`;
+
+    const JUSTIFICATIVA_VELOCIDADE = `•  Evitar acidentes de trânsito;
+•  Excesso de velocidade;
+•  Cumprir com as normas da empresa;
+
+    O funcionário foi orientado quanto à importância de obedecer a legislação de trânsito, especialmente no que diz respeito a velocidade em rodovias.
+    Ter pressa no volante pode ser fatal. A combinação entre excesso de velocidade e falta de atenção está entre as principais causas de acidentes graves e mortes no trânsito brasileiro, especialmente em rodovias.
+    A pressa no trânsito pode custar vidas. Queremos lembrar os condutores de que dirigir com responsabilidade é um ato de cuidado com todos.
+    De acordo com o Código de Trânsito Brasileiro (CTB), dirigir acima da velocidade permitida gera multa, perda de pontos na Carteira Nacional de Habilitação (CNH) e, em casos mais graves, pode resultar na suspensão do direito de dirigir.
+    Os valores das multas, a quantidade de pontos e o nível da infração estão diretamente relacionados ao percentual de excesso de velocidade acima do limite permitido.
+
+Informamos que a reincidência após esta orientação, acarretará advertência ou suspensão, podendo chegar ao desligamento.`;
+
     function mostrarStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selecionarTemplate(tipo) {
+        // Limpa os campos
+        ['nome','setor','responsavel','cargo','descricao','justificativa'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        // Remove erros anteriores
+        document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
+
+        if (tipo === 'velocidade') {
+            document.getElementById('formTitulo').textContent = '🚨 Orientação de Velocidade';
+            document.getElementById('descricao').value = DESCRICAO_VELOCIDADE;
+            document.getElementById('justificativa').value = JUSTIFICATIVA_VELOCIDADE;
+            // Campos de descrição/justificativa ficam editáveis mas pré-preenchidos
+        } else {
+            document.getElementById('formTitulo').textContent = '📋 Nova Orientação';
+        }
+
+        mostrarStep(1);
     }
 
     function voltarFormulario() {
@@ -340,6 +445,10 @@
         return true;
     }
 
+    function getDataAtual() {
+        return 'Carambeí, ' + new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
     function gerarDocumento() {
         const v1 = validarCampo('nome');
         const v2 = validarCampo('setor');
@@ -353,14 +462,13 @@
             return;
         }
 
-        const nome        = document.getElementById('nome').value.trim();
-        const setor       = document.getElementById('setor').value.trim();
-        const responsavel = document.getElementById('responsavel').value.trim();
-        const cargo       = document.getElementById('cargo').value.trim();
-        const descricao   = document.getElementById('descricao').value.trim();
+        const nome          = document.getElementById('nome').value.trim();
+        const setor         = document.getElementById('setor').value.trim();
+        const responsavel   = document.getElementById('responsavel').value.trim();
+        const cargo         = document.getElementById('cargo').value.trim();
+        const descricao     = document.getElementById('descricao').value.trim();
         const justificativa = document.getElementById('justificativa').value.trim();
-        const localData   = document.getElementById('localData').value.trim() ||
-                            'Carambeí, ' + new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        const localData     = getDataAtual();
 
         const html = `
         <div class="documento">
@@ -375,17 +483,17 @@
                 <div class="doc-info-grid">
                     <div class="doc-info-cell">
                         <span class="doc-info-label">Funcionário:</span>
-                        <strong>${nome.toUpperCase()}</strong>${cargo ? ' – ' + cargo : ''}
+                        <strong>${e(nome.toUpperCase())}</strong>${cargo ? ' – ' + e(cargo) : ''}
                     </div>
                     <div class="doc-info-cell">
                         <span class="doc-info-label">Setor:</span>
-                        ${setor}
+                        ${e(setor)}
                     </div>
                 </div>
                 <div style="border-top:1px solid #dde2ea;">
                     <div class="doc-info-cell">
                         <span class="doc-info-label">Responsável pelo Setor:</span>
-                        ${responsavel}
+                        ${e(responsavel)}
                     </div>
                 </div>
             </div>
@@ -393,35 +501,35 @@
             <div class="doc-section no-split">
                 <div class="doc-section-title">DESCRIÇÃO DA ORIENTAÇÃO</div>
                 <div class="doc-section-body">
-                    <p class="doc-content">${escapeHtml(descricao)}</p>
+                    <p class="doc-content">${e(descricao)}</p>
                 </div>
             </div>
 
             <div class="doc-section no-split">
                 <div class="doc-section-title">JUSTIFICATIVA PARA A ORIENTAÇÃO</div>
                 <div class="doc-section-body">
-                    <p class="doc-content">${escapeHtml(justificativa)}</p>
+                    <p class="doc-content">${e(justificativa)}</p>
                 </div>
             </div>
 
             <div class="doc-section no-split">
                 <div class="doc-section-title">ASSINATURAS</div>
                 <div class="doc-section-body">
-                    <p style="text-align:center; margin-bottom:10px; font-size:9pt;">${escapeHtml(localData)}</p>
+                    <p style="text-align:center; margin-bottom:10px; font-size:9pt;">${e(localData)}</p>
                     <div class="signature-area">
                         <div class="signature-box">
                             <div class="signature-line">___________________________</div>
-                            <strong>${escapeHtml(responsavel.split('\n')[0])}</strong><br>
+                            <strong>${e(responsavel.split('\n')[0])}</strong><br>
                             Responsável pelo Setor
                         </div>
                         <div class="signature-box">
                             <div class="signature-line">___________________________</div>
-                            <strong>Evandro dos Santos</strong><br>
+                            <strong>Tatiana T L Mello</strong><br>
                             Tec. Segurança do Trabalho
                         </div>
                         <div class="signature-box">
                             <div class="signature-line">___________________________</div>
-                            <strong>${escapeHtml(nome.toUpperCase())}</strong><br>
+                            <strong>${e(nome.toUpperCase())}</strong><br>
                             Funcionário
                         </div>
                     </div>
@@ -434,8 +542,8 @@
         mostrarStep(2);
     }
 
-    function escapeHtml(str) {
-        return str
+    function e(str) {
+        return String(str)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
