@@ -1,0 +1,764 @@
+13+32<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIO – Aviso de Investigação de Ocorrência</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @media print {
+            @page { size: A4; margin: 10mm; }
+            body { background: white; padding: 0; margin: 0; }
+            .container { box-shadow: none; border-radius: 0; max-width: 100%; }
+            .no-print, header { display: none !important; }
+            .content { padding: 0 !important; }
+            .documento { padding: 0 !important; margin: 0 !important; }
+            .no-split { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+
+        .no-split { page-break-inside: avoid !important; break-inside: avoid !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #c94b4b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 28px 30px;
+            text-align: center;
+        }
+        header img { max-width: 260px; height: auto; margin-bottom: 12px; }
+        header h1 { font-size: 22px; margin-bottom: 5px; }
+        header p { opacity: 0.85; font-size: 13px; }
+
+        .content { padding: 35px; }
+
+        .step { display: none; }
+        .step.active { display: block; }
+
+        .section-title {
+            color: #1e3c72;
+            font-size: 21px;
+            margin-bottom: 22px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #c94b4b;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.3s;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { outline: none; border-color: #2a5298; }
+
+        .form-row { display: grid; gap: 18px; }
+        .form-row-2 { grid-template-columns: 1fr 1fr; }
+        .form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        /* Radio Sim/Não */
+        .radio-group {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #f8f9fa;
+        }
+        .radio-group .radio-label {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 13px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .radio-options { display: flex; gap: 20px; }
+        .radio-options label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: normal;
+            color: #333;
+            margin: 0;
+        }
+        .radio-options input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #1e3c72;
+        }
+
+        .section-divider {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            margin: 28px 0 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #2a5298;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .info-box strong { color: #1e3c72; }
+
+        .btn {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            padding: 13px 36px;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 6px 5px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(30,60,114,0.4); }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { box-shadow: 0 10px 25px rgba(108,117,125,0.4); }
+        .btn-danger { background: linear-gradient(135deg, #c94b4b, #a03030); }
+        .btn-danger:hover { box-shadow: 0 10px 25px rgba(201,75,75,0.4); }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error select { border-color: #c94b4b; }
+        .alert-required { color: #c94b4b; font-size: 12px; margin-top: 4px; display: none; }
+        .form-group.error .alert-required { display: block; }
+
+        .preview-actions {
+            text-align: center;
+            padding: 18px 0 8px;
+        }
+
+        /* ======== DOCUMENTO PDF ======== */
+        .documento {
+            background: white;
+            padding: 12mm 14mm;
+            max-width: 190mm;
+            margin: 0 auto;
+            font-size: 9.5pt;
+            line-height: 1.35;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .doc-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2.5px solid #1e3c72;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .doc-top-logo img {
+            width: 55mm;
+            height: auto;
+        }
+
+        .doc-top-title {
+            flex: 1;
+            text-align: center;
+        }
+
+        .doc-top-title h2 {
+            color: #1e3c72;
+            font-size: 13pt;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .doc-top-title p {
+            color: #555;
+            font-size: 8pt;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .doc-top-code {
+            text-align: right;
+            font-size: 8pt;
+            color: #777;
+            min-width: 55mm;
+        }
+
+        /* Tabela principal */
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .doc-table td, .doc-table th {
+            border: 1.5px solid #1e3c72;
+            padding: 5px 7px;
+            vertical-align: top;
+            font-size: 9pt;
+        }
+
+        .doc-table .lbl {
+            font-weight: bold;
+            color: #1e3c72;
+            white-space: nowrap;
+            font-size: 8.5pt;
+        }
+
+        .doc-table .val {
+            color: #222;
+            border-left: 1px dashed #aaa;
+        }
+
+        .doc-section-header {
+            background: #1e3c72;
+            color: white;
+            padding: 5px 8px;
+            font-weight: bold;
+            font-size: 9pt;
+            border: 1.5px solid #1e3c72;
+            margin-top: 6px;
+        }
+
+        .doc-textarea-row td {
+            padding: 6px 8px;
+            min-height: 18mm;
+            font-size: 9pt;
+            white-space: pre-wrap;
+        }
+
+        .doc-sim-nao {
+            display: inline-block;
+            text-align: center;
+            margin: 0 8px 0 0;
+        }
+
+        .doc-sim-nao .check {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #333;
+            text-align: center;
+            line-height: 12px;
+            font-size: 10pt;
+            vertical-align: middle;
+            margin-right: 3px;
+        }
+
+        .doc-sim-nao .check.marcado { background: #1e3c72; color: white; font-weight: bold; }
+
+        .doc-declaracao {
+            border: 1.5px solid #1e3c72;
+            padding: 8px;
+            margin-top: 6px;
+            font-size: 8.5pt;
+            font-style: italic;
+            color: #333;
+        }
+
+        .doc-assinaturas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 14px;
+        }
+
+        .doc-assinatura-box {
+            text-align: center;
+            font-size: 8.5pt;
+        }
+
+        .doc-assinatura-linha {
+            border-top: 1px solid #333;
+            padding-top: 4px;
+            margin-bottom: 3px;
+        }
+
+        .doc-rodape {
+            margin-top: 10px;
+            font-size: 7.5pt;
+            color: #999;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" onerror="this.style.display='none'">
+        <h1>AIO – Aviso de Investigação de Ocorrência</h1>
+        <p>Acidente / Incidente – TransArdo</p>
+    </header>
+
+    <div class="content">
+
+        <!-- STEP 1: FORMULÁRIO -->
+        <div class="step active" id="step1">
+
+            <h2 class="section-title">🔍 Dados da Ocorrência</h2>
+
+            <div class="info-box">
+                <strong>Finalidade:</strong> A investigação de incidentes/acidentes busca identificar causas, aprender com o ocorrido e implementar medidas preventivas. O foco é <strong>proteger vidas e melhorar processos</strong>, não punir ou encontrar culpados.
+            </div>
+
+            <!-- DADOS DO ENVOLVIDO -->
+            <div class="section-divider">👤 DADOS DO ENVOLVIDO</div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group" id="fg-nome">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="nome" placeholder="Nome do envolvido">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-cpf">
+                    <label>CPF *</label>
+                    <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label>Função / Cargo</label>
+                    <input type="text" id="funcao" placeholder="Ex: Motorista, Auxiliar...">
+                </div>
+                <div class="form-group">
+                    <label>Nº CNH</label>
+                    <input type="text" id="cnh" placeholder="Número da CNH">
+                </div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label>Contato (Telefone)</label>
+                    <input type="text" id="contato" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="form-group">
+                    <label>Testemunha</label>
+                    <input type="text" id="testemunha" placeholder="Nome da testemunha">
+                </div>
+            </div>
+
+            <!-- DADOS DA OCORRÊNCIA -->
+            <div class="section-divider">📍 LOCAL E VEÍCULO</div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group" id="fg-local">
+                    <label>Local da Ocorrência *</label>
+                    <input type="text" id="local" placeholder="Cidade, rodovia, endereço...">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-dataHora">
+                    <label>Data e Hora *</label>
+                    <input type="datetime-local" id="dataHora">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label>Veículo / Frota</label>
+                    <input type="text" id="veiculo" placeholder="Ex: Frota 045, Caminhão...">
+                </div>
+                <div class="form-group">
+                    <label>Placa</label>
+                    <input type="text" id="placa" placeholder="AAA-0000">
+                </div>
+            </div>
+
+            <!-- DESCRIÇÕES -->
+            <div class="section-divider">📝 DESCRIÇÃO DA OCORRÊNCIA</div>
+
+            <div class="form-group" id="fg-atividade">
+                <label>Descreva a atividade ou tarefa realizada no momento da ocorrência *</label>
+                <textarea id="atividade" rows="3" placeholder="Descreva o que estava sendo feito no momento..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group" id="fg-descricaoOcorrencia">
+                <label>Descreva como a ocorrência (incidente/acidente) ocorreu *</label>
+                <textarea id="descricaoOcorrencia" rows="4" placeholder="Descreva o passo a passo do que aconteceu..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <!-- CONSEQUÊNCIAS -->
+            <div class="section-divider">⚠️ CONSEQUÊNCIAS</div>
+
+            <div class="form-row form-row-3">
+                <div class="radio-group">
+                    <span class="radio-label">Houve lesões?</span>
+                    <div class="radio-options">
+                        <label><input type="radio" name="lesoes" value="Sim"> Sim</label>
+                        <label><input type="radio" name="lesoes" value="Não" checked> Não</label>
+                    </div>
+                </div>
+                <div class="radio-group">
+                    <span class="radio-label">Houve necessidade de atendimento médico?</span>
+                    <div class="radio-options">
+                        <label><input type="radio" name="atendimento" value="Sim"> Sim</label>
+                        <label><input type="radio" name="atendimento" value="Não" checked> Não</label>
+                    </div>
+                </div>
+                <div class="radio-group">
+                    <span class="radio-label">Houve danos materiais?</span>
+                    <div class="radio-options">
+                        <label><input type="radio" name="danos" value="Sim"> Sim</label>
+                        <label><input type="radio" name="danos" value="Não" checked> Não</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANÁLISE -->
+            <div class="section-divider">🔎 ANÁLISE DO ENVOLVIDO</div>
+
+            <div class="form-group" id="fg-fatores">
+                <label>Na sua opinião, quais fatores contribuíram para a ocorrência do acidente / incidente? *</label>
+                <textarea id="fatores" rows="4" placeholder="Descreva os fatores que, na sua visão, contribuíram..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group" id="fg-recomendacoes">
+                <label>Quais recomendações você faria para evitar um novo acidente / incidente? *</label>
+                <textarea id="recomendacoes" rows="4" placeholder="Liste suas recomendações preventivas..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group">
+                <label>Observações necessárias</label>
+                <textarea id="observacoes" rows="3" placeholder="Outras informações relevantes..."></textarea>
+            </div>
+
+            <div class="navigation">
+                <div></div>
+                <button class="btn" onclick="gerarDocumento()">Gerar AIO →</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: PREVIEW -->
+        <div class="step" id="step2">
+            <div class="preview-actions no-print">
+                <button class="btn btn-secondary" onclick="mostrarStep(1)">← Editar Dados</button>
+                <button class="btn btn-danger" onclick="gerarPDF()">⬇ Baixar PDF</button>
+                <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+
+            <div id="documentoConteudo"></div>
+
+            <div class="preview-actions no-print" style="padding-bottom:20px;">
+                <button class="btn btn-secondary" onclick="mostrarStep(1)">← Editar Dados</button>
+                <button class="btn btn-danger" onclick="gerarPDF()">⬇ Baixar PDF</button>
+                <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function mostrarStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function e(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function validar(id) {
+        const el = document.getElementById(id);
+        const fg = document.getElementById('fg-' + id);
+        if (!el || !fg) return true;
+        if (!el.value.trim()) { fg.classList.add('error'); return false; }
+        fg.classList.remove('error');
+        return true;
+    }
+
+    function radioVal(name) {
+        const sel = document.querySelector(`input[name="${name}"]:checked`);
+        return sel ? sel.value : '—';
+    }
+
+    function checkBox(val, opcao) {
+        const marcado = val === opcao;
+        return `<span class="doc-sim-nao"><span class="check ${marcado ? 'marcado' : ''}">${marcado ? '✓' : ''}</span> ${opcao}</span>`;
+    }
+
+    function formatarDataHora(str) {
+        if (!str) return '—';
+        const d = new Date(str);
+        return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function dataAtual() {
+        return new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function logoPDF() {
+        return `<img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" style="width:55mm;height:auto;" onerror="this.style.display='none'">`;
+    }
+
+    function gerarDocumento() {
+        const obrigatorios = ['nome','cpf','local','dataHora','atividade','descricaoOcorrencia','fatores','recomendacoes'];
+        let valido = true;
+        obrigatorios.forEach(id => { if (!validar(id)) valido = false; });
+        if (!valido) {
+            const err = document.querySelector('.form-group.error input, .form-group.error textarea');
+            if (err) err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        const nome              = document.getElementById('nome').value.trim();
+        const cpf               = document.getElementById('cpf').value.trim();
+        const funcao            = document.getElementById('funcao').value.trim() || '—';
+        const cnh               = document.getElementById('cnh').value.trim() || '—';
+        const contato           = document.getElementById('contato').value.trim() || '—';
+        const testemunha        = document.getElementById('testemunha').value.trim() || '—';
+        const local             = document.getElementById('local').value.trim();
+        const dataHora          = formatarDataHora(document.getElementById('dataHora').value);
+        const veiculo           = document.getElementById('veiculo').value.trim() || '—';
+        const placa             = document.getElementById('placa').value.trim() || '—';
+        const atividade         = document.getElementById('atividade').value.trim();
+        const descOcorrencia    = document.getElementById('descricaoOcorrencia').value.trim();
+        const fatores           = document.getElementById('fatores').value.trim();
+        const recomendacoes     = document.getElementById('recomendacoes').value.trim();
+        const observacoes       = document.getElementById('observacoes').value.trim() || '—';
+        const lesoes            = radioVal('lesoes');
+        const atendimento       = radioVal('atendimento');
+        const danos             = radioVal('danos');
+
+        const html = `
+        <div class="documento">
+
+            <!-- CABEÇALHO -->
+            <div class="doc-top no-split">
+                <div class="doc-top-logo">${logoPDF()}</div>
+                <div class="doc-top-title">
+                    <h2>AVISO DE INVESTIGAÇÃO DE OCORRÊNCIA</h2>
+                    <p>Informações relacionadas à ocorrência (Acidente / Incidente)</p>
+                </div>
+                <div class="doc-top-code">
+                    AIO – V1<br>
+                    <span style="color:#c94b4b;">Confidencial</span>
+                </div>
+            </div>
+
+            <!-- NOTA ORIENTAÇÃO -->
+            <div style="border:1px solid #dde2ea; border-left:3px solid #2a5298; padding:5px 8px; margin-bottom:8px; font-size:8pt; color:#555; font-style:italic;" class="no-split">
+                A investigação de incidentes/acidentes busca identificar causas, aprender com o ocorrido e implementar medidas preventivas. O foco é <strong>proteger vidas e melhorar processos</strong>, não punir ou encontrar culpados.
+            </div>
+
+            <!-- DADOS DO ENVOLVIDO -->
+            <div class="doc-section-header">DADOS DO ENVOLVIDO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:18%">Nome:</td>
+                    <td class="val" style="width:40%">${e(nome.toUpperCase())}</td>
+                    <td class="lbl" style="width:12%">CPF:</td>
+                    <td class="val">${e(cpf)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Função:</td>
+                    <td class="val">${e(funcao)}</td>
+                    <td class="lbl">CNH:</td>
+                    <td class="val">${e(cnh)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Contato:</td>
+                    <td class="val">${e(contato)}</td>
+                    <td class="lbl">Testemunha:</td>
+                    <td class="val">${e(testemunha)}</td>
+                </tr>
+            </table>
+
+            <!-- LOCAL E VEÍCULO -->
+            <div class="doc-section-header">LOCAL E VEÍCULO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:18%">Local:</td>
+                    <td class="val" style="width:40%">${e(local)}</td>
+                    <td class="lbl" style="width:15%">Data / Hora:</td>
+                    <td class="val">${e(dataHora)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Veículo Frota:</td>
+                    <td class="val">${e(veiculo)}</td>
+                    <td class="lbl">Placa:</td>
+                    <td class="val">${e(placa)}</td>
+                </tr>
+            </table>
+
+            <!-- DESCRIÇÃO DA OCORRÊNCIA -->
+            <div class="doc-section-header">DESCRIÇÃO DA OCORRÊNCIA</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:100%; padding-bottom:3px;" colspan="2">
+                        Descreva a atividade ou tarefa realizada no momento da ocorrência:
+                    </td>
+                </tr>
+                <tr class="doc-textarea-row">
+                    <td colspan="2" style="min-height:16mm;">${e(atividade)}</td>
+                </tr>
+            </table>
+            <table class="doc-table no-split" style="margin-top:4px;">
+                <tr>
+                    <td class="lbl" colspan="2" style="padding-bottom:3px;">
+                        Descreva como a ocorrência (incidente/acidente) ocorreu:
+                    </td>
+                </tr>
+                <tr class="doc-textarea-row">
+                    <td colspan="2" style="min-height:20mm;">${e(descOcorrencia)}</td>
+                </tr>
+            </table>
+
+            <!-- CONSEQUÊNCIAS -->
+            <div class="doc-section-header">CONSEQUÊNCIAS</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:30%"><strong>Houve lesões?</strong></td>
+                    <td style="width:20%">${checkBox(lesoes,'Sim')} ${checkBox(lesoes,'Não')}</td>
+                    <td class="lbl" style="width:30%"><strong>Houve necessidade de atendimento médico?</strong></td>
+                    <td style="width:20%">${checkBox(atendimento,'Sim')} ${checkBox(atendimento,'Não')}</td>
+                </tr>
+                <tr>
+                    <td class="lbl"><strong>Houve danos materiais?</strong></td>
+                    <td colspan="3">${checkBox(danos,'Sim')} ${checkBox(danos,'Não')}</td>
+                </tr>
+            </table>
+
+            <!-- ANÁLISE DO ENVOLVIDO -->
+            <div class="doc-section-header">ANÁLISE DO ENVOLVIDO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="padding-bottom:3px;">Na sua opinião, quais fatores contribuíram para a ocorrência do acidente / incidente?</td>
+                </tr>
+                <tr class="doc-textarea-row">
+                    <td style="min-height:18mm;">${e(fatores)}</td>
+                </tr>
+            </table>
+            <table class="doc-table no-split" style="margin-top:4px;">
+                <tr>
+                    <td class="lbl" style="padding-bottom:3px;">Quais recomendações você faria para evitar um novo acidente / incidente?</td>
+                </tr>
+                <tr class="doc-textarea-row">
+                    <td style="min-height:18mm;">${e(recomendacoes)}</td>
+                </tr>
+            </table>
+            <table class="doc-table no-split" style="margin-top:4px;">
+                <tr>
+                    <td class="lbl" style="padding-bottom:3px;">Observações necessárias:</td>
+                </tr>
+                <tr class="doc-textarea-row">
+                    <td style="min-height:14mm;">${e(observacoes)}</td>
+                </tr>
+            </table>
+
+            <!-- DECLARAÇÃO + ASSINATURAS -->
+            <div class="doc-declaracao no-split">
+                Declaro que as informações aqui descritas são verdadeiras e que assumo inteira responsabilidade pelas mesmas.
+            </div>
+
+            <div style="margin-top:12px; font-size:9pt; text-align:right;" class="no-split">
+                <strong>Data:</strong> Carambeí, ${dataAtual()}
+            </div>
+
+            <div class="doc-assinaturas no-split">
+                <div class="doc-assinatura-box">
+                    <div style="height:25px;"></div>
+                    <div class="doc-assinatura-linha">________________________________</div>
+                    <strong>${e(nome.toUpperCase())}</strong><br>
+                    ${e(funcao !== '—' ? funcao : 'Envolvido')}
+                </div>
+                <div class="doc-assinatura-box">
+                    <div style="height:25px;"></div>
+                    <div class="doc-assinatura-linha">________________________________</div>
+                    <strong>Tatiana T L Mello</strong><br>
+                    Tec. Segurança do Trabalho
+                </div>
+            </div>
+
+            <div class="doc-rodape">
+                AIO – Aviso de Investigação de Ocorrência | TransArdo Logística | Emitido em: ${dataAtual()}
+            </div>
+
+        </div>`;
+
+        document.getElementById('documentoConteudo').innerHTML = html;
+        mostrarStep(2);
+    }
+
+    function gerarPDF() {
+        const nome = document.getElementById('nome').value.trim().toLowerCase().replace(/\s+/g, '-');
+        const elemento = document.getElementById('documentoConteudo');
+
+        html2pdf().set({
+            margin: [10, 10, 10, 10],
+            filename: `aio-ocorrencia-${nome}.pdf`,
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 1.5, useCORS: true, scrollX: 0, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css'], avoid: '.no-split' }
+        }).from(elemento).save();
+    }
+
+    // Máscara CPF
+    document.getElementById('cpf').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '').substring(0, 11);
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        this.value = v;
+    });
+</script>
+</body>
+</html>
