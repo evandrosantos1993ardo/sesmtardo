@@ -1,4 +1,4 @@
-   15+53<!DOCTYPE html>
+13+20<!DOCTYPE html>
     <html lang="pt-BR">
     <head>
         <meta charset="UTF-8">
@@ -579,7 +579,8 @@
                     cpf: cpf,
                     dataAdmissao: dataAdmissao,
                     cbo: cbo,
-                    dataFormatada: new Date(dataAdmissao).toLocaleDateString('pt-BR')
+                    // ✅ CORREÇÃO: adiciona T00:00:00 para evitar erro de fuso horário (UTC vs horário local)
+                    dataFormatada: new Date(dataAdmissao + 'T00:00:00').toLocaleDateString('pt-BR')
                 };
     
                 carregarGHEs();
@@ -970,14 +971,14 @@ Exploração Sexual de Crianças e Adolescentes nas Rodovias Brasileira comuniqu
         const nomeArquivo = `${cargoSelecionado.toLowerCase().replace(/\s+/g, '-')}-${dadosFuncionario.nome.toLowerCase().replace(/\s+/g, '-')}.pdf`;
     
         html2pdf().set({
-            margin: [12, 12, 12, 12], // margem real A4
+            margin: [12, 12, 12, 12],
             filename: nomeArquivo,
             image: {
                 type: 'jpeg',
                 quality: 0.95
             },
             html2canvas: {
-                scale: 1.5,          // equilíbrio perfeito (não estoura)
+                scale: 1.5,
                 useCORS: true,
                 scrollX: 0,
                 scrollY: 0
@@ -995,6 +996,7 @@ Exploração Sexual de Crianças e Adolescentes nas Rodovias Brasileira comuniqu
         .from(elemento)
         .save();
     }
+
     function logoPDF() {
         return `
             <img 
@@ -1004,16 +1006,17 @@ Exploração Sexual de Crianças e Adolescentes nas Rodovias Brasileira comuniqu
             >
         `;
     }
-            function assinaturaTST() {
-                return `
-                    <div class="signature-box no-split" style="margin-top:30px;">
-                        _________________________<br>
-                        <strong>Evandro dos Santos</strong><br>
-                        Técnico em Segurança do Trabalho<br>
-                        REG: 128070/PR
-                    </div>
-                `;
-            }
+
+    function assinaturaTST() {
+        return `
+            <div class="signature-box no-split" style="margin-top:30px;">
+                _________________________<br>
+                <strong>Evandro dos Santos</strong><br>
+                Técnico em Segurança do Trabalho<br>
+                REG: 128070/PR
+            </div>
+        `;
+    }
         </script>
     </body>
     </html>
