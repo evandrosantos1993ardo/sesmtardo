@@ -1,4 +1,4 @@
-13+32<!DOCTYPE html>
+16+10<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -77,6 +77,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: border-color 0.3s;
             resize: vertical;
+            background: white;
         }
         .form-group input:focus,
         .form-group select:focus,
@@ -157,6 +158,9 @@
         .btn-secondary:hover { box-shadow: 0 10px 25px rgba(108,117,125,0.4); }
         .btn-danger { background: linear-gradient(135deg, #c94b4b, #a03030); }
         .btn-danger:hover { box-shadow: 0 10px 25px rgba(201,75,75,0.4); }
+        .btn-success { background: linear-gradient(135deg, #1a7a4a, #24a362); }
+        .btn-success:hover { box-shadow: 0 10px 25px rgba(36,163,98,0.4); }
+        .btn-success:disabled { background: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
 
         .navigation {
             display: flex;
@@ -165,7 +169,10 @@
             margin-top: 30px;
             padding-top: 20px;
             border-top: 2px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 10px;
         }
+        .navigation-right { display: flex; gap: 5px; flex-wrap: wrap; }
 
         .form-group.error input,
         .form-group.error textarea,
@@ -177,6 +184,48 @@
             text-align: center;
             padding: 18px 0 8px;
         }
+
+        /* ======== POPUP ======== */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-overlay.show { display: flex; }
+        .popup-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 48px;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+            max-width: 420px;
+            width: 90%;
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .popup-icon { font-size: 56px; margin-bottom: 16px; }
+        .popup-title { font-size: 22px; font-weight: bold; color: #1e3c72; margin-bottom: 10px; }
+        .popup-msg { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 24px; }
+        .popup-btn {
+            background: linear-gradient(135deg, #1a7a4a, #24a362);
+            color: white;
+            border: none;
+            padding: 12px 36px;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .popup-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(36,163,98,0.4); }
+        .popup-box.error .popup-title { color: #c94b4b; }
+        .popup-box.error .popup-btn { background: linear-gradient(135deg, #c94b4b, #a03030); }
 
         /* ======== DOCUMENTO PDF ======== */
         .documento {
@@ -197,63 +246,16 @@
             padding-bottom: 8px;
             margin-bottom: 10px;
         }
+        .doc-top-logo img { width: 55mm; height: auto; }
+        .doc-top-title { flex: 1; text-align: center; }
+        .doc-top-title h2 { color: #1e3c72; font-size: 13pt; font-weight: bold; letter-spacing: 0.5px; }
+        .doc-top-title p { color: #555; font-size: 8pt; margin-top: 3px; font-style: italic; }
+        .doc-top-code { text-align: right; font-size: 8pt; color: #777; min-width: 55mm; }
 
-        .doc-top-logo img {
-            width: 55mm;
-            height: auto;
-        }
-
-        .doc-top-title {
-            flex: 1;
-            text-align: center;
-        }
-
-        .doc-top-title h2 {
-            color: #1e3c72;
-            font-size: 13pt;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        .doc-top-title p {
-            color: #555;
-            font-size: 8pt;
-            margin-top: 3px;
-            font-style: italic;
-        }
-
-        .doc-top-code {
-            text-align: right;
-            font-size: 8pt;
-            color: #777;
-            min-width: 55mm;
-        }
-
-        /* Tabela principal */
-        .doc-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 8px;
-        }
-
-        .doc-table td, .doc-table th {
-            border: 1.5px solid #1e3c72;
-            padding: 5px 7px;
-            vertical-align: top;
-            font-size: 9pt;
-        }
-
-        .doc-table .lbl {
-            font-weight: bold;
-            color: #1e3c72;
-            white-space: nowrap;
-            font-size: 8.5pt;
-        }
-
-        .doc-table .val {
-            color: #222;
-            border-left: 1px dashed #aaa;
-        }
+        .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .doc-table td, .doc-table th { border: 1.5px solid #1e3c72; padding: 5px 7px; vertical-align: top; font-size: 9pt; }
+        .doc-table .lbl { font-weight: bold; color: #1e3c72; white-space: nowrap; font-size: 8.5pt; }
+        .doc-table .val { color: #222; border-left: 1px dashed #aaa; }
 
         .doc-section-header {
             background: #1e3c72;
@@ -265,71 +267,37 @@
             margin-top: 6px;
         }
 
-        .doc-textarea-row td {
-            padding: 6px 8px;
-            min-height: 18mm;
-            font-size: 9pt;
-            white-space: pre-wrap;
-        }
+        .doc-textarea-row td { padding: 6px 8px; min-height: 18mm; font-size: 9pt; white-space: pre-wrap; }
 
-        .doc-sim-nao {
-            display: inline-block;
-            text-align: center;
-            margin: 0 8px 0 0;
-        }
-
+        .doc-sim-nao { display: inline-block; text-align: center; margin: 0 8px 0 0; }
         .doc-sim-nao .check {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 1.5px solid #333;
-            text-align: center;
-            line-height: 12px;
-            font-size: 10pt;
-            vertical-align: middle;
-            margin-right: 3px;
+            display: inline-block; width: 14px; height: 14px;
+            border: 1.5px solid #333; text-align: center; line-height: 12px;
+            font-size: 10pt; vertical-align: middle; margin-right: 3px;
         }
-
         .doc-sim-nao .check.marcado { background: #1e3c72; color: white; font-weight: bold; }
 
-        .doc-declaracao {
-            border: 1.5px solid #1e3c72;
-            padding: 8px;
-            margin-top: 6px;
-            font-size: 8.5pt;
-            font-style: italic;
-            color: #333;
-        }
+        .doc-declaracao { border: 1.5px solid #1e3c72; padding: 8px; margin-top: 6px; font-size: 8.5pt; font-style: italic; color: #333; }
 
-        .doc-assinaturas {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 14px;
-        }
+        .doc-assinaturas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 14px; }
+        .doc-assinatura-box { text-align: center; font-size: 8.5pt; }
+        .doc-assinatura-linha { border-top: 1px solid #333; padding-top: 4px; margin-bottom: 3px; }
 
-        .doc-assinatura-box {
-            text-align: center;
-            font-size: 8.5pt;
-        }
-
-        .doc-assinatura-linha {
-            border-top: 1px solid #333;
-            padding-top: 4px;
-            margin-bottom: 3px;
-        }
-
-        .doc-rodape {
-            margin-top: 10px;
-            font-size: 7.5pt;
-            color: #999;
-            text-align: center;
-            border-top: 1px solid #ddd;
-            padding-top: 5px;
-        }
+        .doc-rodape { margin-top: 10px; font-size: 7.5pt; color: #999; text-align: center; border-top: 1px solid #ddd; padding-top: 5px; }
     </style>
 </head>
 <body>
+
+<!-- POPUP -->
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup-box" id="popupBox">
+        <div class="popup-icon" id="popupIcon">✅</div>
+        <div class="popup-title" id="popupTitle">Dados Enviados!</div>
+        <div class="popup-msg" id="popupMsg">Os dados foram registrados com sucesso no Google Drive. Você pode continuar e gerar o AIO normalmente.</div>
+        <button class="popup-btn" id="popupBtn" onclick="fecharPopup()">OK, entendido</button>
+    </div>
+</div>
+
 <div class="container">
     <header>
         <img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" onerror="this.style.display='none'">
@@ -346,6 +314,34 @@
 
             <div class="info-box">
                 <strong>Finalidade:</strong> A investigação de incidentes/acidentes busca identificar causas, aprender com o ocorrido e implementar medidas preventivas. O foco é <strong>proteger vidas e melhorar processos</strong>, não punir ou encontrar culpados.
+            </div>
+
+            <!-- SETOR + TIPO -->
+            <div class="form-row form-row-2">
+                <div class="form-group" id="fg-setor">
+                    <label>Setor *</label>
+                    <select id="setor">
+                        <option value="">— Selecione o Setor —</option>
+                        <option value="Suínos">Suínos</option>
+                        <option value="Slider">Slider</option>
+                        <option value="BI-Trem">BI-Trem</option>
+                        <option value="Ração">Ração</option>
+                        <option value="Matriz">Matriz</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-tipoOcorrencia">
+                    <label>Tipo de Ocorrência *</label>
+                    <select id="tipoOcorrencia">
+                        <option value="">— Selecione o Tipo —</option>
+                        <option value="Acidente">Acidente</option>
+                        <option value="Danos Materiais">Danos Materiais</option>
+                        <option value="Incidente">Incidente</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
             </div>
 
             <!-- DADOS DO ENVOLVIDO -->
@@ -386,7 +382,7 @@
                 </div>
             </div>
 
-            <!-- DADOS DA OCORRÊNCIA -->
+            <!-- LOCAL E VEÍCULO -->
             <div class="section-divider">📍 LOCAL E VEÍCULO</div>
 
             <div class="form-row form-row-2">
@@ -477,7 +473,10 @@
 
             <div class="navigation">
                 <div></div>
-                <button class="btn" onclick="gerarDocumento()">Gerar AIO →</button>
+                <div class="navigation-right">
+                    <button class="btn btn-success" id="btnEnviar" onclick="enviarDados()">📤 Enviar Dados</button>
+                    <button class="btn" onclick="gerarDocumento()">Gerar AIO →</button>
+                </div>
             </div>
         </div>
 
@@ -502,6 +501,13 @@
 </div>
 
 <script>
+    // =============================================
+    // CONFIGURAÇÃO – cole aqui a URL do seu Apps Script
+    // Veja as instruções abaixo de como obter essa URL
+    // =============================================
+    const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT';
+    // =============================================
+
     function mostrarStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
@@ -548,39 +554,116 @@
         return `<img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" style="width:55mm;height:auto;" onerror="this.style.display='none'">`;
     }
 
-    function gerarDocumento() {
-        const obrigatorios = ['nome','cpf','local','dataHora','atividade','descricaoOcorrencia','fatores','recomendacoes'];
+    function coletarDados() {
+        return {
+            setor:              document.getElementById('setor').value,
+            tipoOcorrencia:     document.getElementById('tipoOcorrencia').value,
+            nome:               document.getElementById('nome').value.trim(),
+            cpf:                document.getElementById('cpf').value.trim(),
+            funcao:             document.getElementById('funcao').value.trim() || '—',
+            cnh:                document.getElementById('cnh').value.trim() || '—',
+            contato:            document.getElementById('contato').value.trim() || '—',
+            testemunha:         document.getElementById('testemunha').value.trim() || '—',
+            local:              document.getElementById('local').value.trim(),
+            dataHora:           formatarDataHora(document.getElementById('dataHora').value),
+            veiculo:            document.getElementById('veiculo').value.trim() || '—',
+            placa:              document.getElementById('placa').value.trim() || '—',
+            atividade:          document.getElementById('atividade').value.trim(),
+            descOcorrencia:     document.getElementById('descricaoOcorrencia').value.trim(),
+            lesoes:             radioVal('lesoes'),
+            atendimento:        radioVal('atendimento'),
+            danos:              radioVal('danos'),
+            fatores:            document.getElementById('fatores').value.trim(),
+            recomendacoes:      document.getElementById('recomendacoes').value.trim(),
+            observacoes:        document.getElementById('observacoes').value.trim() || '—',
+            dataEnvio:          new Date().toLocaleString('pt-BR')
+        };
+    }
+
+    function mostrarPopup(sucesso, msg) {
+        const overlay = document.getElementById('popupOverlay');
+        const box = document.getElementById('popupBox');
+        const icon = document.getElementById('popupIcon');
+        const title = document.getElementById('popupTitle');
+        const msgEl = document.getElementById('popupMsg');
+
+        if (sucesso) {
+            box.className = 'popup-box';
+            icon.textContent = '✅';
+            title.textContent = 'Dados Enviados!';
+            msgEl.textContent = msg || 'Os dados foram registrados com sucesso no Google Drive. Você pode continuar e gerar o AIO normalmente.';
+        } else {
+            box.className = 'popup-box error';
+            icon.textContent = '❌';
+            title.textContent = 'Erro ao Enviar';
+            msgEl.textContent = msg || 'Não foi possível enviar os dados. Verifique a conexão e tente novamente.';
+        }
+
+        overlay.classList.add('show');
+    }
+
+    function fecharPopup() {
+        document.getElementById('popupOverlay').classList.remove('show');
+    }
+
+    async function enviarDados() {
+        // Validar campos obrigatórios antes de enviar
+        const obrigatorios = ['setor','tipoOcorrencia','nome','cpf','local','dataHora','atividade','descricaoOcorrencia','fatores','recomendacoes'];
         let valido = true;
         obrigatorios.forEach(id => { if (!validar(id)) valido = false; });
         if (!valido) {
-            const err = document.querySelector('.form-group.error input, .form-group.error textarea');
+            const err = document.querySelector('.form-group.error input, .form-group.error textarea, .form-group.error select');
             if (err) err.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        const nome              = document.getElementById('nome').value.trim();
-        const cpf               = document.getElementById('cpf').value.trim();
-        const funcao            = document.getElementById('funcao').value.trim() || '—';
-        const cnh               = document.getElementById('cnh').value.trim() || '—';
-        const contato           = document.getElementById('contato').value.trim() || '—';
-        const testemunha        = document.getElementById('testemunha').value.trim() || '—';
-        const local             = document.getElementById('local').value.trim();
-        const dataHora          = formatarDataHora(document.getElementById('dataHora').value);
-        const veiculo           = document.getElementById('veiculo').value.trim() || '—';
-        const placa             = document.getElementById('placa').value.trim() || '—';
-        const atividade         = document.getElementById('atividade').value.trim();
-        const descOcorrencia    = document.getElementById('descricaoOcorrencia').value.trim();
-        const fatores           = document.getElementById('fatores').value.trim();
-        const recomendacoes     = document.getElementById('recomendacoes').value.trim();
-        const observacoes       = document.getElementById('observacoes').value.trim() || '—';
-        const lesoes            = radioVal('lesoes');
-        const atendimento       = radioVal('atendimento');
-        const danos             = radioVal('danos');
+        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT') {
+            mostrarPopup(false, '⚠️ URL do Apps Script não configurada. Siga as instruções no comentário do código para configurar o envio ao Google Drive.');
+            return;
+        }
+
+        const btn = document.getElementById('btnEnviar');
+        btn.disabled = true;
+        btn.textContent = '⏳ Enviando...';
+
+        try {
+            const dados = coletarDados();
+            const params = new URLSearchParams(dados);
+
+            // Usa fetch com no-cors para enviar ao Apps Script
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            });
+
+            // Com no-cors não conseguimos ler a resposta, mas se não lançou erro, chegou
+            mostrarPopup(true, `✅ Dados de "${dados.nome}" enviados com sucesso! Registrado em: ${dados.dataEnvio}. Você pode continuar e gerar o AIO normalmente.`);
+
+        } catch (err) {
+            mostrarPopup(false, 'Erro na conexão: ' + err.message + '. Verifique sua internet e tente novamente.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '📤 Enviar Dados';
+        }
+    }
+
+    function gerarDocumento() {
+        const obrigatorios = ['setor','tipoOcorrencia','nome','cpf','local','dataHora','atividade','descricaoOcorrencia','fatores','recomendacoes'];
+        let valido = true;
+        obrigatorios.forEach(id => { if (!validar(id)) valido = false; });
+        if (!valido) {
+            const err = document.querySelector('.form-group.error input, .form-group.error textarea, .form-group.error select');
+            if (err) err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        const d = coletarDados();
 
         const html = `
         <div class="documento">
 
-            <!-- CABEÇALHO -->
             <div class="doc-top no-split">
                 <div class="doc-top-logo">${logoPDF()}</div>
                 <div class="doc-top-title">
@@ -593,117 +676,97 @@
                 </div>
             </div>
 
-            <!-- NOTA ORIENTAÇÃO -->
             <div style="border:1px solid #dde2ea; border-left:3px solid #2a5298; padding:5px 8px; margin-bottom:8px; font-size:8pt; color:#555; font-style:italic;" class="no-split">
                 A investigação de incidentes/acidentes busca identificar causas, aprender com o ocorrido e implementar medidas preventivas. O foco é <strong>proteger vidas e melhorar processos</strong>, não punir ou encontrar culpados.
             </div>
 
-            <!-- DADOS DO ENVOLVIDO -->
+            <!-- SETOR E TIPO -->
+            <div class="doc-section-header">IDENTIFICAÇÃO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:18%">Setor:</td>
+                    <td class="val" style="width:32%">${e(d.setor)}</td>
+                    <td class="lbl" style="width:20%">Tipo de Ocorrência:</td>
+                    <td class="val">${e(d.tipoOcorrencia)}</td>
+                </tr>
+            </table>
+
             <div class="doc-section-header">DADOS DO ENVOLVIDO</div>
             <table class="doc-table no-split">
                 <tr>
                     <td class="lbl" style="width:18%">Nome:</td>
-                    <td class="val" style="width:40%">${e(nome.toUpperCase())}</td>
+                    <td class="val" style="width:40%">${e(d.nome.toUpperCase())}</td>
                     <td class="lbl" style="width:12%">CPF:</td>
-                    <td class="val">${e(cpf)}</td>
+                    <td class="val">${e(d.cpf)}</td>
                 </tr>
                 <tr>
                     <td class="lbl">Função:</td>
-                    <td class="val">${e(funcao)}</td>
+                    <td class="val">${e(d.funcao)}</td>
                     <td class="lbl">CNH:</td>
-                    <td class="val">${e(cnh)}</td>
+                    <td class="val">${e(d.cnh)}</td>
                 </tr>
                 <tr>
                     <td class="lbl">Contato:</td>
-                    <td class="val">${e(contato)}</td>
+                    <td class="val">${e(d.contato)}</td>
                     <td class="lbl">Testemunha:</td>
-                    <td class="val">${e(testemunha)}</td>
+                    <td class="val">${e(d.testemunha)}</td>
                 </tr>
             </table>
 
-            <!-- LOCAL E VEÍCULO -->
             <div class="doc-section-header">LOCAL E VEÍCULO</div>
             <table class="doc-table no-split">
                 <tr>
                     <td class="lbl" style="width:18%">Local:</td>
-                    <td class="val" style="width:40%">${e(local)}</td>
+                    <td class="val" style="width:40%">${e(d.local)}</td>
                     <td class="lbl" style="width:15%">Data / Hora:</td>
-                    <td class="val">${e(dataHora)}</td>
+                    <td class="val">${e(d.dataHora)}</td>
                 </tr>
                 <tr>
                     <td class="lbl">Veículo Frota:</td>
-                    <td class="val">${e(veiculo)}</td>
+                    <td class="val">${e(d.veiculo)}</td>
                     <td class="lbl">Placa:</td>
-                    <td class="val">${e(placa)}</td>
+                    <td class="val">${e(d.placa)}</td>
                 </tr>
             </table>
 
-            <!-- DESCRIÇÃO DA OCORRÊNCIA -->
             <div class="doc-section-header">DESCRIÇÃO DA OCORRÊNCIA</div>
             <table class="doc-table no-split">
-                <tr>
-                    <td class="lbl" style="width:100%; padding-bottom:3px;" colspan="2">
-                        Descreva a atividade ou tarefa realizada no momento da ocorrência:
-                    </td>
-                </tr>
-                <tr class="doc-textarea-row">
-                    <td colspan="2" style="min-height:16mm;">${e(atividade)}</td>
-                </tr>
+                <tr><td class="lbl" colspan="2" style="padding-bottom:3px;">Descreva a atividade ou tarefa realizada no momento da ocorrência:</td></tr>
+                <tr class="doc-textarea-row"><td colspan="2" style="min-height:16mm;">${e(d.atividade)}</td></tr>
             </table>
             <table class="doc-table no-split" style="margin-top:4px;">
-                <tr>
-                    <td class="lbl" colspan="2" style="padding-bottom:3px;">
-                        Descreva como a ocorrência (incidente/acidente) ocorreu:
-                    </td>
-                </tr>
-                <tr class="doc-textarea-row">
-                    <td colspan="2" style="min-height:20mm;">${e(descOcorrencia)}</td>
-                </tr>
+                <tr><td class="lbl" colspan="2" style="padding-bottom:3px;">Descreva como a ocorrência (incidente/acidente) ocorreu:</td></tr>
+                <tr class="doc-textarea-row"><td colspan="2" style="min-height:20mm;">${e(d.descOcorrencia)}</td></tr>
             </table>
 
-            <!-- CONSEQUÊNCIAS -->
             <div class="doc-section-header">CONSEQUÊNCIAS</div>
             <table class="doc-table no-split">
                 <tr>
                     <td class="lbl" style="width:30%"><strong>Houve lesões?</strong></td>
-                    <td style="width:20%">${checkBox(lesoes,'Sim')} ${checkBox(lesoes,'Não')}</td>
+                    <td style="width:20%">${checkBox(d.lesoes,'Sim')} ${checkBox(d.lesoes,'Não')}</td>
                     <td class="lbl" style="width:30%"><strong>Houve necessidade de atendimento médico?</strong></td>
-                    <td style="width:20%">${checkBox(atendimento,'Sim')} ${checkBox(atendimento,'Não')}</td>
+                    <td style="width:20%">${checkBox(d.atendimento,'Sim')} ${checkBox(d.atendimento,'Não')}</td>
                 </tr>
                 <tr>
                     <td class="lbl"><strong>Houve danos materiais?</strong></td>
-                    <td colspan="3">${checkBox(danos,'Sim')} ${checkBox(danos,'Não')}</td>
+                    <td colspan="3">${checkBox(d.danos,'Sim')} ${checkBox(d.danos,'Não')}</td>
                 </tr>
             </table>
 
-            <!-- ANÁLISE DO ENVOLVIDO -->
             <div class="doc-section-header">ANÁLISE DO ENVOLVIDO</div>
             <table class="doc-table no-split">
-                <tr>
-                    <td class="lbl" style="padding-bottom:3px;">Na sua opinião, quais fatores contribuíram para a ocorrência do acidente / incidente?</td>
-                </tr>
-                <tr class="doc-textarea-row">
-                    <td style="min-height:18mm;">${e(fatores)}</td>
-                </tr>
+                <tr><td class="lbl" style="padding-bottom:3px;">Na sua opinião, quais fatores contribuíram para a ocorrência do acidente / incidente?</td></tr>
+                <tr class="doc-textarea-row"><td style="min-height:18mm;">${e(d.fatores)}</td></tr>
             </table>
             <table class="doc-table no-split" style="margin-top:4px;">
-                <tr>
-                    <td class="lbl" style="padding-bottom:3px;">Quais recomendações você faria para evitar um novo acidente / incidente?</td>
-                </tr>
-                <tr class="doc-textarea-row">
-                    <td style="min-height:18mm;">${e(recomendacoes)}</td>
-                </tr>
+                <tr><td class="lbl" style="padding-bottom:3px;">Quais recomendações você faria para evitar um novo acidente / incidente?</td></tr>
+                <tr class="doc-textarea-row"><td style="min-height:18mm;">${e(d.recomendacoes)}</td></tr>
             </table>
             <table class="doc-table no-split" style="margin-top:4px;">
-                <tr>
-                    <td class="lbl" style="padding-bottom:3px;">Observações necessárias:</td>
-                </tr>
-                <tr class="doc-textarea-row">
-                    <td style="min-height:14mm;">${e(observacoes)}</td>
-                </tr>
+                <tr><td class="lbl" style="padding-bottom:3px;">Observações necessárias:</td></tr>
+                <tr class="doc-textarea-row"><td style="min-height:14mm;">${e(d.observacoes)}</td></tr>
             </table>
 
-            <!-- DECLARAÇÃO + ASSINATURAS -->
             <div class="doc-declaracao no-split">
                 Declaro que as informações aqui descritas são verdadeiras e que assumo inteira responsabilidade pelas mesmas.
             </div>
@@ -716,8 +779,8 @@
                 <div class="doc-assinatura-box">
                     <div style="height:25px;"></div>
                     <div class="doc-assinatura-linha">________________________________</div>
-                    <strong>${e(nome.toUpperCase())}</strong><br>
-                    ${e(funcao !== '—' ? funcao : 'Envolvido')}
+                    <strong>${e(d.nome.toUpperCase())}</strong><br>
+                    ${e(d.funcao !== '—' ? d.funcao : 'Envolvido')}
                 </div>
                 <div class="doc-assinatura-box">
                     <div style="height:25px;"></div>
@@ -740,7 +803,6 @@
     function gerarPDF() {
         const nome = document.getElementById('nome').value.trim().toLowerCase().replace(/\s+/g, '-');
         const elemento = document.getElementById('documentoConteudo');
-
         html2pdf().set({
             margin: [10, 10, 10, 10],
             filename: `aio-ocorrencia-${nome}.pdf`,
@@ -759,6 +821,61 @@
         v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
         this.value = v;
     });
+
+    // Fechar popup clicando fora
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) fecharPopup();
+    });
 </script>
+
+<!--
+╔══════════════════════════════════════════════════════════════╗
+║         INSTRUÇÕES PARA CONFIGURAR O ENVIO AO GOOGLE        ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  1. Abra o Google Drive e crie uma planilha nova             ║
+║     (Google Sheets) com o nome "AIO – Ocorrências"          ║
+║                                                              ║
+║  2. Na planilha, vá em: Extensões > Apps Script             ║
+║                                                              ║
+║  3. Apague o código existente e cole este código:            ║
+║                                                              ║
+║  function doPost(e) {                                        ║
+║    var sheet = SpreadsheetApp                                ║
+║      .getActiveSpreadsheet().getActiveSheet();               ║
+║    var p = e.parameter;                                      ║
+║    if (sheet.getLastRow() === 0) {                           ║
+║      sheet.appendRow([                                       ║
+║        'Data Envio','Setor','Tipo Ocorrência','Nome','CPF',  ║
+║        'Função','CNH','Contato','Testemunha','Local',        ║
+║        'Data/Hora','Veículo','Placa','Atividade',            ║
+║        'Descrição','Lesões','Atendimento','Danos Materiais', ║
+║        'Fatores','Recomendações','Observações'               ║
+║      ]);                                                     ║
+║    }                                                         ║
+║    sheet.appendRow([                                         ║
+║      p.dataEnvio, p.setor, p.tipoOcorrencia, p.nome,        ║
+║      p.cpf, p.funcao, p.cnh, p.contato, p.testemunha,       ║
+║      p.local, p.dataHora, p.veiculo, p.placa,               ║
+║      p.atividade, p.descOcorrencia, p.lesoes,               ║
+║      p.atendimento, p.danos, p.fatores,                      ║
+║      p.recomendacoes, p.observacoes                          ║
+║    ]);                                                       ║
+║    return ContentService                                     ║
+║      .createTextOutput(JSON.stringify({status:'ok'}))        ║
+║      .setMimeType(ContentService.MimeType.JSON);             ║
+║  }                                                           ║
+║                                                              ║
+║  4. Clique em "Implantar" > "Nova implantação"               ║
+║     - Tipo: "Aplicativo da Web"                              ║
+║     - Executar como: Eu (sua conta)                         ║
+║     - Quem tem acesso: Qualquer pessoa                       ║
+║     - Clique em "Implantar" e copie a URL gerada             ║
+║                                                              ║
+║  5. Cole a URL na variável APPS_SCRIPT_URL no topo           ║
+║     do <script> deste arquivo HTML                           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+-->
 </body>
 </html>
