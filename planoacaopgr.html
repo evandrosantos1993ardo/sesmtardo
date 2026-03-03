@@ -1,0 +1,869 @@
+15+52<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PGR - Plano de Ação | Transardo</title>
+<style>
+  :root {
+    --primary: #c0392b;
+    --primary-dark: #922b21;
+    --bg: #f4f6f8;
+    --card: #fff;
+    --border: #e0e0e0;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+    --green: #27ae60;
+    --yellow: #f39c12;
+    --red: #e74c3c;
+    --blue: #2980b9;
+    --orange: #e67e22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* SETUP SCREEN */
+  #setup-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+  }
+  .setup-card {
+    background: var(--card); border-radius: 12px; padding: 40px;
+    max-width: 520px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.1);
+  }
+  .setup-card h2 { color: var(--primary); margin-bottom: 8px; font-size: 1.6rem; }
+  .setup-card p { color: var(--muted); margin-bottom: 24px; line-height: 1.6; font-size: .9rem; }
+  .setup-card .steps { background: #fef9f0; border: 1px solid #f39c12; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  .setup-card .steps ol { padding-left: 18px; }
+  .setup-card .steps li { margin-bottom: 6px; font-size: .85rem; line-height: 1.5; }
+  .setup-card .steps code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: .8rem; }
+
+  /* HEADER */
+  header {
+    background: var(--primary); color: #fff; padding: 0 24px;
+    display: flex; align-items: center; height: 60px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2); position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; }
+  header span { font-size: .8rem; opacity: .8; }
+  .nav-btn {
+    background: rgba(255,255,255,.15); border: none; color: #fff;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: .85rem;
+    margin-left: 8px; transition: background .2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.3); }
+  .nav-btn.active { background: rgba(255,255,255,.3); font-weight: 600; }
+
+  /* LAYOUT */
+  #app { display: none; }
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+  /* PAGE */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--card); border-radius: 10px; padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06); border-left: 4px solid var(--border);
+    text-align: center;
+  }
+  .stat-card .num { font-size: 2rem; font-weight: 700; }
+  .stat-card .lbl { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .stat-card.total { border-color: var(--blue); } .stat-card.total .num { color: var(--blue); }
+  .stat-card.pendente { border-color: var(--yellow); } .stat-card.pendente .num { color: var(--yellow); }
+  .stat-card.andamento { border-color: var(--orange); } .stat-card.andamento .num { color: var(--orange); }
+  .stat-card.concluido { border-color: var(--green); } .stat-card.concluido .num { color: var(--green); }
+  .stat-card.atrasado { border-color: var(--red); } .stat-card.atrasado .num { color: var(--red); }
+
+  /* CHARTS */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card { background: var(--card); border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .chart-card h3 { font-size: .95rem; color: var(--muted); margin-bottom: 16px; }
+  .bar-item { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; font-size: .85rem; }
+  .bar-item .bar-label { width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 18px; background: #f0f0f0; border-radius: 9px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 9px; transition: width .5s; }
+  .bar-item .bar-val { width: 24px; text-align: right; font-weight: 600; color: var(--text); }
+
+  /* ALERTS */
+  .alert-box { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+  .alert-box.danger { background: #f8d7da; border-color: var(--red); }
+  .alert-box h4 { font-size: .9rem; margin-bottom: 6px; }
+  .alert-box ul { padding-left: 18px; font-size: .83rem; }
+  .alert-box li { margin-bottom: 3px; }
+
+  /* FORM */
+  .form-card { background: var(--card); border-radius: 10px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .form-card h2 { font-size: 1.1rem; margin-bottom: 20px; color: var(--primary); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: .83rem; font-weight: 600; color: var(--muted); }
+  .form-group input, .form-group select, .form-group textarea {
+    border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px;
+    font-size: .9rem; font-family: inherit; transition: border .2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--primary);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-actions { margin-top: 20px; display: flex; gap: 10px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 9px 20px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .88rem; font-weight: 600; transition: opacity .2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-secondary { background: #ecf0f1; color: var(--text); }
+  .btn-sm { padding: 5px 10px; font-size: .78rem; }
+  .btn-info { background: var(--blue); color: #fff; }
+
+  /* FILTERS */
+  .filter-bar {
+    background: var(--card); border-radius: 10px; padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+  }
+  .filter-bar .fg { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
+  .filter-bar label { font-size: .78rem; font-weight: 600; color: var(--muted); }
+  .filter-bar input, .filter-bar select {
+    border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; font-size: .85rem;
+  }
+
+  /* TABLE */
+  .table-wrap { background: var(--card); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  th { background: #f8f9fa; padding: 12px 14px; text-align: left; font-size: .78rem; color: var(--muted); font-weight: 700; white-space: nowrap; }
+  td { padding: 11px 14px; border-top: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: #fafafa; }
+  tr.row-overdue td { background: #fff5f5; }
+  tr.row-warning td { background: #fffbf0; }
+
+  /* BADGES */
+  .badge {
+    display: inline-block; padding: 3px 9px; border-radius: 12px;
+    font-size: .75rem; font-weight: 700; white-space: nowrap;
+  }
+  .badge-alta { background: #fdecea; color: var(--red); }
+  .badge-media { background: #fff8e1; color: #d68910; }
+  .badge-baixa { background: #eafaf1; color: var(--green); }
+  .badge-pendente { background: #fff8e1; color: #d68910; }
+  .badge-andamento { background: #fff3e0; color: var(--orange); }
+  .badge-concluido { background: #eafaf1; color: var(--green); }
+  .badge-atrasado { background: #fdecea; color: var(--red); }
+
+  /* DETAIL */
+  .detail-card { background: var(--card); border-radius: 10px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .detail-field label { font-size: .78rem; color: var(--muted); font-weight: 600; display: block; margin-bottom: 3px; }
+  .detail-field p { font-size: .92rem; }
+
+  /* LOADING */
+  .loader { text-align: center; padding: 40px; color: var(--muted); }
+  .spinner { width: 32px; height: 32px; border: 3px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CONFIG */
+  .config-bar {
+    background: #fff; border-bottom: 1px solid var(--border); padding: 8px 24px;
+    display: flex; align-items: center; gap: 12px; font-size: .82rem; color: var(--muted);
+  }
+  .config-bar input { border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: .82rem; width: 420px; }
+  .config-bar .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; display: inline-block; margin-right: 4px; }
+  .config-bar .status-dot.ok { background: var(--green); }
+  .config-bar .status-dot.err { background: var(--red); }
+
+  @media (max-width: 768px) {
+    .form-grid, .chart-grid, .detail-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <h2>⚙️ Configuração Inicial</h2>
+    <p>Informe o ID da planilha Google Sheets que será usada como banco de dados do sistema PGR - Plano de Ação da <strong>Transportes Ardo Ltda</strong>.</p>
+    <div class="steps">
+      <strong>Como preparar a planilha:</strong>
+      <ol>
+        <li>Crie uma planilha no Google Sheets</li>
+        <li>Renomeie a aba para <code>plano_acao</code></li>
+        <li>Na linha 1, adicione os cabeçalhos:<br>
+          <code>ID | Atividade | Descricao | Setor | Cargo | Risco | Responsavel | Prioridade | Data_Inicio | Prazo_Final | Status | Observacoes | Data_Criacao | Ultima_Atualizacao</code></li>
+        <li>Vá em <strong>Extensões → Apps Script</strong>, cole o script disponibilizado e publique como Web App (acesso: <em>Qualquer pessoa</em>)</li>
+        <li>Copie a URL do Web App abaixo</li>
+      </ol>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>URL do Google Apps Script (Web App)</label>
+      <input type="text" id="setup-url" placeholder="https://script.google.com/macros/s/.../exec" />
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Nome da empresa (opcional)</label>
+      <input type="text" id="setup-empresa" placeholder="Transportes Ardo Ltda" value="Transportes Ardo Ltda" />
+    </div>
+    <button class="btn btn-primary" onclick="salvarConfig()">▶ Entrar no Sistema</button>
+    <button class="btn btn-secondary" onclick="usarDemo()" style="margin-left:8px">🧪 Modo Demo (sem planilha)</button>
+    <p style="margin-top:14px; font-size:.78rem; color:var(--muted)">O script Apps Script necessário está descrito na documentação do sistema.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <h1>🛡️ PGR – Plano de Ação</h1>
+    <span id="empresa-nome">Transportes Ardo Ltda</span>
+    <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">Dashboard</button>
+    <button class="nav-btn" onclick="showPage('lista')" id="nav-lista">Ações</button>
+    <button class="nav-btn" onclick="showPage('novo')" id="nav-novo">+ Nova Ação</button>
+    <button class="nav-btn" onclick="showPage('config')" id="nav-config">⚙️</button>
+  </header>
+  <div class="config-bar">
+    <span><span class="status-dot" id="conn-dot"></span><span id="conn-txt">Verificando conexão...</span></span>
+    <span style="flex:1"></span>
+    <button class="btn btn-secondary btn-sm" onclick="syncData()">🔄 Sincronizar</button>
+  </div>
+  <main>
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card total"><div class="num" id="s-total">0</div><div class="lbl">Total de Ações</div></div>
+        <div class="stat-card pendente"><div class="num" id="s-pendente">0</div><div class="lbl">Pendentes</div></div>
+        <div class="stat-card andamento"><div class="num" id="s-andamento">0</div><div class="lbl">Em Andamento</div></div>
+        <div class="stat-card concluido"><div class="num" id="s-concluido">0</div><div class="lbl">Concluídas</div></div>
+        <div class="stat-card atrasado"><div class="num" id="s-atrasado">0</div><div class="lbl">Atrasadas</div></div>
+      </div>
+      <div id="alertas-area"></div>
+      <div class="chart-grid">
+        <div class="chart-card"><h3>📊 Por Prioridade</h3><div id="chart-prioridade"></div></div>
+        <div class="chart-card"><h3>📊 Por Setor</h3><div id="chart-setor"></div></div>
+      </div>
+    </div>
+
+    <!-- LISTA -->
+    <div class="page" id="page-lista">
+      <div class="filter-bar">
+        <div class="fg"><label>🔍 Busca geral</label><input type="text" id="f-busca" placeholder="Digite para buscar..." oninput="renderTabela()"></div>
+        <div class="fg"><label>Setor</label><select id="f-setor" onchange="renderTabela()"><option value="">Todos</option></select></div>
+        <div class="fg"><label>Responsável</label><select id="f-resp" onchange="renderTabela()"><option value="">Todos</option></select></div>
+        <div class="fg"><label>Status</label>
+          <select id="f-status" onchange="renderTabela()">
+            <option value="">Todos</option>
+            <option>Pendente</option><option>Em Andamento</option><option>Concluído</option><option>Atrasado</option>
+          </select>
+        </div>
+        <div class="fg"><label>Prioridade</label>
+          <select id="f-prio" onchange="renderTabela()">
+            <option value="">Todas</option>
+            <option>Alta</option><option>Média</option><option>Baixa</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="limparFiltros()">✕ Limpar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Atividade</th><th>Setor</th><th>Responsável</th>
+              <th>Prazo</th><th>Prioridade</th><th>Status</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-body"><tr><td colspan="8" class="loader"><div class="spinner"></div>Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NOVO / EDITAR -->
+    <div class="page" id="page-novo">
+      <div class="form-card">
+        <h2 id="form-titulo">➕ Nova Ação do Plano</h2>
+        <input type="hidden" id="edit-id">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Atividade *</label>
+            <input type="text" id="f-atividade" placeholder="Ex: Elaboração de Laudos Técnicos">
+          </div>
+          <div class="form-group full">
+            <label>Descrição *</label>
+            <textarea id="f-descricao" placeholder="Descreva detalhadamente a ação..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Setor *</label>
+            <select id="f-setor-form">
+              <option value="">Selecione...</option>
+              <option>Administrativo</option><option>Almoxarifado</option>
+              <option>Borracharia</option><option>Comercial</option><option>CPD</option>
+              <option>Faturamento</option><option>Lavador</option><option>Limpeza</option>
+              <option>Logística</option><option>Manobra</option><option>Manutenção</option>
+              <option>Portaria</option><option>Segurança do Trabalho</option>
+              <option>Transporte</option><option>Abastecimento</option><option>Toda a Empresa</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cargo</label>
+            <input type="text" id="f-cargo" placeholder="Ex: Mecânico, Motorista...">
+          </div>
+          <div class="form-group">
+            <label>Risco Associado</label>
+            <select id="f-risco">
+              <option value="">Selecione...</option>
+              <option>Ruído contínuo ou intermitente</option>
+              <option>Vibração de corpo inteiro</option>
+              <option>Vibração localizada mão e braço</option>
+              <option>Radiação não ionizante (solar)</option>
+              <option>Umidade</option>
+              <option>Postura sentada por longos períodos</option>
+              <option>Postura inadequada</option>
+              <option>Esforço físico</option>
+              <option>Agentes biológicos</option>
+              <option>Benzeno</option>
+              <option>Óleo diesel</option>
+              <option>Óleo mineral</option>
+              <option>Fumos metálicos</option>
+              <option>Produtos domissanitários</option>
+              <option>Incêndio e explosão</option>
+              <option>Choque elétrico</option>
+              <option>Trabalho em altura</option>
+              <option>Condução de veículos</option>
+              <option>Queda de mesmo nível</option>
+              <option>Batida contra</option>
+              <option>Queimaduras</option>
+              <option>Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Responsável *</label>
+            <input type="text" id="f-responsavel" placeholder="Ex: ELAINE CRISTINA GUBERT">
+          </div>
+          <div class="form-group">
+            <label>Prioridade *</label>
+            <select id="f-prioridade">
+              <option value="">Selecione...</option>
+              <option>Alta</option><option>Média</option><option>Baixa</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Data de Início *</label>
+            <input type="date" id="f-data-inicio">
+          </div>
+          <div class="form-group">
+            <label>Prazo Final *</label>
+            <input type="date" id="f-prazo">
+          </div>
+          <div class="form-group">
+            <label>Status *</label>
+            <select id="f-status-form">
+              <option>Pendente</option>
+              <option>Em Andamento</option>
+              <option>Concluído</option>
+              <option>Atrasado</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Observações</label>
+            <textarea id="f-obs" placeholder="Observações adicionais..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="salvarAcao()">💾 Salvar Ação</button>
+          <button class="btn btn-secondary" onclick="cancelarForm()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALHE -->
+    <div class="page" id="page-detalhe">
+      <div class="detail-card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <button class="btn btn-secondary btn-sm" onclick="showPage('lista')">← Voltar</button>
+          <h2 id="det-titulo" style="font-size:1.1rem;color:var(--primary)"></h2>
+        </div>
+        <div id="det-badges" style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap"></div>
+        <div class="detail-grid" id="det-grid"></div>
+        <div style="margin-top:20px;display:flex;gap:10px">
+          <button class="btn btn-primary btn-sm" onclick="editarFromDetalhe()">✏️ Editar</button>
+          <button class="btn btn-success btn-sm" onclick="concluirFromDetalhe()">✔ Concluir</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirFromDetalhe()">🗑 Excluir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="page" id="page-config">
+      <div class="form-card">
+        <h2>⚙️ Configurações</h2>
+        <div class="form-group" style="margin-bottom:14px;margin-top:16px">
+          <label>URL do Google Apps Script</label>
+          <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <div class="form-group" style="margin-bottom:20px">
+          <label>Nome da Empresa</label>
+          <input type="text" id="cfg-empresa">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="atualizarConfig()">💾 Salvar Configurações</button>
+        </div>
+        <hr style="margin:24px 0;border-color:var(--border)">
+        <h3 style="margin-bottom:12px;font-size:.95rem">📋 Script Google Apps Script</h3>
+        <p style="font-size:.83rem;color:var(--muted);margin-bottom:10px">Cole este script em Extensões → Apps Script da sua planilha e publique como Web App:</p>
+        <pre id="script-box" style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-size:.75rem;overflow:auto;max-height:320px;white-space:pre-wrap"></pre>
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="copiarScript()">📋 Copiar Script</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ==================== STATE ====================
+let ACOES = [];
+let SCRIPT_URL = '';
+let EMPRESA = 'Transportes Ardo Ltda';
+let IS_DEMO = false;
+let detalheId = null;
+let nextId = 1;
+
+const APPS_SCRIPT = `function doGet(e) {
+  return handleRequest(e);
+}
+function doPost(e) {
+  return handleRequest(e);
+}
+function handleRequest(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("plano_acao");
+  var action = e.parameter.action || (e.postData ? JSON.parse(e.postData.contents).action : "");
+  var data = e.postData ? JSON.parse(e.postData.contents) : e.parameter;
+  var result;
+  if (action === "getAll") {
+    var vals = sheet.getDataRange().getValues();
+    result = { ok: true, data: vals };
+  } else if (action === "add") {
+    sheet.appendRow(data.row);
+    result = { ok: true };
+  } else if (action === "update") {
+    var rows = sheet.getDataRange().getValues();
+    for (var i = 1; i < rows.length; i++) {
+      if (String(rows[i][0]) === String(data.id)) {
+        var r = sheet.getRange(i + 1, 1, 1, data.row.length);
+        r.setValues([data.row]);
+        break;
+      }
+    }
+    result = { ok: true };
+  } else if (action === "delete") {
+    var rows = sheet.getDataRange().getValues();
+    for (var i = 1; i < rows.length; i++) {
+      if (String(rows[i][0]) === String(data.id)) {
+        sheet.deleteRow(i + 1);
+        break;
+      }
+    }
+    result = { ok: true };
+  } else {
+    result = { ok: false, msg: "Unknown action" };
+  }
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+// ==================== INIT ====================
+window.onload = () => {
+  document.getElementById('script-box').textContent = APPS_SCRIPT;
+  const saved = localStorage.getItem('pgr_config');
+  if (saved) {
+    const c = JSON.parse(saved);
+    SCRIPT_URL = c.url || '';
+    EMPRESA = c.empresa || 'Transportes Ardo Ltda';
+    IS_DEMO = c.demo || false;
+    if (SCRIPT_URL || IS_DEMO) iniciarApp();
+  }
+};
+
+function salvarConfig() {
+  const url = document.getElementById('setup-url').value.trim();
+  const emp = document.getElementById('setup-empresa').value.trim() || 'Transportes Ardo Ltda';
+  if (!url) { alert('Informe a URL do Apps Script.'); return; }
+  SCRIPT_URL = url; EMPRESA = emp; IS_DEMO = false;
+  localStorage.setItem('pgr_config', JSON.stringify({ url, empresa: emp, demo: false }));
+  iniciarApp();
+}
+
+function usarDemo() {
+  SCRIPT_URL = ''; EMPRESA = 'Transportes Ardo Ltda (Demo)'; IS_DEMO = true;
+  localStorage.setItem('pgr_config', JSON.stringify({ url: '', empresa: EMPRESA, demo: true }));
+  carregarDemoData();
+  iniciarApp();
+}
+
+function iniciarApp() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('empresa-nome').textContent = EMPRESA;
+  document.getElementById('cfg-url').value = SCRIPT_URL;
+  document.getElementById('cfg-empresa').value = EMPRESA;
+  syncData();
+}
+
+// ==================== DEMO DATA ====================
+function carregarDemoData() {
+  const hoje = new Date();
+  const d = (off) => {
+    const dt = new Date(hoje);
+    dt.setDate(dt.getDate() + off);
+    return dt.toISOString().split('T')[0];
+  };
+  ACOES = [
+    {id:'PGR-001',atividade:'Elaboração de Laudos Técnicos',descricao:'Elaborar e manter atualizados os laudos de insalubridade e periculosidade conforme NR 15 e NR 16.',setor:'Toda a Empresa',cargo:'Técnico de Segurança',risco:'Outros',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-30),prazoFinal:d(30),status:'Em Andamento',observacoes:'Em elaboração pelo laboratório Oscar Pereira.',dataCriacao:d(-30),ultimaAtualizacao:d(-5)},
+    {id:'PGR-002',atividade:'Constituição da CIPA',descricao:'Constituir a CIPA – Comissão Interna de Prevenção de Acidentes e de Assédio conforme NR-5.',setor:'Toda a Empresa',cargo:'',risco:'Outros',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-20),prazoFinal:d(-5),status:'Atrasado',observacoes:'Prazo vencido. Providenciar com urgência.',dataCriacao:d(-20),ultimaAtualizacao:d(-2)},
+    {id:'PGR-003',atividade:'Proteção contra incêndios – NR 23',descricao:'Adequar a empresa conforme NR-23 e inspecionar extintores.',setor:'Toda a Empresa',cargo:'',risco:'Incêndio e explosão',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-15),prazoFinal:d(60),status:'Pendente',observacoes:'',dataCriacao:d(-15),ultimaAtualizacao:d(-15)},
+    {id:'PGR-004',atividade:'Implantação de EPI para trabalho em altura',descricao:'Implantar cinto de segurança com talabarte e trava quedas. Realizar treinamento NR35.',setor:'Lavador',cargo:'Lavador de Veículos',risco:'Trabalho em altura',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-10),prazoFinal:d(8),status:'Em Andamento',observacoes:'Aguardando cotação dos EPIs.',dataCriacao:d(-10),ultimaAtualizacao:d(-3)},
+    {id:'PGR-005',atividade:'Avaliação quantitativa de ruído (dosimetria)',descricao:'Realizar dosimetria nos setores: Manutenção, Solda, Borracharia, Transporte, Lavador.',setor:'Manutenção',cargo:'Mecânico',risco:'Ruído contínuo ou intermitente',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-5),prazoFinal:d(90),status:'Pendente',observacoes:'',dataCriacao:d(-5),ultimaAtualizacao:d(-5)},
+    {id:'PGR-006',atividade:'Treinamento NR-06 (EPI)',descricao:'Realizar treinamento sobre uso adequado dos EPIs conforme NR-06.',setor:'Toda a Empresa',cargo:'',risco:'Outros',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Média',dataInicio:d(-25),prazoFinal:d(45),status:'Em Andamento',observacoes:'Primeiro treinamento agendado.',dataCriacao:d(-25),ultimaAtualizacao:d(-8)},
+    {id:'PGR-007',atividade:'Implementar NR 20 – Combustíveis',descricao:'Implementar medidas de segurança para trabalho com inflamáveis e combustíveis no setor de abastecimento.',setor:'Abastecimento',cargo:'Frentista',risco:'Incêndio e explosão',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Média',dataInicio:d(-12),prazoFinal:d(120),status:'Pendente',observacoes:'',dataCriacao:d(-12),ultimaAtualizacao:d(-12)},
+    {id:'PGR-008',atividade:'Treinamento NR-35 – Trabalho em Altura',descricao:'Realizar treinamento de NR35 para motoristas e lavadores.',setor:'Transporte',cargo:'Motorista Truck Suínos',risco:'Trabalho em altura',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-8),prazoFinal:d(7),status:'Em Andamento',observacoes:'Treinamento marcado.',dataCriacao:d(-8),ultimaAtualizacao:d(-2)},
+    {id:'PGR-009',atividade:'Pesquisa de Clima Organizacional',descricao:'Realizar pesquisa de riscos psicossociais a cada 6 meses conforme recomendação do PGR.',setor:'Toda a Empresa',cargo:'',risco:'Postura sentada por longos períodos',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Alta',dataInicio:d(-60),prazoFinal:d(-30),status:'Concluído',observacoes:'Primeira pesquisa concluída em maio/2025.',dataCriacao:d(-60),ultimaAtualizacao:d(-30)},
+    {id:'PGR-010',atividade:'Treinamento NR-18 – Soldagem',descricao:'Capacitar mecânicos soldadores conforme requisitos da NR-18.',setor:'Manutenção',cargo:'Mecânico Soldador',risco:'Fumos metálicos',responsavel:'ELAINE CRISTINA GUBERT',prioridade:'Média',dataInicio:d(-3),prazoFinal:d(180),status:'Pendente',observacoes:'',dataCriacao:d(-3),ultimaAtualizacao:d(-3)},
+  ];
+  nextId = 11;
+}
+
+// ==================== SYNC ====================
+async function syncData() {
+  setConnStatus('loading', 'Sincronizando...');
+  if (IS_DEMO) {
+    if (!ACOES.length) carregarDemoData();
+    setConnStatus('ok', 'Modo Demo ativo');
+    atualizarUI();
+    return;
+  }
+  try {
+    const r = await fetch(`${SCRIPT_URL}?action=getAll`);
+    const j = await r.json();
+    if (j.ok && j.data.length > 1) {
+      ACOES = j.data.slice(1).map(row => ({
+        id: row[0], atividade: row[1], descricao: row[2], setor: row[3],
+        cargo: row[4], risco: row[5], responsavel: row[6], prioridade: row[7],
+        dataInicio: row[8], prazoFinal: row[9], status: row[10],
+        observacoes: row[11], dataCriacao: row[12], ultimaAtualizacao: row[13]
+      })).filter(a => a.id);
+      nextId = ACOES.length + 1;
+    }
+    setConnStatus('ok', 'Conectado ao Google Sheets ✓');
+    atualizarUI();
+  } catch(e) {
+    setConnStatus('err', 'Erro de conexão – verifique a URL do Apps Script');
+  }
+}
+
+function setConnStatus(st, msg) {
+  const dot = document.getElementById('conn-dot');
+  dot.className = 'status-dot' + (st === 'ok' ? ' ok' : st === 'err' ? ' err' : '');
+  document.getElementById('conn-txt').textContent = msg;
+}
+
+// ==================== SHEETS API ====================
+async function sheetsPost(body) {
+  if (IS_DEMO) return { ok: true };
+  const r = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(body) });
+  return r.json();
+}
+
+function rowFromAcao(a) {
+  return [a.id, a.atividade, a.descricao, a.setor, a.cargo, a.risco,
+    a.responsavel, a.prioridade, a.dataInicio, a.prazoFinal, a.status,
+    a.observacoes, a.dataCriacao, a.ultimaAtualizacao];
+}
+
+// ==================== CRUD ====================
+async function salvarAcao() {
+  const id = document.getElementById('edit-id').value;
+  const a = {
+    id: id || `PGR-${String(nextId).padStart('3','0')}`,
+    atividade: document.getElementById('f-atividade').value.trim(),
+    descricao: document.getElementById('f-descricao').value.trim(),
+    setor: document.getElementById('f-setor-form').value,
+    cargo: document.getElementById('f-cargo').value.trim(),
+    risco: document.getElementById('f-risco').value,
+    responsavel: document.getElementById('f-responsavel').value.trim(),
+    prioridade: document.getElementById('f-prioridade').value,
+    dataInicio: document.getElementById('f-data-inicio').value,
+    prazoFinal: document.getElementById('f-prazo').value,
+    status: document.getElementById('f-status-form').value,
+    observacoes: document.getElementById('f-obs').value.trim(),
+    dataCriacao: id ? (ACOES.find(x=>x.id===id)||{}).dataCriacao || today() : today(),
+    ultimaAtualizacao: today()
+  };
+  if (!a.atividade || !a.setor || !a.responsavel || !a.prioridade || !a.prazoFinal) {
+    alert('Preencha os campos obrigatórios (*)'); return;
+  }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    if (id) {
+      await sheetsPost({ action: 'update', id, row: rowFromAcao(a) });
+      const idx = ACOES.findIndex(x => x.id === id);
+      if (idx >= 0) ACOES[idx] = a;
+    } else {
+      await sheetsPost({ action: 'add', row: rowFromAcao(a) });
+      ACOES.push(a); nextId++;
+    }
+    atualizarUI();
+    showPage('lista');
+    limparForm();
+  } catch(e) { alert('Erro ao salvar. Verifique a conexão.'); }
+  btn.disabled = false; btn.textContent = '💾 Salvar Ação';
+}
+
+async function excluirAcao(id) {
+  if (!confirm('Excluir esta ação?')) return;
+  await sheetsPost({ action: 'delete', id });
+  ACOES = ACOES.filter(a => a.id !== id);
+  atualizarUI();
+  if (document.getElementById('page-detalhe').classList.contains('active')) showPage('lista');
+}
+
+async function concluirAcao(id) {
+  const a = ACOES.find(x => x.id === id);
+  if (!a) return;
+  a.status = 'Concluído'; a.ultimaAtualizacao = today();
+  await sheetsPost({ action: 'update', id, row: rowFromAcao(a) });
+  atualizarUI();
+}
+
+// ==================== UI ====================
+function atualizarUI() {
+  // Update statuses
+  const now = new Date(); now.setHours(0,0,0,0);
+  ACOES.forEach(a => {
+    if (a.status !== 'Concluído' && a.prazoFinal) {
+      const p = new Date(a.prazoFinal + 'T00:00:00');
+      if (p < now) a.status = 'Atrasado';
+    }
+  });
+  renderDashboard();
+  renderTabela();
+  popularFiltros();
+}
+
+function renderDashboard() {
+  const t = ACOES.length;
+  const pend = ACOES.filter(a => a.status === 'Pendente').length;
+  const and = ACOES.filter(a => a.status === 'Em Andamento').length;
+  const conc = ACOES.filter(a => a.status === 'Concluído').length;
+  const atr = ACOES.filter(a => a.status === 'Atrasado').length;
+  document.getElementById('s-total').textContent = t;
+  document.getElementById('s-pendente').textContent = pend;
+  document.getElementById('s-andamento').textContent = and;
+  document.getElementById('s-concluido').textContent = conc;
+  document.getElementById('s-atrasado').textContent = atr;
+  renderAlertas();
+  renderCharts();
+}
+
+function renderAlertas() {
+  const area = document.getElementById('alertas-area');
+  const now = new Date(); now.setHours(0,0,0,0);
+  const em10 = new Date(now); em10.setDate(em10.getDate() + 10);
+  const atr = ACOES.filter(a => a.status === 'Atrasado');
+  const prox = ACOES.filter(a => {
+    if (a.status === 'Concluído' || a.status === 'Atrasado' || !a.prazoFinal) return false;
+    const p = new Date(a.prazoFinal + 'T00:00:00');
+    return p >= now && p <= em10;
+  });
+  let html = '';
+  if (atr.length) {
+    html += `<div class="alert-box danger"><h4>🚨 ${atr.length} ação(ões) com prazo vencido!</h4><ul>${atr.map(a=>`<li><b>${a.id}</b> – ${a.atividade} (prazo: ${fmt(a.prazoFinal)})</li>`).join('')}</ul></div>`;
+  }
+  if (prox.length) {
+    html += `<div class="alert-box"><h4>⚠️ ${prox.length} ação(ões) vencem nos próximos 10 dias</h4><ul>${prox.map(a=>`<li><b>${a.id}</b> – ${a.atividade} (prazo: ${fmt(a.prazoFinal)})</li>`).join('')}</ul></div>`;
+  }
+  area.innerHTML = html;
+}
+
+function renderCharts() {
+  // Prioridade
+  const prioData = [
+    { label: 'Alta', val: ACOES.filter(a=>a.prioridade==='Alta').length, color: '#e74c3c' },
+    { label: 'Média', val: ACOES.filter(a=>a.prioridade==='Média').length, color: '#f39c12' },
+    { label: 'Baixa', val: ACOES.filter(a=>a.prioridade==='Baixa').length, color: '#27ae60' },
+  ];
+  renderBarChart('chart-prioridade', prioData);
+  // Setor
+  const setores = {};
+  ACOES.forEach(a => { setores[a.setor] = (setores[a.setor] || 0) + 1; });
+  const setData = Object.entries(setores).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([l,v],i) => ({
+    label: l, val: v, color: ['#2980b9','#8e44ad','#16a085','#e67e22','#c0392b','#27ae60','#d35400','#2c3e50'][i%8]
+  }));
+  renderBarChart('chart-setor', setData);
+}
+
+function renderBarChart(id, data) {
+  const mx = Math.max(...data.map(d=>d.val), 1);
+  document.getElementById(id).innerHTML = data.map(d => `
+    <div class="bar-item">
+      <span class="bar-label" title="${d.label}">${d.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(d.val/mx)*100}%;background:${d.color}"></div></div>
+      <span class="bar-val">${d.val}</span>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:.85rem">Sem dados</p>';
+}
+
+function renderTabela() {
+  const busca = document.getElementById('f-busca').value.toLowerCase();
+  const fSetor = document.getElementById('f-setor').value;
+  const fResp = document.getElementById('f-resp').value;
+  const fStatus = document.getElementById('f-status').value;
+  const fPrio = document.getElementById('f-prio').value;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const em10 = new Date(now); em10.setDate(em10.getDate() + 10);
+
+  const filtradas = ACOES.filter(a => {
+    if (fSetor && a.setor !== fSetor) return false;
+    if (fResp && a.responsavel !== fResp) return false;
+    if (fStatus && a.status !== fStatus) return false;
+    if (fPrio && a.prioridade !== fPrio) return false;
+    if (busca) {
+      const str = Object.values(a).join(' ').toLowerCase();
+      if (!str.includes(busca)) return false;
+    }
+    return true;
+  });
+
+  const tbody = document.getElementById('tabela-body');
+  if (!filtradas.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Nenhuma ação encontrada.</td></tr>'; return; }
+
+  tbody.innerHTML = filtradas.map(a => {
+    const p = a.prazoFinal ? new Date(a.prazoFinal + 'T00:00:00') : null;
+    const overdue = p && p < now && a.status !== 'Concluído';
+    const warn = p && p >= now && p <= em10 && a.status !== 'Concluído';
+    const cls = overdue ? 'row-overdue' : warn ? 'row-warning' : '';
+    return `<tr class="${cls}">
+      <td><b>${a.id}</b></td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(a.atividade)}">${esc(a.atividade)}</td>
+      <td>${esc(a.setor)}</td>
+      <td>${esc(a.responsavel)}</td>
+      <td>${p ? `<span style="color:${overdue?'var(--red)':warn?'var(--orange)':'inherit'}">${fmt(a.prazoFinal)}${overdue?' ⚠️':warn?' ⏰':''}</span>` : '–'}</td>
+      <td><span class="badge badge-${(a.prioridade||'').toLowerCase().replace('é','e')}">${a.prioridade||'–'}</span></td>
+      <td><span class="badge badge-${statusClass(a.status)}">${a.status}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-info btn-sm" onclick="verDetalhe('${a.id}')">👁</button>
+        <button class="btn btn-primary btn-sm" onclick="editarAcao('${a.id}')">✏️</button>
+        <button class="btn btn-success btn-sm" onclick="concluirAcao('${a.id}')">✔</button>
+        <button class="btn btn-danger btn-sm" onclick="excluirAcao('${a.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function popularFiltros() {
+  const setores = [...new Set(ACOES.map(a => a.setor).filter(Boolean))].sort();
+  const resps = [...new Set(ACOES.map(a => a.responsavel).filter(Boolean))].sort();
+  const fS = document.getElementById('f-setor');
+  const fR = document.getElementById('f-resp');
+  const sv = fS.value, rv = fR.value;
+  fS.innerHTML = '<option value="">Todos</option>' + setores.map(s=>`<option>${esc(s)}</option>`).join('');
+  fR.innerHTML = '<option value="">Todos</option>' + resps.map(r=>`<option>${esc(r)}</option>`).join('');
+  fS.value = sv; fR.value = rv;
+}
+
+function verDetalhe(id) {
+  const a = ACOES.find(x => x.id === id);
+  if (!a) return;
+  detalheId = id;
+  document.getElementById('det-titulo').textContent = `${a.id} – ${a.atividade}`;
+  document.getElementById('det-badges').innerHTML = `
+    <span class="badge badge-${(a.prioridade||'').toLowerCase().replace('é','e')}">Prioridade: ${a.prioridade}</span>
+    <span class="badge badge-${statusClass(a.status)}">${a.status}</span>`;
+  const campos = [
+    ['Setor', a.setor], ['Cargo', a.cargo], ['Risco', a.risco],
+    ['Responsável', a.responsavel], ['Data Início', fmt(a.dataInicio)],
+    ['Prazo Final', fmt(a.prazoFinal)], ['Data Criação', fmt(a.dataCriacao)],
+    ['Última Atualização', fmt(a.ultimaAtualizacao)],
+    ['Descrição', a.descricao, true], ['Observações', a.observacoes, true]
+  ];
+  document.getElementById('det-grid').innerHTML = campos.map(([l,v,full]) =>
+    `<div class="detail-field${full?' full':''}"><label>${l}</label><p>${esc(v)||'–'}</p></div>`
+  ).join('');
+  showPage('detalhe');
+}
+
+function editarAcao(id) {
+  const a = ACOES.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('form-titulo').textContent = `✏️ Editar Ação – ${id}`;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('f-atividade').value = a.atividade;
+  document.getElementById('f-descricao').value = a.descricao;
+  document.getElementById('f-setor-form').value = a.setor;
+  document.getElementById('f-cargo').value = a.cargo;
+  document.getElementById('f-risco').value = a.risco;
+  document.getElementById('f-responsavel').value = a.responsavel;
+  document.getElementById('f-prioridade').value = a.prioridade;
+  document.getElementById('f-data-inicio').value = a.dataInicio;
+  document.getElementById('f-prazo').value = a.prazoFinal;
+  document.getElementById('f-status-form').value = a.status;
+  document.getElementById('f-obs').value = a.observacoes;
+  showPage('novo');
+}
+
+function editarFromDetalhe() { if (detalheId) editarAcao(detalheId); }
+function concluirFromDetalhe() { if (detalheId) { concluirAcao(detalheId); verDetalhe(detalheId); } }
+function excluirFromDetalhe() { if (detalheId) excluirAcao(detalheId); }
+
+function cancelarForm() { limparForm(); showPage('lista'); }
+function limparForm() {
+  document.getElementById('edit-id').value = '';
+  document.getElementById('form-titulo').textContent = '➕ Nova Ação do Plano';
+  ['f-atividade','f-descricao','f-cargo','f-responsavel','f-data-inicio','f-prazo','f-obs'].forEach(id => document.getElementById(id).value = '');
+  ['f-setor-form','f-risco','f-prioridade'].forEach(id => document.getElementById(id).selectedIndex = 0);
+  document.getElementById('f-status-form').value = 'Pendente';
+}
+function limparFiltros() {
+  ['f-busca','f-setor','f-resp','f-status','f-prio'].forEach(id => { const el = document.getElementById(id); if(el.tagName==='INPUT') el.value=''; else el.value=''; });
+  renderTabela();
+}
+
+// ==================== CONFIG ====================
+function atualizarConfig() {
+  SCRIPT_URL = document.getElementById('cfg-url').value.trim();
+  EMPRESA = document.getElementById('cfg-empresa').value.trim() || 'Transportes Ardo Ltda';
+  IS_DEMO = !SCRIPT_URL;
+  localStorage.setItem('pgr_config', JSON.stringify({ url: SCRIPT_URL, empresa: EMPRESA, demo: IS_DEMO }));
+  document.getElementById('empresa-nome').textContent = EMPRESA;
+  alert('Configurações salvas!');
+  syncData();
+}
+
+function copiarScript() {
+  navigator.clipboard.writeText(APPS_SCRIPT).then(() => alert('Script copiado!'));
+}
+
+// ==================== NAVIGATION ====================
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`page-${p}`).classList.add('active');
+  const navEl = document.getElementById(`nav-${p}`);
+  if (navEl) navEl.classList.add('active');
+  if (p === 'novo' && !document.getElementById('edit-id').value) limparForm();
+}
+
+// ==================== HELPERS ====================
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmt(d) { if (!d) return '–'; const [y,m,dy] = d.split('-'); return `${dy}/${m}/${y}`; }
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function statusClass(s) {
+  return { 'Pendente': 'pendente', 'Em Andamento': 'andamento', 'Concluído': 'concluido', 'Atrasado': 'atrasado' }[s] || 'pendente';
+}
+</script>
+</body>
+</html>
