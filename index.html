@@ -1,334 +1,241 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SESMT – Transportes Ardo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard SESMT</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    :root {
-      --navy:   #1a2060;
-      --red:    #cc1a2a;
-      --silver: #c8cdd8;
-      --dark:   #0d1235;
-      --light:  #f4f5f9;
-      --white:  #ffffff;
-    }
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
 
-    body {
-      font-family: 'Barlow', sans-serif;
-      background: var(--dark);
-      min-height: 100vh;
-      overflow-x: hidden;
-      color: var(--white);
-    }
+:root{
+--primary:#1a2060;
+--secondary:#cc1a2a;
+--bg:#0f172a;
+--card:#1e293b;
+--light:#f1f5f9;
+--muted:#94a3b8;
+}
 
-    /* ── BACKGROUND ── */
-    .bg-layer {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26,32,96,.7) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 85% 90%, rgba(204,26,42,.25) 0%, transparent 55%),
-        linear-gradient(160deg, #0b0f2a 0%, #111640 50%, #0f0c24 100%);
-    }
-    .bg-grid {
-      position: fixed; inset: 0; z-index: 1; opacity: .07;
-      background-image:
-        linear-gradient(var(--silver) 1px, transparent 1px),
-        linear-gradient(90deg, var(--silver) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-    .bg-stripe {
-      position: fixed; left: -10%; top: 0; width: 55%; height: 100%;
-      z-index: 2; opacity: .04;
-      background: repeating-linear-gradient(
-        -55deg,
-        var(--white) 0, var(--white) 2px,
-        transparent 2px, transparent 28px
-      );
-    }
+body{
+font-family:'Inter',sans-serif;
+background:var(--bg);
+color:var(--light);
+display:flex;
+min-height:100vh;
+}
 
-    /* ── HEADER ── */
-    header {
-      position: relative; z-index: 10;
-      padding: 28px 48px 0;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .logo-wrap img {
-      height: 72px;
-      filter: drop-shadow(0 4px 18px rgba(204,26,42,.45));
-      animation: logoIn .9s cubic-bezier(.22,1,.36,1) both;
-    }
-    @keyframes logoIn {
-      from { opacity: 0; transform: translateX(-32px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    .badge {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 50px;
-      padding: 8px 20px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 600; font-size: .85rem; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--silver);
-      animation: fadeUp .8s .3s both;
-    }
+.sidebar{
+width:250px;
+background:linear-gradient(180deg,var(--primary),#111827);
+padding:30px 20px;
+display:flex;
+flex-direction:column;
+gap:30px;
+}
 
-    /* ── HERO ── */
-    .hero {
-      position: relative; z-index: 10;
-      padding: 60px 48px 0;
-      max-width: 780px;
-      animation: fadeUp .8s .15s both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .eyebrow {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .8rem; letter-spacing: .25em; font-weight: 600;
-      text-transform: uppercase; color: var(--red);
-      margin-bottom: 14px;
-    }
-    .eyebrow::before {
-      content: ''; display: inline-block;
-      width: 28px; height: 2px; background: var(--red);
-      vertical-align: middle; margin-right: 10px;
-    }
-    h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(3rem, 7vw, 5.5rem);
-      line-height: .95; letter-spacing: .02em;
-      color: var(--white);
-    }
-    h1 span { color: var(--red); }
-    .subtitle {
-      margin-top: 18px;
-      font-size: 1.05rem; font-weight: 300; color: var(--silver);
-      max-width: 480px; line-height: 1.65;
-    }
+.sidebar h2{
+font-size:20px;
+font-weight:600;
+letter-spacing:1px;
+}
 
-    /* ── DIVIDER ── */
-    .divider {
-      position: relative; z-index: 10;
-      margin: 48px 48px 0;
-      height: 1px;
-      background: linear-gradient(90deg, var(--red) 0%, rgba(26,32,96,.6) 50%, transparent 100%);
-      animation: fadeUp .6s .35s both;
-    }
+.menu{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
 
-    /* ── CARDS GRID ── */
-    .grid {
-      position: relative; z-index: 10;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-      padding: 48px 48px 72px;
-      animation: fadeUp .7s .45s both;
-    }
+.menu a{
+text-decoration:none;
+color:var(--light);
+padding:10px 14px;
+border-radius:8px;
+font-size:14px;
+transition:0.3s;
+display:flex;
+align-items:center;
+gap:10px;
+}
 
-    .card {
-      position: relative;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      padding: 40px 32px 36px;
-      cursor: pointer;
-      overflow: hidden;
-      transition: transform .3s cubic-bezier(.22,1,.36,1),
-                  border-color .3s, box-shadow .3s;
-      text-decoration: none; color: inherit;
-      display: flex; flex-direction: column; gap: 16px;
-    }
-    .card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(26,32,96,.55) 0%, rgba(204,26,42,.12) 100%);
-      opacity: 0; transition: opacity .35s;
-      border-radius: inherit;
-    }
-    .card::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0;
-      width: 100%; height: 3px;
-      background: linear-gradient(90deg, var(--red), var(--navy));
-      transform: scaleX(0); transform-origin: left;
-      transition: transform .35s cubic-bezier(.22,1,.36,1);
-    }
-    .card:hover { transform: translateY(-8px); border-color: rgba(204,26,42,.5); box-shadow: 0 24px 48px rgba(0,0,0,.45), 0 0 0 1px rgba(204,26,42,.2); }
-    .card:hover::before { opacity: 1; }
-    .card:hover::after { transform: scaleX(1); }
+.menu a:hover{
+background:rgba(255,255,255,0.08);
+padding-left:18px;
+}
 
-    .card-icon {
-      width: 56px; height: 56px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-      background: rgba(204,26,42,.15);
-      border: 1px solid rgba(204,26,42,.25);
-      position: relative; z-index: 1;
-      transition: background .3s, transform .3s;
-    }
-    .card:hover .card-icon { background: rgba(204,26,42,.3); transform: scale(1.08); }
+.main{
+flex:1;
+padding:40px;
+}
 
-    .card-num {
-      position: absolute; top: 20px; right: 24px;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 4rem; color: rgba(255,255,255,.04);
-      line-height: 1; pointer-events: none;
-      transition: color .3s;
-    }
-    .card:hover .card-num { color: rgba(204,26,42,.12); }
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:40px;
+}
 
-    .card-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.6rem; font-weight: 700;
-      letter-spacing: .03em; line-height: 1.1;
-      color: var(--white); position: relative; z-index: 1;
-    }
-    .card-desc {
-      font-size: .88rem; font-weight: 300;
-      color: var(--silver); line-height: 1.6;
-      position: relative; z-index: 1;
-    }
-    .card-arrow {
-      margin-top: auto;
-      display: flex; align-items: center; gap: 8px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .82rem; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--red);
-      font-weight: 600; position: relative; z-index: 1;
-      opacity: 0; transform: translateX(-8px);
-      transition: opacity .3s, transform .3s;
-    }
-    .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
-    .card-arrow svg { width: 16px; height: 16px; }
+.header h1{
+font-size:28px;
+font-weight:600;
+}
 
-    /* ── FOOTER ── */
-    footer {
-      position: relative; z-index: 10;
-      text-align: center;
-      padding: 0 48px 36px;
-      font-size: .78rem; color: rgba(200,205,216,.35);
-      letter-spacing: .06em;
-    }
-    footer strong { color: rgba(200,205,216,.55); }
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
 
-    /* ── ANIMATED DIAGONAL ACCENT ── */
-    .accent-bar {
-      position: fixed; right: -60px; top: 0;
-      width: 160px; height: 100vh; z-index: 3;
-      background: linear-gradient(180deg, rgba(204,26,42,.08) 0%, transparent 100%);
-      transform: skewX(-8deg);
-      pointer-events: none;
-    }
+.card{
+background:var(--card);
+padding:25px;
+border-radius:16px;
+transition:0.3s;
+cursor:pointer;
+border:1px solid rgba(255,255,255,0.05);
+display:flex;
+flex-direction:column;
+gap:15px;
+}
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      header { padding: 20px 24px 0; flex-direction: column; align-items: flex-start; gap: 14px; }
-      .hero { padding: 40px 24px 0; }
-      .divider { margin: 36px 24px 0; }
-      .grid { padding: 36px 24px 56px; gap: 16px; }
-      footer { padding: 0 24px 28px; }
-    }
-  </style>
+.card:hover{
+transform:translateY(-6px);
+border-color:var(--secondary);
+box-shadow:0 15px 30px rgba(0,0,0,0.4);
+}
+
+.card-icon{
+font-size:28px;
+}
+
+.card-title{
+font-weight:600;
+font-size:16px;
+}
+
+.card-desc{
+font-size:13px;
+color:var(--muted);
+line-height:1.5;
+}
+
+.footer{
+margin-top:50px;
+font-size:12px;
+color:var(--muted);
+}
+
+@media(max-width:768px){
+.sidebar{display:none}
+body{flex-direction:column}
+}
+
+</style>
 </head>
+
 <body>
 
-  <div class="bg-layer"></div>
-  <div class="bg-grid"></div>
-  <div class="bg-stripe"></div>
-  <div class="accent-bar"></div>
+<div class="sidebar">
+<h2>SESMT</h2>
+<div class="menu">
+<a href="#">🔍 Inspeções</a>
+<a href="#">👷 Integração</a>
+<a href="#">📋 DDS</a>
+<a href="#">⚠️ Investigação</a>
+<a href="#">🤝 Orientação</a>
+<a href="#">🦺 EPI</a>
+<a href="#">📊 PGR</a>
+<a href="#">📝 Atividades Diárias</a>
+<a href="#">🔥 Extintores</a>
+<a href="#">👥 CIPA</a>
+<a href="#">🎓 Treinamentos</a>
+<a href="#">📣 Campanhas</a>
+<a href="#">⛑ Kit de Primeiro Socorros</a>
+</div>
+</div>
 
-  <header>
-    <div class="logo-wrap">
-      <img src="imagem/LogoArdo70anos.png" alt="Transportes Ardo – 70 anos" />
-    </div>
-    <div class="badge">SESMT · Portal Interno</div>
-  </header>
+<div class="main">
+<div class="header">
+<h1>Dashboard de Segurança do Trabalho</h1>
+<div>Portal Interno</div>
+</div>
 
-  <section class="hero">
-    <p class="eyebrow">Segurança do Trabalho</p>
-    <h1>Bem-vindo ao<br/><span>Portal</span> SESMT</h1>
-    <p class="subtitle">Gerencie inspeções, integrações, DDS e investigações de forma ágil e centralizada. Selecione um módulo para começar.</p>
-  </section>
+<div class="cards">
 
-  <div class="divider"></div>
+<div class="card">
+<div class="card-icon">🔍</div>
+<div class="card-title">Inspeções</div>
+<div class="card-desc">Controle e registro das inspeções de segurança realizadas na empresa.</div>
+</div>
 
-  <main class="grid">
+<div class="card">
+<div class="card-icon">👷</div>
+<div class="card-title">Integração</div>
+<div class="card-desc">Gestão das integrações de novos colaboradores.</div>
+</div>
 
-    <a href="#" class="card">
-      <div class="card-num">01</div>
-      <div class="card-icon">🔍</div>
-      <div class="card-label">Inspeções</div>
-      <div class="card-desc">Registro e acompanhamento de inspeções de segurança, equipamentos e ambientes de trabalho.</div>
-      <div class="card-arrow">
-        Acessar
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 8h10M9 4l4 4-4 4"/>
-        </svg>
-      </div>
-    </a>
+<div class="card">
+<div class="card-icon">📋</div>
+<div class="card-title">DDS</div>
+<div class="card-desc">Registro e histórico de Diálogo Diário de Segurança.</div>
+</div>
 
-    <a href="integração.html" class="card">
-      <div class="card-num">02</div>
-      <div class="card-icon">👷</div>
-      <div class="card-label">Integração</div>
-      <div class="card-desc">Gestão do processo de integração de novos colaboradores com as normas e procedimentos internos.</div>
-      <div class="card-arrow">
-        Acessar
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 8h10M9 4l4 4-4 4"/>
-        </svg>
-      </div>
-    </a>
+<div class="card">
+<div class="card-icon">⚠️</div>
+<div class="card-title">Investigação</div>
+<div class="card-desc">Análise de acidentes e quase-acidentes.</div>
+</div>
 
-    <a href="#" class="card">
-      <div class="card-num">03</div>
-      <div class="card-icon">📋</div>
-      <div class="card-label">DDS</div>
-      <div class="card-desc">Diálogo Diário de Segurança — planejamento, registro e histórico de reuniões de segurança.</div>
-      <div class="card-arrow">
-        Acessar
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 8h10M9 4l4 4-4 4"/>
-        </svg>
-      </div>
-    </a>
+<div class="card">
+<div class="card-icon">🦺</div>
+<div class="card-title">EPI</div>
+<div class="card-desc">Controle de entrega e estoque de Equipamentos de Proteção Individual.</div>
+</div>
 
-    <a href="aio.html" class="card">
-      <div class="card-num">04</div>
-      <div class="card-icon">⚠️</div>
-      <div class="card-label">Investigação</div>
-      <div class="card-desc">Análise e investigação de incidentes, acidentes e quase-acidentes com plano de ação corretiva.</div>
-      <div class="card-arrow">
-        Acessar
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 8h10M9 4l4 4-4 4"/>
-        </svg>
-      </div>
-    </a>
-    
-   <a href="orientacao.html" class="card">
-        <div class="card-num">05</div>
-        <div class="card-icon">🤝</div>
-        <div class="card-label">Orientação</div>
-        <div class="card-desc">Treinamentos e Orientações fornecidos para prevenir acidentes, proteger a integridade física e mental de trabalhadores, e garantir ambientes seguros</div>
-        <div class="card-arrow">
-          Acessar
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 8h10M9 4l4 4-4 4"/>
-          </svg>
-        </div>
-      </a>
-  </main>
+<div class="card">
+<div class="card-icon">📊</div>
+<div class="card-title">PGR</div>
+<div class="card-desc">Programa de Gerenciamento de Riscos e planos de ação.</div>
+</div>
 
-  <footer>
-    <strong>Transportes Ardo</strong> &nbsp;·&nbsp; SESMT &nbsp;·&nbsp; Uso interno exclusivo
-  </footer>
+<div class="card">
+<div class="card-icon">🔥</div>
+<div class="card-title">Extintores</div>
+<div class="card-desc">Controle de inspeção e validade dos extintores.</div>
+</div>
+
+<div class="card">
+<div class="card-icon">👥</div>
+<div class="card-title">CIPA</div>
+<div class="card-desc">Gestão de reuniões, atas e ações da CIPA.</div>
+</div>
+
+<div class="card">
+<div class="card-icon">🎓</div>
+<div class="card-title">Treinamentos</div>
+<div class="card-desc">Controle de treinamentos obrigatórios e reciclagens.</div>
+</div>
+
+<div class="card">
+<div class="card-icon">📣</div>
+<div class="card-title">Campanhas</div>
+<div class="card-desc">Gestão de campanhas internas de segurança.</div>
+</div>
+
+<div class="card">
+<div class="card-icon">⛑</div>
+<div class="card-title">Kit de Primeiro Socorros</div>
+<div class="card-desc">Controle de inspeção e reposição dos kits.</div>
+</div>
+
+</div>
+
+<div class="footer">
+Transportes Ardo • SESMT • Uso Interno
+</div>
+
+</div>
 
 </body>
 </html>
