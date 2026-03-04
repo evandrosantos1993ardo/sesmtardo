@@ -696,9 +696,9 @@ function ok() {
 let STATE = {
   epis: [],
   historico: [],
-  apiUrl: '',
-  sheetId: '',
-  mode: 'local', // 'sheets' | 'local'
+  apiUrl: 'https://script.google.com/macros/s/AKfycby9awkeSMOtQNJLZerA_8QyEEdThhh1eBrSp0mMO3YijpoLqboQtk6wdB8iqS9xlfnj/exec',
+  sheetId: '1VSHI2P0LW560_YB86qOqTWSZ1dUpNc8H5_BhFxk1_Tg',
+  mode: 'sheets',
 };
 let pendingAction = null;
 
@@ -755,18 +755,11 @@ document.getElementById('show-instructions').onclick = function(e) {
 
 // ── INIT ──────────────────────────────────────────
 window.onload = () => {
-  const cfg = localStorage.getItem('epi_config');
-  if (cfg) {
-    const { url, sid } = JSON.parse(cfg);
-    STATE.apiUrl = url; STATE.sheetId = sid; STATE.mode = 'sheets';
-    document.getElementById('cfg-url').value = url;
-    document.getElementById('cfg-sheet-id').value = sid;
-    document.getElementById('config-overlay').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    syncData();
-  }
-  // Set today date
+  // Configurações fixas — pula tela de config
+  document.getElementById('config-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
   document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
+  syncData();
 };
 
 // ── API / SYNC ─────────────────────────────────────
