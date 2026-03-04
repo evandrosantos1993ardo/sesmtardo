@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Controle de EPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: #252a38;
+    --accent: #cc1a2a;
+    --accent2: #1a2060;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --yellow: #f39c12;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --display: 'Syne', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-top: 36px;
+  }
+
+  /* ── CONFIG OVERLAY ── */
+  #config-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .config-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 520px;
+    max-width: 95vw;
+  }
+  .config-box h2 {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .config-box p { color: var(--muted); font-size: .875rem; margin-bottom: 28px; line-height: 1.6; }
+  .config-box a { color: var(--accent); }
+  .field-group { margin-bottom: 20px; }
+  .field-group label { display: block; font-size: .8rem; font-family: var(--mono); color: var(--muted); margin-bottom: 6px; letter-spacing: .06em; text-transform: uppercase; }
+  .field-group input {
+    width: 100%; padding: 12px 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: .85rem;
+    outline: none; transition: border .2s;
+  }
+  .field-group input:focus { border-color: var(--accent); }
+  .btn-primary {
+    width: 100%; padding: 14px;
+    background: var(--accent); color: #fff;
+    font-family: var(--display); font-weight: 700; font-size: 1rem;
+    border: none; border-radius: 8px; cursor: pointer; transition: opacity .2s;
+  }
+  .btn-primary:hover { opacity: .85; }
+
+  /* ── LAYOUT ── */
+  .topbar {
+    height: 64px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: var(--display); font-weight: 800; font-size: 1.1rem; }
+  .logo span { color: var(--accent); }
+  .sync-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-family: var(--mono); font-size: .78rem;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .sync-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .sync-icon { font-size: 1rem; }
+
+  .main { display: flex; height: calc(100vh - 64px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px; background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0; flex-shrink: 0;
+  }
+  .nav-label {
+    font-family: var(--mono); font-size: .68rem; color: var(--muted);
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: 0 20px; margin-bottom: 10px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 20px; cursor: pointer; font-size: .875rem;
+    transition: background .15s; border-left: 2px solid transparent;
+    color: var(--muted);
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active {
+    background: rgba(245,166,35,.08); color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+  .nav-sep { border: none; border-top: 1px solid var(--border); margin: 16px 20px; }
+  .config-nav {
+    padding: 0 20px; margin-top: auto;
+    position: absolute; bottom: 24px; width: 220px;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1; overflow-y: auto; padding: 28px 32px;
+    background: var(--bg);
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-family: var(--display); font-size: 1.6rem; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .page-sub { color: var(--muted); font-size: .875rem; margin-bottom: 28px; }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative; overflow: hidden; transition: border-color .2s;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .kpi-card.total::before { background: var(--accent); }
+  .kpi-card.ok::before { background: var(--green); }
+  .kpi-card.alert::before { background: var(--red); }
+  .kpi-card.qty::before { background: #3b82f6; }
+  .kpi-label { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+  .kpi-value { font-family: var(--display); font-size: 2.2rem; font-weight: 800; line-height: 1; }
+  .kpi-card.alert .kpi-value { color: var(--red); }
+  .kpi-card.ok .kpi-value { color: var(--green); }
+  .kpi-card.total .kpi-value { color: #e05c6e; }
+  .kpi-card.qty .kpi-value { color: #3b82f6; }
+  .kpi-desc { font-size: .78rem; color: var(--muted); }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px; border-bottom: 1px solid var(--border);
+  }
+  .table-title { font-family: var(--display); font-size: 1rem; font-weight: 700; }
+  .search-input {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 12px; color: var(--text);
+    font-family: var(--mono); font-size: .8rem; outline: none; width: 220px;
+    transition: border-color .2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th {
+    text-align: left; padding: 12px 16px;
+    font-family: var(--mono); font-size: .72rem; color: var(--muted);
+    letter-spacing: .06em; text-transform: uppercase; font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 13px 16px; font-size: .85rem;
+    border-bottom: 1px solid rgba(37,42,56,.5);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .code-cell { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px; font-size: .75rem; font-weight: 600;
+    font-family: var(--mono);
+  }
+  .status-ok { background: rgba(46,204,113,.12); color: var(--green); border: 1px solid rgba(46,204,113,.25); }
+  .status-alert { background: rgba(231,76,60,.12); color: var(--red); border: 1px solid rgba(231,76,60,.25); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot-ok { background: var(--green); }
+  .dot-alert { background: var(--red); }
+  .action-btns { display: flex; gap: 6px; }
+  .btn-sm {
+    padding: 5px 12px; border-radius: 6px; font-size: .75rem;
+    font-family: var(--mono); font-weight: 500; cursor: pointer; border: 1px solid;
+    transition: all .15s;
+  }
+  .btn-out { background: rgba(231,76,60,.1); color: var(--red); border-color: rgba(231,76,60,.3); }
+  .btn-out:hover { background: var(--red); color: #fff; }
+  .btn-add { background: rgba(46,204,113,.1); color: var(--green); border-color: rgba(46,204,113,.3); }
+  .btn-add:hover { background: var(--green); color: #000; }
+  .btn-edit { background: rgba(245,166,35,.1); color: var(--accent); border-color: rgba(245,166,35,.3); }
+  .btn-edit:hover { background: var(--accent); color: #000; }
+  .empty-row td { text-align: center; padding: 40px; color: var(--muted); font-size: .9rem; }
+
+  /* ── FORMS ── */
+  .form-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-full { grid-column: 1 / -1; }
+  .form-field label {
+    display: block; font-family: var(--mono); font-size: .72rem;
+    color: var(--muted); letter-spacing: .06em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    width: 100%; padding: 11px 13px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: var(--sans); font-size: .875rem;
+    outline: none; transition: border .2s;
+  }
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus { border-color: var(--accent); }
+  .form-field textarea { resize: vertical; min-height: 80px; }
+  .form-field select option { background: var(--surface); }
+  .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+  .btn-cancel {
+    padding: 11px 22px; background: transparent;
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--muted); font-family: var(--sans); font-size: .875rem;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .btn-cancel:hover { border-color: var(--text); color: var(--text); }
+  .btn-submit {
+    padding: 11px 26px; background: var(--accent);
+    border: none; border-radius: 8px;
+    color: #fff; font-family: var(--display); font-weight: 700; font-size: .95rem;
+    cursor: pointer; transition: opacity .2s;
+  }
+  .btn-submit:hover { opacity: .85; }
+  .btn-submit.danger { background: var(--red); color: #fff; }
+  .btn-submit.success { background: var(--green); color: #000; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+    z-index: 500; display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 32px; width: 460px; max-width: 95vw;
+  }
+  .modal h3 {
+    font-family: var(--display); font-size: 1.2rem; font-weight: 800;
+    margin-bottom: 20px;
+  }
+  .modal h3.red { color: var(--red); }
+  .modal h3.green { color: var(--green); }
+  .modal-info { background: var(--surface2); border-radius: 8px; padding: 14px; margin-bottom: 20px; }
+  .modal-info p { font-size: .875rem; color: var(--muted); margin-bottom: 4px; }
+  .modal-info strong { color: var(--text); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    padding: 14px 20px; border-radius: 10px;
+    font-family: var(--mono); font-size: .82rem;
+    z-index: 9999; opacity: 0; transition: opacity .3s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+  #toast.ok { background: var(--green); color: #000; }
+  #toast.err { background: var(--red); color: #fff; }
+  #toast.warn { background: var(--yellow); color: #000; }
+
+  /* ── LOADING ── */
+  .loading-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--accent); z-index: 9998;
+    width: 0; transition: width .3s;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+    .form-grid, .form-grid.three { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+
+<!-- DASHBOARD NAV BAR -->
+<div style="position:fixed;top:0;left:0;right:0;height:36px;background:rgba(13,15,20,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,26,42,.2);z-index:9999;display:flex;align-items:center;padding:0 20px;gap:14px;">
+  <a href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#c8cdd8;padding:4px 13px;border-radius:50px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:.2s;" onmouseover="this.style.borderColor='rgba(204,26,42,.5)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='#c8cdd8'">← Dashboard</a>
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,205,216,.25);">SESMT · Transportes Ardo</span>
+</div>
+
+<div class="loading-bar" id="loading-bar"></div>
+<div id="toast"></div>
+
+<!-- ══════════ CONFIG OVERLAY ══════════ -->
+<div id="config-overlay">
+  <div class="config-box">
+    <h2>⚙️ Configuração Inicial</h2>
+    <p>
+      Para conectar ao Google Sheets como banco de dados, você precisa de:<br>
+      1. Uma <strong>Planilha Google</strong> — <a href="https://sheets.google.com" target="_blank">criar agora</a><br>
+      2. Um <strong>Google Apps Script</strong> publicado como Web App para servir como API.<br>
+      <a href="#" id="show-instructions" style="color:var(--accent)">Ver instruções de configuração →</a>
+    </p>
+    <div class="field-group">
+      <label>URL do Web App (Google Apps Script)</label>
+      <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/SEU_ID/exec">
+    </div>
+    <div class="field-group">
+      <label>ID da Planilha Google</label>
+      <input type="text" id="cfg-sheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
+    </div>
+    <button class="btn-primary" onclick="saveConfig()">Conectar ao Google Drive →</button>
+    <p style="margin-top:14px;font-size:.78rem;color:var(--muted);text-align:center">
+      Ou use em modo <a href="#" onclick="demoMode()" style="color:var(--accent)">demonstração local</a> (dados salvos no navegador)
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ INSTRUCTIONS MODAL ══════════ -->
+<div class="modal-overlay" id="instructions-modal" style="display:none">
+  <div class="modal" style="width:600px;max-height:90vh;overflow-y:auto">
+    <h3 style="color:var(--accent)">📋 Configuração do Google Apps Script</h3>
+    <div style="font-size:.85rem;line-height:1.8;color:var(--text)">
+      <p style="color:var(--muted);margin-bottom:12px">Siga os passos abaixo para configurar o backend no Google Drive:</p>
+      <strong>1. Criar a Planilha</strong>
+      <p style="color:var(--muted)">Acesse <a href="https://sheets.google.com" target="_blank" style="color:var(--accent)">sheets.google.com</a>, crie uma planilha nova chamada <em>"Controle EPI"</em> e copie o ID da URL.</p>
+      <br>
+      <strong>2. Criar o Apps Script</strong>
+      <p style="color:var(--muted)">Na planilha, clique em <em>Extensões → Apps Script</em>. Cole o código abaixo:</p>
+      <pre style="background:var(--bg);padding:12px;border-radius:8px;font-family:var(--mono);font-size:.72rem;color:#a5d6a7;overflow-x:auto;margin:10px 0;border:1px solid var(--border)">const SHEET_ID = 'SEU_SHEET_ID_AQUI';
+const SHEET_NAME = 'EPI';
+
+function doGet(e) {
+  const action = e.parameter.action;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(['Código','Data Cadastro','Nome','Descrição',
+      'CA','Estoque Mínimo','Saldo Atual']);
+  }
+  if (action === 'getAll') {
+    const data = sheet.getDataRange().getValues();
+    return ContentService.createTextOutput(
+      JSON.stringify({ok:true,data:data})
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+  return ContentService.createTextOutput('{}');
+}
+
+function doPost(e) {
+  const body = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  const { action, data, codigo, quantidade } = body;
+
+  if (action === 'add') {
+    sheet.appendRow([data.codigo, data.dataCadastro, data.nome,
+      data.descricao, data.ca, data.estoqueMin, data.saldoAtual]);
+    return ok();
+  }
+  if (action === 'saida' || action === 'entrada') {
+    const rows = sheet.getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][0] == codigo) {
+        const col = 7;
+        const atual = rows[i][6];
+        const novo = action==='saida'
+          ? Math.max(0, atual - quantidade)
+          : atual + quantidade;
+        sheet.getRange(i+1, col).setValue(novo);
+        return ok();
+      }
+    }
+  }
+  if (action === 'delete') {
+    const rows = sheet.getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][0] == codigo) {
+        sheet.deleteRow(i+1); return ok();
+      }
+    }
+  }
+  return ok();
+}
+function ok() {
+  return ContentService.createTextOutput(
+    JSON.stringify({ok:true})
+  ).setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      <strong>3. Publicar como Web App</strong>
+      <p style="color:var(--muted)">Clique em <em>Implantar → Nova implantação</em>. Tipo: <strong>App da Web</strong>. Executar como: <strong>Eu</strong>. Quem tem acesso: <strong>Qualquer pessoa</strong>. Copie a URL gerada.</p>
+    </div>
+    <div class="form-actions" style="margin-top:20px">
+      <button class="btn-cancel" onclick="document.getElementById('instructions-modal').style.display='none'">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MOVE/EDIT MODAL ══════════ -->
+<div class="modal-overlay" id="action-modal">
+  <div class="modal">
+    <h3 id="modal-title">Movimentação</h3>
+    <div class="modal-info" id="modal-info"></div>
+    <div class="form-field" id="qty-field">
+      <label>Quantidade</label>
+      <input type="number" id="modal-qty" min="1" value="1">
+    </div>
+    <div class="form-field" id="person-field">
+      <label id="person-label">Nome do Funcionário *</label>
+      <input type="text" id="modal-person" placeholder="Ex: João Silva">
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-submit" id="modal-btn" onclick="confirmAction()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div class="logo" style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.06em;">EPI<span style="color:var(--accent)">·</span>Control</div>
+    <button class="sync-btn" onclick="syncData()">
+      <span class="sync-icon">↻</span> Sincronizar
+    </button>
+  </div>
+  <div class="main">
+    <nav class="sidebar">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active" onclick="navigate('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="navigate('estoque')">
+        <span class="nav-icon">▤</span> Estoque
+      </div>
+      <div class="nav-item" onclick="navigate('cadastro')">
+        <span class="nav-icon">＋</span> Novo EPI
+      </div>
+      <div class="nav-item" onclick="navigate('saida')">
+        <span class="nav-icon">↓</span> Entrega EPI
+      </div>
+      <div class="nav-item" onclick="navigate('entrada')">
+        <span class="nav-icon">↑</span> Adicionar Estoque
+      </div>
+      <div class="nav-item" onclick="navigate('historico')">
+        <span class="nav-icon">☰</span> Histórico
+      </div>
+      <hr class="nav-sep">
+      <div class="nav-item" onclick="openConfig()">
+        <span class="nav-icon">⚙</span> Configurações
+      </div>
+    </nav>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Visão geral do controle de EPI</div>
+        <div class="kpi-grid">
+          <div class="kpi-card total">
+            <div class="kpi-label">Total EPIs</div>
+            <div class="kpi-value" id="kpi-total">0</div>
+            <div class="kpi-desc">Itens cadastrados</div>
+          </div>
+          <div class="kpi-card ok">
+            <div class="kpi-label">Em Estoque</div>
+            <div class="kpi-value" id="kpi-ok">0</div>
+            <div class="kpi-desc">Saldo adequado</div>
+          </div>
+          <div class="kpi-card alert">
+            <div class="kpi-label">Em Alerta</div>
+            <div class="kpi-value" id="kpi-alert">0</div>
+            <div class="kpi-desc">Abaixo do mínimo</div>
+          </div>
+          <div class="kpi-card qty">
+            <div class="kpi-label">Itens em Estoque</div>
+            <div class="kpi-value" id="kpi-qty">0</div>
+            <div class="kpi-desc">Total de unidades</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">EPIs em Alerta de Estoque</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>CA</th>
+                <th>Mínimo</th>
+                <th>Saldo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="alert-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ESTOQUE ── -->
+      <div class="page" id="page-estoque">
+        <div class="page-title">Estoque de EPIs</div>
+        <div class="page-sub">Todos os EPIs cadastrados</div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Itens</div>
+            <input class="search-input" type="text" placeholder="Buscar EPI..." id="search-epi" oninput="renderEstoque()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Data Cadastro</th>
+                <th>Nome</th>
+                <th>CA</th>
+                <th>Estoque Mín.</th>
+                <th>Saldo Atual</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="estoque-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CADASTRO ── -->
+      <div class="page" id="page-cadastro">
+        <div class="page-title">Novo EPI</div>
+        <div class="page-sub">Cadastrar novo Equipamento de Proteção Individual</div>
+        <div class="form-card">
+          <div class="form-grid three">
+            <div class="form-field">
+              <label>Código *</label>
+              <input type="text" id="f-codigo" placeholder="EPI-001">
+            </div>
+            <div class="form-field">
+              <label>Data de Cadastro</label>
+              <input type="date" id="f-data">
+            </div>
+            <div class="form-field">
+              <label>CA (Cert. Aprovação) *</label>
+              <input type="text" id="f-ca" placeholder="12345">
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nome do EPI *</label>
+              <input type="text" id="f-nome" placeholder="Ex: Capacete de Segurança">
+            </div>
+            <div class="form-field form-full">
+              <label>Descrição</label>
+              <textarea id="f-descricao" placeholder="Descreva características, material, uso..."></textarea>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Estoque Mínimo *</label>
+              <input type="number" id="f-minimo" min="0" placeholder="10">
+            </div>
+            <div class="form-field">
+              <label>Saldo Inicial *</label>
+              <input type="number" id="f-saldo" min="0" placeholder="50">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="clearForm()">Limpar</button>
+            <button class="btn-submit" onclick="cadastrarEPI()">Cadastrar EPI</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SAÍDA ── -->
+      <div class="page" id="page-saida">
+        <div class="page-title">Entrega de EPI</div>
+        <div class="page-sub">Registrar saída de equipamento do estoque</div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Selecione o EPI para Entrega</div>
+            <input class="search-input" type="text" placeholder="Buscar..." id="search-saida" oninput="renderSaida()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>CA</th>
+                <th>Saldo Atual</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="saida-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ENTRADA ── -->
+      <div class="page" id="page-entrada">
+        <div class="page-title">Adicionar ao Estoque</div>
+        <div class="page-sub">Repor estoque de EPIs existentes</div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Selecione o EPI para Repor</div>
+            <input class="search-input" type="text" placeholder="Buscar..." id="search-entrada" oninput="renderEntrada()">
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>CA</th>
+                <th>Saldo Atual</th>
+                <th>Mínimo</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="entrada-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── HISTÓRICO ── -->
+      <div class="page" id="page-historico">
+        <div class="page-title">Histórico de Movimentação</div>
+        <div class="page-sub">Registro de todas as entradas e saídas de EPI</div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">Movimentações</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="filter-tipo" onchange="renderHistorico()" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:.8rem;outline:none">
+                <option value="">Todos</option>
+                <option value="ENTRADA">Entrada</option>
+                <option value="SAÍDA">Saída</option>
+              </select>
+              <input class="search-input" type="text" placeholder="Buscar..." id="search-hist" oninput="renderHistorico()" style="width:180px">
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Data/Hora</th>
+                <th>Tipo</th>
+                <th>EPI</th>
+                <th>Código</th>
+                <th>Qtd</th>
+                <th>Responsável</th>
+                <th>Saldo Após</th>
+              </tr>
+            </thead>
+            <tbody id="historico-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ── STATE ──────────────────────────────────────────
+let STATE = {
+  epis: [],
+  historico: [],
+  apiUrl: 'https://script.google.com/macros/s/AKfycby9awkeSMOtQNJLZerA_8QyEEdThhh1eBrSp0mMO3YijpoLqboQtk6wdB8iqS9xlfnj/exec',
+  sheetId: '1VSHI2P0LW560_YB86qOqTWSZ1dUpNc8H5_BhFxk1_Tg',
+  mode: 'sheets',
+};
+let pendingAction = null;
+
+// ── STORAGE HELPERS ────────────────────────────────
+function saveLocal() {
+  localStorage.setItem('epi_data', JSON.stringify(STATE.epis));
+  localStorage.setItem('epi_hist', JSON.stringify(STATE.historico));
+}
+function loadLocal() {
+  const d = localStorage.getItem('epi_data');
+  STATE.epis = d ? JSON.parse(d) : [];
+  const h = localStorage.getItem('epi_hist');
+  STATE.historico = h ? JSON.parse(h) : [];
+}
+
+// ── CONFIG ────────────────────────────────────────
+function saveConfig() {
+  const url = document.getElementById('cfg-url').value.trim();
+  const sid = document.getElementById('cfg-sheet-id').value.trim();
+  if (!url || !sid) { toast('Preencha a URL e o ID da planilha', 'err'); return; }
+  STATE.apiUrl = url;
+  STATE.sheetId = sid;
+  STATE.mode = 'sheets';
+  localStorage.setItem('epi_config', JSON.stringify({ url, sid }));
+  document.getElementById('config-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  syncData();
+}
+function demoMode() {
+  STATE.mode = 'local';
+  loadLocal();
+  if (STATE.epis.length === 0) loadDemoData();
+  document.getElementById('config-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  refreshAll();
+  toast('Modo demonstração ativo (dados locais)', 'warn');
+}
+function openConfig() {
+  const cfg = localStorage.getItem('epi_config');
+  if (cfg) {
+    const { url, sid } = JSON.parse(cfg);
+    document.getElementById('cfg-url').value = url;
+    document.getElementById('cfg-sheet-id').value = sid;
+  }
+  document.getElementById('config-overlay').style.display = 'flex';
+}
+document.getElementById('show-instructions').onclick = function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var m = document.getElementById('instructions-modal');
+  m.style.display = 'flex';
+  m.style.zIndex = '2000';
+};
+
+// ── INIT ──────────────────────────────────────────
+window.onload = () => {
+  // Configurações fixas — pula tela de config
+  document.getElementById('config-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
+  syncData();
+};
+
+// ── API / SYNC ─────────────────────────────────────
+async function syncData() {
+  if (STATE.mode === 'local') { refreshAll(); return; }
+  setLoading(true);
+  try {
+    const res = await fetch(`${STATE.apiUrl}?action=getAll`);
+    const json = await res.json();
+    if (!json.ok) throw new Error('API error');
+    const rows = json.data.slice(1); // skip header
+    STATE.epis = rows.map(r => ({
+      codigo: r[0], dataCadastro: r[1], nome: r[2],
+      descricao: r[3], ca: r[4],
+      estoqueMin: Number(r[5]), saldoAtual: Number(r[6])
+    }));
+    // Buscar histórico
+    try {
+      const res2 = await fetch(`${STATE.apiUrl}?action=getLog`);
+      const json2 = await res2.json();
+      if (json2.ok && json2.data && json2.data.length > 1) {
+        STATE.historico = json2.data.slice(1).map(r => ({
+          dataHora: r[0], tipo: r[1], epiNome: r[2],
+          codigo: r[3], quantidade: r[4], responsavel: r[5], saldoApos: r[6]
+        })).reverse();
+      }
+    } catch(e2) {}
+    refreshAll();
+    toast('Sincronizado com Google Sheets ✓', 'ok');
+  } catch(e) {
+    toast('Falha ao sincronizar. Verifique a URL do Web App.', 'err');
+  }
+  setLoading(false);
+}
+
+async function apiPost(body) {
+  if (STATE.mode === 'local') return { ok: true };
+  // Usa GET para evitar bloqueio de CORS do Google Apps Script
+  const params = new URLSearchParams();
+  if (body.action) params.append('action', body.action);
+  if (body.codigo) params.append('codigo', body.codigo);
+  if (body.quantidade !== undefined) params.append('quantidade', String(body.quantidade));
+  if (body.data) {
+    Object.entries(body.data).forEach(([k, v]) => params.append(k, String(v)));
+  }
+  if (body.log) {
+    Object.entries(body.log).forEach(([k, v]) => params.append(k, String(v)));
+  }
+  const url = STATE.apiUrl + '?' + params.toString();
+  const res = await fetch(url);
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e) { return { ok: true }; }
+}
+
+// ── NAVIGATE ──────────────────────────────────────
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(n => { if (n.textContent.includes(pageLabel(page))) n.classList.add('active'); });
+  if (page === 'estoque') renderEstoque();
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'saida') renderSaida();
+  if (page === 'entrada') renderEntrada();
+  if (page === 'historico') renderHistorico();
+}
+function pageLabel(p) {
+  return { dashboard:'Dashboard', estoque:'Estoque', cadastro:'Novo', saida:'Entrega', entrada:'Adicionar', historico:'Histórico' }[p];
+}
+
+// ── REFRESH ALL ───────────────────────────────────
+function refreshAll() {
+  renderDashboard();
+  renderEstoque();
+  renderSaida();
+  renderEntrada();
+  renderHistorico();
+}
+
+// ── STATUS HELPER ─────────────────────────────────
+function isAlert(epi) { return epi.saldoAtual < epi.estoqueMin; }
+function statusBadge(epi) {
+  if (isAlert(epi)) return `<span class="status-badge status-alert"><span class="dot dot-alert"></span>Crítico</span>`;
+  return `<span class="status-badge status-ok"><span class="dot dot-ok"></span>OK</span>`;
+}
+
+// ── DASHBOARD ─────────────────────────────────────
+function renderDashboard() {
+  const total = STATE.epis.length;
+  const alerts = STATE.epis.filter(isAlert);
+  const ok = total - alerts.length;
+  const qty = STATE.epis.reduce((s, e) => s + e.saldoAtual, 0);
+  document.getElementById('kpi-total').textContent = total;
+  document.getElementById('kpi-ok').textContent = ok;
+  document.getElementById('kpi-alert').textContent = alerts.length;
+  document.getElementById('kpi-qty').textContent = qty;
+
+  const tbody = document.getElementById('alert-table');
+  if (alerts.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">✓ Nenhum EPI em situação crítica</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = alerts.map(e => `
+    <tr>
+      <td class="code-cell">${e.codigo}</td>
+      <td>${e.nome}</td>
+      <td><span style="font-family:var(--mono);font-size:.8rem">${e.ca}</span></td>
+      <td style="color:var(--muted)">${e.estoqueMin}</td>
+      <td style="color:var(--red);font-weight:600">${e.saldoAtual}</td>
+      <td>${statusBadge(e)}</td>
+    </tr>`).join('');
+}
+
+// ── ESTOQUE ───────────────────────────────────────
+function renderEstoque() {
+  const q = (document.getElementById('search-epi')?.value || '').toLowerCase();
+  const list = STATE.epis.filter(e =>
+    e.nome.toLowerCase().includes(q) || e.codigo.toLowerCase().includes(q) || String(e.ca).includes(q)
+  );
+  const tbody = document.getElementById('estoque-table');
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Nenhum EPI encontrado</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(e => `
+    <tr>
+      <td class="code-cell">${e.codigo}</td>
+      <td style="font-size:.8rem;color:var(--muted)">${e.dataCadastro}</td>
+      <td>${e.nome}</td>
+      <td style="font-family:var(--mono);font-size:.8rem">${e.ca}</td>
+      <td style="color:var(--muted)">${e.estoqueMin}</td>
+      <td style="font-weight:600;color:${isAlert(e)?'var(--red)':'var(--green)'}">${e.saldoAtual}</td>
+      <td>${statusBadge(e)}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-sm btn-out" onclick="openModal('saida','${e.codigo}')">Saída</button>
+          <button class="btn-sm btn-add" onclick="openModal('entrada','${e.codigo}')">Entrada</button>
+          <button class="btn-sm btn-edit" onclick="deleteEPI('${e.codigo}')">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ── SAÍDA ─────────────────────────────────────────
+function renderSaida() {
+  const q = (document.getElementById('search-saida')?.value || '').toLowerCase();
+  const list = STATE.epis.filter(e =>
+    e.nome.toLowerCase().includes(q) || e.codigo.toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('saida-table');
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Nenhum EPI cadastrado</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(e => `
+    <tr>
+      <td class="code-cell">${e.codigo}</td>
+      <td>${e.nome}</td>
+      <td style="font-family:var(--mono);font-size:.8rem">${e.ca}</td>
+      <td style="font-weight:600;color:${isAlert(e)?'var(--red)':'var(--green)'}">${e.saldoAtual}</td>
+      <td>${statusBadge(e)}</td>
+      <td>
+        <button class="btn-sm btn-out" onclick="openModal('saida','${e.codigo}')">Registrar Saída</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ── ENTRADA ───────────────────────────────────────
+function renderEntrada() {
+  const q = (document.getElementById('search-entrada')?.value || '').toLowerCase();
+  const list = STATE.epis.filter(e =>
+    e.nome.toLowerCase().includes(q) || e.codigo.toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('entrada-table');
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Nenhum EPI cadastrado</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(e => `
+    <tr>
+      <td class="code-cell">${e.codigo}</td>
+      <td>${e.nome}</td>
+      <td style="font-family:var(--mono);font-size:.8rem">${e.ca}</td>
+      <td style="font-weight:600;color:${isAlert(e)?'var(--red)':'var(--green)'}">${e.saldoAtual}</td>
+      <td style="color:var(--muted)">${e.estoqueMin}</td>
+      <td>
+        <button class="btn-sm btn-add" onclick="openModal('entrada','${e.codigo}')">Adicionar Estoque</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ── HISTÓRICO ─────────────────────────────────────
+function renderHistorico() {
+  const tipo = document.getElementById('filter-tipo')?.value || '';
+  const q = (document.getElementById('search-hist')?.value || '').toLowerCase();
+  let list = STATE.historico;
+  if (tipo) list = list.filter(h => h.tipo === tipo);
+  if (q) list = list.filter(h =>
+    h.epiNome.toLowerCase().includes(q) ||
+    h.responsavel.toLowerCase().includes(q) ||
+    h.codigo.toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('historico-table');
+  if (!tbody) return;
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Nenhuma movimentação registrada</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(h => {
+    const isEntrada = h.tipo === 'ENTRADA';
+    const cor = isEntrada ? 'var(--green)' : 'var(--red)';
+    const badge = isEntrada
+      ? `<span class="status-badge status-ok" style="min-width:72px;justify-content:center">↑ ENTRADA</span>`
+      : `<span class="status-badge status-alert" style="min-width:72px;justify-content:center">↓ SAÍDA</span>`;
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">${h.dataHora}</td>
+      <td>${badge}</td>
+      <td style="font-weight:500">${h.epiNome}</td>
+      <td class="code-cell">${h.codigo}</td>
+      <td style="font-family:var(--mono);font-weight:700;color:${cor}">${isEntrada?'+':'−'}${h.quantidade}</td>
+      <td style="color:var(--text)">${h.responsavel}</td>
+      <td style="font-family:var(--mono);font-size:.82rem;color:var(--muted)">${h.saldoApos} un.</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── MODAL ─────────────────────────────────────────
+function openModal(type, codigo) {
+  const epi = STATE.epis.find(e => e.codigo === codigo);
+  if (!epi) return;
+  pendingAction = { type, codigo };
+  const modal = document.getElementById('action-modal');
+  const title = document.getElementById('modal-title');
+  const info = document.getElementById('modal-info');
+  const btn = document.getElementById('modal-btn');
+  document.getElementById('modal-qty').value = 1;
+
+  document.getElementById('modal-person').value = '';
+  if (type === 'saida') {
+    title.textContent = '↓ Registrar Saída / Entrega';
+    title.className = 'red';
+    btn.textContent = 'Confirmar Saída';
+    btn.className = 'btn-submit danger';
+    document.getElementById('person-label').textContent = 'Nome do Funcionário *';
+    document.getElementById('modal-person').placeholder = 'Ex: João Silva';
+  } else {
+    title.textContent = '↑ Adicionar ao Estoque';
+    title.className = 'green';
+    btn.textContent = 'Confirmar Entrada';
+    btn.className = 'btn-submit success';
+    document.getElementById('person-label').textContent = 'ADM Responsável *';
+    document.getElementById('modal-person').placeholder = 'Ex: Carlos (ADM)';
+  }
+  info.innerHTML = `
+    <p>EPI: <strong>${epi.nome}</strong></p>
+    <p>Código: <strong>${epi.codigo}</strong> · CA: <strong>${epi.ca}</strong></p>
+    <p>Saldo Atual: <strong style="color:${isAlert(epi)?'var(--red)':'var(--green)'}">${epi.saldoAtual} un.</strong> · Mínimo: <strong>${epi.estoqueMin} un.</strong></p>
+  `;
+  modal.classList.add('open');
+}
+function closeModal() {
+  document.getElementById('action-modal').classList.remove('open');
+  pendingAction = null;
+}
+async function confirmAction() {
+  if (!pendingAction) return;
+  const qty = parseInt(document.getElementById('modal-qty').value) || 0;
+  const person = document.getElementById('modal-person').value.trim();
+  if (qty <= 0) { toast('Informe uma quantidade válida', 'err'); return; }
+  if (!person) { toast('Informe o nome do responsável', 'err'); return; }
+  const { type, codigo } = pendingAction;
+  const idx = STATE.epis.findIndex(e => e.codigo === codigo);
+  if (idx === -1) return;
+
+  if (type === 'saida') {
+    if (STATE.epis[idx].saldoAtual < qty) {
+      toast('Saldo insuficiente para esta saída!', 'err'); return;
+    }
+    STATE.epis[idx].saldoAtual -= qty;
+  } else {
+    STATE.epis[idx].saldoAtual += qty;
+  }
+
+  const saldoApos = STATE.epis[idx].saldoAtual;
+  const epiNome = STATE.epis[idx].nome;
+  const agora = new Date().toLocaleString('pt-BR');
+  const log = {
+    dataHora: agora,
+    tipo: type === 'saida' ? 'SAÍDA' : 'ENTRADA',
+    epiNome,
+    codigo,
+    quantidade: qty,
+    responsavel: person,
+    saldoApos
+  };
+  STATE.historico.unshift(log);
+
+  closeModal();
+  setLoading(true);
+  try {
+    await apiPost({ action: type, codigo, quantidade: qty });
+    await apiPost({
+      action: 'addLog',
+      log: { dataHora: agora, tipo: log.tipo, epiNome, codigo, quantidade: qty, responsavel: person, saldoApos }
+    });
+    if (STATE.mode === 'local') saveLocal();
+    refreshAll();
+    toast(type === 'saida' ? `Saída de ${qty} un. para ${person}` : `${qty} un. adicionadas por ${person}`, 'ok');
+  } catch(e) {
+    toast('Erro ao salvar. Verifique a conexão.', 'err');
+  }
+  setLoading(false);
+}
+
+// ── CADASTRO ──────────────────────────────────────
+async function cadastrarEPI() {
+  const codigo = document.getElementById('f-codigo').value.trim();
+  const nome = document.getElementById('f-nome').value.trim();
+  const ca = document.getElementById('f-ca').value.trim();
+  const minimo = parseInt(document.getElementById('f-minimo').value) || 0;
+  const saldo = parseInt(document.getElementById('f-saldo').value) || 0;
+
+  if (!codigo || !nome || !ca) { toast('Preencha os campos obrigatórios (*)', 'err'); return; }
+  if (STATE.epis.find(e => e.codigo === codigo)) { toast('Código já cadastrado!', 'err'); return; }
+
+  const epi = {
+    codigo,
+    dataCadastro: document.getElementById('f-data').value || new Date().toISOString().split('T')[0],
+    nome,
+    descricao: document.getElementById('f-descricao').value.trim(),
+    ca,
+    estoqueMin: minimo,
+    saldoAtual: saldo
+  };
+
+  setLoading(true);
+  try {
+    await apiPost({ action: 'add', data: epi });
+    STATE.epis.push(epi);
+    if (STATE.mode === 'local') saveLocal();
+    clearForm();
+    refreshAll();
+    toast(`EPI "${nome}" cadastrado com sucesso!`, 'ok');
+    navigate('estoque');
+  } catch(e) {
+    toast('Erro ao cadastrar. Verifique a conexão.', 'err');
+  }
+  setLoading(false);
+}
+
+async function deleteEPI(codigo) {
+  if (!confirm(`Remover o EPI ${codigo}? Esta ação não pode ser desfeita.`)) return;
+  setLoading(true);
+  try {
+    await apiPost({ action: 'delete', codigo });
+    STATE.epis = STATE.epis.filter(e => e.codigo !== codigo);
+    if (STATE.mode === 'local') saveLocal();
+    refreshAll();
+    toast('EPI removido', 'ok');
+  } catch(e) { toast('Erro ao remover', 'err'); }
+  setLoading(false);
+}
+
+function clearForm() {
+  ['f-codigo','f-nome','f-ca','f-descricao','f-minimo','f-saldo'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
+}
+
+// ── DEMO DATA ─────────────────────────────────────
+function loadDemoData() {
+  STATE.epis = [
+    { codigo:'EPI-001', dataCadastro:'2024-01-15', nome:'Capacete de Segurança', descricao:'Classe B, aba frontal', ca:'31469', estoqueMin:10, saldoAtual:25 },
+    { codigo:'EPI-002', dataCadastro:'2024-01-15', nome:'Luva de Raspa', descricao:'Cano curto, raspa bovina', ca:'11578', estoqueMin:20, saldoAtual:8 },
+    { codigo:'EPI-003', dataCadastro:'2024-02-10', nome:'Óculos de Proteção', descricao:'Lente incolor anti-risco', ca:'25716', estoqueMin:15, saldoAtual:30 },
+    { codigo:'EPI-004', dataCadastro:'2024-02-20', nome:'Protetor Auricular', descricao:'Espuma PU, NRR 29dB', ca:'10344', estoqueMin:30, saldoAtual:5 },
+    { codigo:'EPI-005', dataCadastro:'2024-03-01', nome:'Botina de Segurança', descricao:'Bico de aço, solado antiderrapante', ca:'38978', estoqueMin:8, saldoAtual:12 },
+    { codigo:'EPI-006', dataCadastro:'2024-03-15', nome:'Colete Refletivo', descricao:'Alta visibilidade, classe 2', ca:'44123', estoqueMin:5, saldoAtual:3 },
+  ];
+  saveLocal();
+}
+
+// ── UTILS ─────────────────────────────────────────
+function setLoading(on) {
+  const bar = document.getElementById('loading-bar');
+  bar.style.width = on ? '70%' : '0';
+  setTimeout(() => { if (!on) bar.style.width = '0'; }, 300);
+}
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `show ${type}`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.className = '', 3000);
+}
+</script>
+</body>
+</html>
