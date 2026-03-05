@@ -1,4 +1,4 @@
-15+2.<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -390,9 +390,14 @@ select option{background:#1a2060;color:var(--white);}
       <div class="dash-logo">Trans<span>Ardo</span></div>
       <div class="dash-subtitle">Sistema de Gestão de Orientações</div>
     </div>
-    <div class="gs-status" id="gsStatus">
-      <span class="gs-dot" id="gsDot"></span>
-      <span id="gsStatusText">Google Sheets não configurado</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+      <button id="btnAtualizar" onclick="carregarDoSheets()" title="Atualizar dados do Sheets" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#c8cdd8;padding:5px 13px;border-radius:50px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px;">
+        <span id="btnAtualizarIcon">🔄</span> Atualizar
+      </button>
+      <div class="gs-status" id="gsStatus">
+        <span class="gs-dot" id="gsDot"></span>
+        <span id="gsStatusText">Carregando…</span>
+      </div>
     </div>
   </div>
 
@@ -594,10 +599,9 @@ select option{background:#1a2060;color:var(--white);}
 <!-- ======================================================= SCRIPT ======================================================= -->
 <script>
 // ==================== DADOS ====================
-// Armazenamento local (substitui BD enquanto não há servidor)
-let orientacoes = JSON.parse(localStorage.getItem('orientacoes') || '[]');
 const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2ywQWFkFhjUfnu7nIU18y61PuMMNo09G6b0glaYNsh1Uie45BPopNMFu_5wBrULEPuA/exec';
-let scriptUrl   = localStorage.getItem('scriptUrl') || DEFAULT_SCRIPT_URL;
+let orientacoes = [];
+let scriptUrl   = DEFAULT_SCRIPT_URL;
 let modoAtual   = 'nova'; // 'nova' | 'velocidade'
 
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -624,14 +628,70 @@ Informamos que a reincidência após esta orientação acarretará advertência 
 
 // ==================== INIT ====================
 window.addEventListener('DOMContentLoaded', () => {
-  // Garante que a URL padrão seja salva automaticamente
-  if (!localStorage.getItem('scriptUrl')) {
-    localStorage.setItem('scriptUrl', DEFAULT_SCRIPT_URL);
-  }
   preencherData();
-  atualizarUI();
   atualizarConfigPanel();
+  carregarDoSheets();
 });
+
+// ==================== CARREGAR DO SHEETS ====================
+async function carregarDoSheets() {
+  if (!scriptUrl) { atualizarUI(); return; }
+  const dot = document.getElementById('gsDot');
+  const txt = document.getElementById('gsStatusText');
+  const btn = document.getElementById('btnAtualizar');
+  const icon = document.getElementById('btnAtualizarIcon');
+
+  // Estado: carregando
+  dot.style.background = 'var(--gold)';
+  dot.classList.remove('ok');
+  txt.textContent = 'Sincronizando…';
+  if (btn) btn.disabled = true;
+  if (icon) icon.style.animation = 'spin .7s linear infinite';
+
+  // Mostra loading na tabela
+  const tbody = document.getElementById('tabelaBody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><span class="spinner"></span> Carregando dados do Google Sheets…</div></td></tr>';
+
+  try {
+    const res = await fetch(scriptUrl + '?action=listar&t=' + Date.now());
+    const json = await res.json();
+    if (json.ok && Array.isArray(json.dados) && json.dados.length > 0) {
+      orientacoes = json.dados.map(row => ({
+        id:           Number(row[0]) || Date.now(),
+        titulo:       row[1] || '',
+        data:         row[2] || '',
+        dataBruta:    row[2] || '',
+        nome:         row[3] || '',
+        setor:        row[4] || '',
+        responsavel:  row[5] || '',
+        cargo:        row[6] || '',
+        descricao:    row[7] || '',
+        justificativa:row[8] || '',
+        status:       row[9] || 'Pendente',
+      }));
+      salvarLocal();
+      dot.classList.add('ok');
+      dot.style.background = '';
+      txt.textContent = 'Atualizado agora mesmo';
+      showToast('✅ ' + orientacoes.length + ' orientações carregadas do Sheets!', 'success');
+    } else {
+      dot.classList.add('ok');
+      dot.style.background = '';
+      txt.textContent = 'Google Sheets conectado';
+      showToast('📊 Sheets conectado — nenhum dado ainda.', 'info');
+    }
+  } catch (err) {
+    console.error('Erro ao carregar Sheets:', err);
+    dot.classList.remove('ok');
+    dot.style.background = 'var(--red)';
+    txt.textContent = 'Erro ao conectar';
+    showToast('⚠️ Não foi possível carregar do Sheets. Usando dados locais.', 'error');
+  }
+
+  if (btn) btn.disabled = false;
+  if (icon) { icon.style.animation = ''; }
+  atualizarUI();
+}
 
 function preencherData(){
   const d = new Date();
@@ -951,7 +1011,7 @@ function marcarFeito(id){
 
 // ==================== LOCAL STORAGE ====================
 function salvarLocal(){
-  localStorage.setItem('orientacoes',JSON.stringify(orientacoes));
+  // dados mantidos apenas em memória e no Google Sheets
 }
 
 // ==================== GOOGLE SHEETS ====================
@@ -959,7 +1019,7 @@ function salvarConfig(){
   const url=document.getElementById('scriptUrlInput').value.trim();
   if(!url){showToast('Cole a URL do Google Apps Script','error');return;}
   scriptUrl=url;
-  localStorage.setItem('scriptUrl',url);
+  // URL mantida apenas em memória
   atualizarConfigPanel();
   showToast('✅ URL salva! Próximas orientações serão enviadas ao Sheets.','success');
 }
