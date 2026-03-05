@@ -596,7 +596,8 @@ select option{background:#1a2060;color:var(--white);}
 // ==================== DADOS ====================
 // Armazenamento local (substitui BD enquanto não há servidor)
 let orientacoes = JSON.parse(localStorage.getItem('orientacoes') || '[]');
-let scriptUrl   = localStorage.getItem('scriptUrl') || '';
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2ywQWFkFhjUfnu7nIU18y61PuMMNo09G6b0glaYNsh1Uie45BPopNMFu_5wBrULEPuA/exec';
+let scriptUrl   = localStorage.getItem('scriptUrl') || DEFAULT_SCRIPT_URL;
 let modoAtual   = 'nova'; // 'nova' | 'velocidade'
 
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -623,6 +624,10 @@ Informamos que a reincidência após esta orientação acarretará advertência 
 
 // ==================== INIT ====================
 window.addEventListener('DOMContentLoaded', () => {
+  // Garante que a URL padrão seja salva automaticamente
+  if (!localStorage.getItem('scriptUrl')) {
+    localStorage.setItem('scriptUrl', DEFAULT_SCRIPT_URL);
+  }
   preencherData();
   atualizarUI();
   atualizarConfigPanel();
