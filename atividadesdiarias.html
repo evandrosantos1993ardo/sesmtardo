@@ -495,6 +495,7 @@ let draggedId = null;
 let calYear, calMonth;
 let chartPie, chartBar;
 const API_KEY = 'taskflow_api_url';
+const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbyk-HkhODc6WLouRMHCSWg19MNPL2LiVh5WQVbJxvRxMvvuQcfBuXBGijyF7egcG76wwQ/exec';
 
 const today = () => {
   const d = new Date(); d.setHours(0,0,0,0); return d;
@@ -517,7 +518,8 @@ const nowStr = () => {
 // API
 // ============================================================
 function getApiUrl() {
-  return localStorage.getItem(API_KEY) || '';
+  // URL fixa — pode ser sobrescrita pelo campo de configuração
+  return localStorage.getItem(API_KEY) || FIXED_API_URL;
 }
 function saveApiUrl() {
   const url = document.getElementById('apiUrlInput').value.trim();
@@ -997,7 +999,7 @@ function showPage(name,btn) {
   document.getElementById('topbarSub').textContent=titles[name]||'';
   if(name==='kanban') renderKanban();
   if(name==='calendar') renderCalendar();
-  if(name==='config') { const u=getApiUrl(); if(u) document.getElementById('apiUrlInput').value=u; }
+  if(name==='config') { const u=getApiUrl(); document.getElementById('apiUrlInput').value=u; }
   // close sidebar on mobile
   if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('open');
 }
@@ -1015,6 +1017,10 @@ function showToast(msg,type='info') {
 // ============================================================
 // INIT
 // ============================================================
+// Garante que a URL fixa seja salva no localStorage ao abrir
+if (!localStorage.getItem(API_KEY)) {
+  localStorage.setItem(API_KEY, FIXED_API_URL);
+}
 initCal();
 loadActivities();
 </script>
