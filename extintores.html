@@ -1,1 +1,955 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FireGuard · Controle de Extintores</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#1a2060; --red:#cc1a2a; --silver:#c8cdd8;
+  --dark:#0d1235; --light:#f4f5f9; --white:#ffffff;
+  --ok:#27ae60; --warn:#f39c12; --danger:#e74c3c; --info:#2980b9;
+  --surface:rgba(255,255,255,.04); --border:rgba(255,255,255,.08);
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:var(--dark);min-height:100vh;color:var(--white);overflow-x:hidden;}
+
+/* BG */
+.bg-layer{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(26,32,96,.7) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 90%,rgba(204,26,42,.25) 0%,transparent 55%),linear-gradient(160deg,#0b0f2a 0%,#111640 50%,#0f0c24 100%);}
+.bg-grid{position:fixed;inset:0;z-index:1;opacity:.07;background-image:linear-gradient(var(--silver) 1px,transparent 1px),linear-gradient(90deg,var(--silver) 1px,transparent 1px);background-size:60px 60px;}
+.bg-stripe{position:fixed;left:-10%;top:0;width:55%;height:100%;z-index:2;opacity:.04;background:repeating-linear-gradient(-55deg,var(--white) 0,var(--white) 2px,transparent 2px,transparent 28px);}
+.accent-bar{position:fixed;right:-60px;top:0;width:160px;height:100vh;z-index:3;background:linear-gradient(180deg,rgba(204,26,42,.08) 0%,transparent 100%);transform:skewX(-8deg);pointer-events:none;}
+
+/* CONFIG OVERLAY */
+#config-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);z-index:2000;display:flex;align-items:center;justify-content:center;}
+.config-box{background:rgba(26,32,96,.4);border:1px solid rgba(204,26,42,.3);border-radius:18px;padding:44px;width:540px;max-width:95vw;position:relative;z-index:10;}
+.config-box h2{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--red);letter-spacing:2px;margin-bottom:6px;}
+.config-box p{color:var(--silver);font-size:.875rem;margin-bottom:28px;line-height:1.7;}
+.config-box a{color:var(--red);}
+.cfg-field{margin-bottom:18px;}
+.cfg-field label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--silver);margin-bottom:6px;font-weight:700;}
+.cfg-field input{width:100%;padding:12px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--white);font-family:var(--mono);font-size:.85rem;outline:none;transition:border .2s;}
+.cfg-field input:focus{border-color:var(--red);}
+.cfg-btns{display:flex;gap:10px;margin-top:8px;}
+.cfg-btn-p{flex:1;padding:13px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
+.cfg-btn-p:hover{opacity:.85;}
+.cfg-btn-d{padding:13px 20px;background:rgba(255,255,255,.06);color:var(--silver);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;transition:all .2s;}
+.cfg-btn-d:hover{background:rgba(255,255,255,.1);color:var(--white);}
+.cfg-sep{border:none;border-top:1px solid rgba(255,255,255,.08);margin:22px 0;}
+.cfg-code{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;font-family:var(--mono);font-size:.78rem;color:#a0d4ff;line-height:1.7;white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto;}
+.cfg-toggle{cursor:pointer;color:var(--red);font-size:.82rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:inline-block;}
+
+/* HEADER */
+header{position:relative;z-index:10;padding:18px 40px;display:flex;align-items:center;gap:8px;background:rgba(13,18,53,.7);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,26,42,.25);box-shadow:0 2px 20px rgba(0,0,0,.4);}
+header h1{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;flex:1;letter-spacing:.05em;}
+header h1 small{font-weight:400;opacity:.6;font-size:.85rem;}
+.eyebrow-line{display:inline-block;width:20px;height:2px;background:var(--red);vertical-align:middle;margin-right:8px;}
+.nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--silver);padding:6px 16px;border-radius:50px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:all .25s;}
+.nb:hover{background:rgba(204,26,42,.2);border-color:rgba(204,26,42,.5);color:var(--white);}
+.nb.on{background:rgba(204,26,42,.25);border-color:var(--red);color:var(--white);}
+.nb-new{background:var(--red);border:1px solid var(--red);color:#fff;padding:6px 16px;border-radius:50px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all .25s;}
+.nb-new:hover{background:#a8141f;box-shadow:0 4px 16px rgba(204,26,42,.4);}
+
+/* CONN BAR */
+.cb{position:relative;z-index:10;background:rgba(26,32,96,.3);border-bottom:1px solid rgba(255,255,255,.06);padding:6px 40px;display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;color:var(--silver);letter-spacing:.06em;}
+.cdot{width:7px;height:7px;border-radius:50%;background:#555;display:inline-block;}
+.cdot.ok{background:#27ae60;box-shadow:0 0 6px #27ae60;}
+.cdot.er{background:var(--red);box-shadow:0 0 6px var(--red);}
+.btn-sync{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--silver);padding:4px 12px;border-radius:50px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;}
+.btn-sync:hover{border-color:rgba(204,26,42,.5);color:var(--white);}
+
+main{position:relative;z-index:10;padding:28px 40px 60px;}
+.pg{display:none;}.pg.on{display:block;}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;position:relative;overflow:hidden;transition:transform .3s,border-color .3s;}
+.sc::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--c1,var(--red)),var(--c2,var(--navy)));}
+.sc:hover{transform:translateY(-4px);border-color:rgba(204,26,42,.4);}
+.sc .n{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1;}
+.sc .l{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--silver);margin-top:4px;}
+
+/* ALERTS */
+.ab{border-radius:10px;padding:12px 16px;margin-bottom:12px;border:1px solid;}
+.ad{background:rgba(204,26,42,.1);border-color:rgba(204,26,42,.4);}
+.aw{background:rgba(243,156,18,.08);border-color:rgba(243,156,18,.35);}
+.ab h4{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.ab ul{padding-left:16px;font-size:.8rem;line-height:1.9;color:var(--silver);}
+
+/* CHART BARS */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.cc h3{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;color:var(--silver);margin-bottom:14px;}
+.bi{display:flex;align-items:center;margin-bottom:9px;gap:8px;font-size:.8rem;color:var(--silver);}
+.bl{width:130px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bt{flex:1;height:14px;background:rgba(255,255,255,.07);border-radius:7px;overflow:hidden;}
+.bf{height:100%;border-radius:7px;transition:width .6s cubic-bezier(.22,1,.36,1);}
+.bv{width:22px;text-align:right;font-weight:700;color:var(--white);}
+
+/* FILTER */
+.fb{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
+.fg label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--silver);}
+.fg input,.fg select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 10px;font-size:.82rem;font-family:'Barlow',sans-serif;color:var(--white);transition:border .2s;}
+.fg input::placeholder{color:rgba(200,205,216,.4);}
+.fg input:focus,.fg select:focus{outline:none;border-color:rgba(204,26,42,.6);}
+.fg select option{background:#1a2060;color:var(--white);}
+
+/* TABLE */
+.tw{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;overflow:auto;}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+th{background:rgba(26,32,96,.5);padding:11px 13px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:.73rem;letter-spacing:.12em;text-transform:uppercase;color:var(--silver);font-weight:700;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.08);}
+td{padding:10px 13px;border-top:1px solid rgba(255,255,255,.05);vertical-align:middle;color:var(--silver);}
+td b{color:var(--white);}
+tr:hover td{background:rgba(26,32,96,.3);}
+tr.ov td{background:rgba(204,26,42,.07);}
+tr.wa td{background:rgba(243,156,18,.05);}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 9px;border-radius:50px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+.b-ok{background:rgba(39,174,96,.15);color:#27ae60;border:1px solid rgba(39,174,96,.3);}
+.b-warn{background:rgba(243,156,18,.15);color:#f39c12;border:1px solid rgba(243,156,18,.3);}
+.b-danger{background:rgba(204,26,42,.2);color:#ff6b7a;border:1px solid rgba(204,26,42,.35);}
+.b-abc{background:rgba(204,26,42,.12);color:#ff8a7a;}
+.b-co2{background:rgba(41,128,185,.15);color:#5dade2;}
+.b-agua{background:rgba(39,174,96,.12);color:#27ae60;}
+.b-po{background:rgba(243,156,18,.12);color:#f39c12;}
+
+/* FORM */
+.fc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;}
+.fc h2{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:.05em;color:var(--white);margin-bottom:22px;display:flex;align-items:center;gap:10px;}
+.fc h2::before{content:'';display:inline-block;width:4px;height:24px;background:var(--red);border-radius:2px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fgr{display:flex;flex-direction:column;gap:5px;}
+.fgr.full{grid-column:1/-1;}
+.fgr label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--silver);}
+.fgr input,.fgr select,.fgr textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;font-size:.86rem;font-family:'Barlow',sans-serif;color:var(--white);width:100%;transition:border .2s;}
+.fgr input::placeholder,.fgr textarea::placeholder{color:rgba(200,205,216,.35);}
+.fgr input:focus,.fgr select:focus,.fgr textarea:focus{outline:none;border-color:rgba(204,26,42,.6);}
+.fgr select option{background:#1a2060;}
+.fgr textarea{resize:vertical;min-height:75px;}
+.fa{margin-top:20px;display:flex;gap:10px;}
+
+/* DETAIL */
+.dc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;}
+.dc h2{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.04em;}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+.df label{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--silver);display:block;margin-bottom:3px;}
+.df p{font-size:.88rem;color:var(--white);}
+.df.full{grid-column:1/-1;}
+
+/* INSPECAO */
+.insp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.insp-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.insp-item:hover{border-color:rgba(204,26,42,.4);}
+.insp-item input[type=checkbox]{accent-color:var(--red);width:15px;height:15px;}
+.insp-item.fail{background:rgba(204,26,42,.08);border-color:rgba(204,26,42,.3);}
+
+/* BUTTONS */
+.btn{padding:8px 20px;border-radius:50px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all .25s;display:inline-flex;align-items:center;gap:5px;}
+.btn:hover{opacity:.88;transform:translateY(-1px);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-p{background:var(--red);color:#fff;box-shadow:0 4px 14px rgba(204,26,42,.35);}
+.btn-p:hover{background:#a8141f;}
+.btn-s{background:rgba(39,174,96,.2);color:#27ae60;border:1px solid rgba(39,174,96,.35);}
+.btn-n{background:rgba(255,255,255,.07);color:var(--silver);border:1px solid rgba(255,255,255,.1);}
+.btn-n:hover{background:rgba(255,255,255,.12);color:var(--white);}
+.btn-d{background:rgba(204,26,42,.15);color:#ff6b7a;border:1px solid rgba(204,26,42,.3);}
+.btn-i{background:rgba(41,128,185,.2);color:#5dade2;border:1px solid rgba(41,128,185,.3);}
+.sm{padding:4px 10px;font-size:.72rem;}
+
+/* PROGRESS */
+.prog-wrap{display:flex;align-items:center;gap:7px;}
+.prog-bar{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;min-width:60px;}
+.prog-fill{height:100%;border-radius:3px;}
+
+/* LOADER */
+.ldr{text-align:center;padding:40px;color:var(--silver);}
+.sp{width:28px;height:28px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(26,32,96,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 20px;font-size:.85rem;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:320px;backdrop-filter:blur(8px);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:3px solid var(--ok);}
+.toast.err{border-left:3px solid var(--red);}
+.toast.warn{border-left:3px solid var(--warn);}
+
+/* MODAL INSP */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1500;align-items:center;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal-box{background:#111640;border:1px solid rgba(204,26,42,.25);border-radius:16px;padding:32px;width:580px;max-width:96vw;max-height:90vh;overflow-y:auto;position:relative;}
+.modal-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:.05em;margin-bottom:20px;color:var(--red);}
+.modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.07);border:none;color:var(--silver);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:var(--white);}
+
+@media(max-width:700px){
+  header{padding:16px 20px;}
+  main{padding:20px 20px 48px;}
+  .fg2,.cg,.dg,.insp-grid{grid-template-columns:1fr;}
+  .sg{grid-template-columns:repeat(2,1fr);}
+  .cb{padding:6px 20px;}
+}
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="bg-grid"></div>
+<div class="bg-stripe"></div>
+<div class="accent-bar"></div>
+
+<!-- CONFIG OVERLAY -->
+<div id="config-overlay">
+  <div class="config-box">
+    <h2>🔥 FireGuard</h2>
+    <p>Conecte ao Google Sheets para armazenar todos os dados de extintores na nuvem.<br>
+    <a href="#" onclick="toggleInstr()">📋 Ver instruções para criar o Web App</a></p>
+
+    <div id="instr-box" style="display:none;margin-bottom:18px;">
+      <p style="font-size:.78rem;color:var(--warn);margin-bottom:8px;">COLE ESTE CÓDIGO NO GOOGLE APPS SCRIPT:</p>
+      <div class="cfg-code" id="gas-code-display"></div>
+      <p style="font-size:.77rem;color:var(--silver);margin-top:10px;line-height:1.6;">
+        1. Abra <b>script.google.com</b> → Novo Projeto<br>
+        2. Cole o código acima → Salve<br>
+        3. Implantar → Nova implantação → Web App<br>
+        4. Executar como: <b>Eu mesmo</b> · Acesso: <b>Qualquer pessoa</b><br>
+        5. Copie a URL gerada e cole abaixo
+      </p>
+    </div>
+
+    <div class="cfg-field">
+      <label>URL do Google Apps Script (Web App)</label>
+      <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/...../exec">
+    </div>
+    <div class="cfg-btns">
+      <button class="cfg-btn-p" onclick="saveConfig()">🔗 Conectar ao Google Sheets</button>
+      <button class="cfg-btn-d" onclick="demoMode()">Demo</button>
+    </div>
+    <hr class="cfg-sep">
+    <p style="font-size:.75rem;color:var(--silver);opacity:.6;line-height:1.6;">
+      Os dados serão gravados diretamente em uma planilha Google Sheets da sua conta. Nenhum servidor externo é necessário.
+    </p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+<header>
+  <h1><span class="eyebrow-line"></span>🔥 FireGuard – Controle de Extintores &nbsp;<small id="hdr-empresa"></small></h1>
+  <button class="nb on" id="nav-dashboard" onclick="goTo('dashboard')">Dashboard</button>
+  <button class="nb" id="nav-lista" onclick="goTo('lista')">Extintores</button>
+  <button class="nb" id="nav-inspecoes" onclick="goTo('inspecoes')">Inspeções</button>
+  <button class="nb-new" onclick="abrirNovo()">+ Novo</button>
+  <button class="nb" onclick="openConfig()" style="margin-left:4px">⚙</button>
+</header>
+
+<div class="cb">
+  <span class="cdot" id="cdot"></span>
+  <span id="ctxt">Conectando...</span>
+  <span style="flex:1"></span>
+  <span id="last-sync" style="opacity:.5;font-size:.73rem"></span>
+  <button class="btn-sync" onclick="sync()">🔄 Sincronizar</button>
+</div>
+
+<main>
+
+<!-- DASHBOARD -->
+<div class="pg on" id="pg-dashboard">
+  <div class="sg">
+    <div class="sc" style="--c1:#cc1a2a;--c2:#1a2060"><div class="n" id="s-total" style="color:var(--silver)">–</div><div class="l">Total</div></div>
+    <div class="sc" style="--c1:#27ae60;--c2:#1a6040"><div class="n" id="s-ok" style="color:#27ae60">–</div><div class="l">Em Dia</div></div>
+    <div class="sc" style="--c1:#f39c12;--c2:#7a4e00"><div class="n" id="s-warn" style="color:#f39c12">–</div><div class="l">A Vencer (30d)</div></div>
+    <div class="sc" style="--c1:#e74c3c;--c2:#7a0000"><div class="n" id="s-danger" style="color:#e74c3c">–</div><div class="l">Vencidos</div></div>
+    <div class="sc" style="--c1:#2980b9;--c2:#1a2060"><div class="n" id="s-insp" style="color:#5dade2">–</div><div class="l">Inspeções</div></div>
+  </div>
+  <div id="alertas-dash"></div>
+  <div class="cg">
+    <div class="cc"><h3>Por Tipo</h3><div id="chart-tipo"></div></div>
+    <div class="cc"><h3>Por Local / Setor</h3><div id="chart-local"></div></div>
+  </div>
+  <div class="cc" style="margin-top:0">
+    <h3>📅 Próximos Vencimentos</h3>
+    <div id="prox-venc"></div>
+  </div>
+</div>
+
+<!-- LISTA -->
+<div class="pg" id="pg-lista">
+  <div class="fb">
+    <div class="fg"><label>Busca</label><input type="text" id="fb-q" placeholder="Código, local..." oninput="renderTab()"></div>
+    <div class="fg"><label>Status</label>
+      <select id="fb-st" onchange="renderTab()">
+        <option value="">Todos</option><option value="ok">Em Dia</option>
+        <option value="warn">A Vencer</option><option value="danger">Vencido</option>
+      </select>
+    </div>
+    <div class="fg"><label>Tipo</label>
+      <select id="fb-tp" onchange="renderTab()">
+        <option value="">Todos</option><option>ABC</option><option>CO2</option><option>Água</option><option>Pó</option>
+      </select>
+    </div>
+    <div class="fg"><label>Local</label>
+      <select id="fb-lc" onchange="renderTab()"><option value="">Todos</option></select>
+    </div>
+    <button class="btn btn-n sm" onclick="limFiltros()">✕ Limpar</button>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Código</th><th>Tipo</th><th>Local</th><th>Capacidade</th>
+        <th>Próx. Recarga</th><th>Próx. Inspeção</th><th>Carga</th>
+        <th>Status</th><th>Ações</th>
+      </tr></thead>
+      <tbody id="tb"><tr><td colspan="9"><div class="ldr"><div class="sp"></div>Carregando...</div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="pg" id="pg-novo">
+  <div class="fc">
+    <h2 id="ftit">Novo Extintor</h2>
+    <input type="hidden" id="eid">
+    <div class="fg2">
+      <div class="fgr"><label>Código / Patrimônio *</label><input id="f-cod" type="text" placeholder="EXT-001"></div>
+      <div class="fgr"><label>Tipo *</label>
+        <select id="f-tipo">
+          <option value="">Selecione...</option>
+          <option>ABC</option><option>CO2</option><option>Água</option><option>Pó</option>
+        </select>
+      </div>
+      <div class="fgr"><label>Capacidade (kg/L)</label><input id="f-cap" type="text" placeholder="6 kg"></div>
+      <div class="fgr"><label>Fabricação</label><input id="f-fab" type="date"></div>
+      <div class="fgr"><label>Próxima Recarga *</label><input id="f-rec" type="date"></div>
+      <div class="fgr"><label>Próxima Inspeção *</label><input id="f-ins" type="date"></div>
+      <div class="fgr full"><label>Local / Setor *</label><input id="f-loc" type="text" placeholder="Ex: Recepção, Sala TI, Garagem..."></div>
+      <div class="fgr"><label>Responsável</label><input id="f-res" type="text" placeholder="Nome do responsável"></div>
+      <div class="fgr"><label>Carga Atual (%)</label><input id="f-carga" type="number" min="0" max="100" value="100"></div>
+      <div class="fgr full"><label>Observações</label><textarea id="f-obs" placeholder="Notas sobre o extintor..."></textarea></div>
+    </div>
+    <div class="fa">
+      <button class="btn btn-p" id="btn-salvar" onclick="salvar()">💾 Salvar</button>
+      <button class="btn btn-n" onclick="goTo('lista')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETALHE -->
+<div class="pg" id="pg-detalhe">
+  <div class="dc">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <button class="btn btn-n sm" onclick="goTo('lista')">← Voltar</button>
+      <h2 id="d-tit"></h2>
+    </div>
+    <div id="d-badges" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px"></div>
+    <div class="dg" id="d-grid"></div>
+    <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-i sm" onclick="abrirInspModal(currentId)">🔍 Nova Inspeção</button>
+      <button class="btn btn-p sm" onclick="editarExt(currentId)">✏️ Editar</button>
+      <button class="btn btn-d sm" onclick="excluir(currentId,true)">🗑 Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSPEÇÕES -->
+<div class="pg" id="pg-inspecoes">
+  <div class="fb">
+    <div class="fg"><label>Busca</label><input type="text" id="fi-q" placeholder="Extintor, inspetor..." oninput="renderInsp()"></div>
+    <div class="fg"><label>Resultado</label>
+      <select id="fi-res" onchange="renderInsp()">
+        <option value="">Todos</option><option value="ok">Aprovado</option><option value="fail">Com Falhas</option>
+      </select>
+    </div>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Data/Hora</th><th>Extintor</th><th>Local</th><th>Inspetor</th><th>Falhas</th><th>Resultado</th><th>Obs</th></tr></thead>
+      <tbody id="tb-insp"><tr><td colspan="7"><div class="ldr"><div class="sp"></div>Carregando...</div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+</div><!-- /app -->
+
+<!-- MODAL INSPEÇÃO -->
+<div class="modal-ov" id="modal-insp">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeInspModal()">✕</button>
+    <h3>🔍 Registrar Inspeção</h3>
+    <input type="hidden" id="insp-ext-id">
+    <div id="insp-ext-info" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px;margin-bottom:18px;font-size:.85rem;"></div>
+    <p style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--silver);margin-bottom:12px;">Itens de verificação:</p>
+    <div class="insp-grid" id="insp-checks"></div>
+    <div class="fg2" style="margin-top:4px">
+      <div class="fgr">
+        <label>Inspetor *</label>
+        <input type="text" id="insp-inspetor" placeholder="Nome completo">
+      </div>
+      <div class="fgr">
+        <label>Atualizar próxima inspeção</label>
+        <input type="date" id="insp-proxima">
+      </div>
+      <div class="fgr full">
+        <label>Observações</label>
+        <textarea id="insp-obs" placeholder="Observações da inspeção..."></textarea>
+      </div>
+    </div>
+    <div class="fa">
+      <button class="btn btn-p" id="btn-insp-salvar" onclick="salvarInspModal()">✅ Registrar</button>
+      <button class="btn btn-n" onclick="closeInspModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+// GAS CODE (mostrado nas instruções)
+// ════════════════════════════════════════════════════
+const GAS_CODE = `const SHEET_EXT  = 'Extintores';
+const SHEET_INSP = 'Inspecoes';
+const HEADER_EXT  = ['ID','Codigo','Tipo','Capacidade','Fabricacao','Recarga','Inspecao','Local','Responsavel','Carga','Obs','DataCadastro','UltAtualizacao'];
+const HEADER_INSP = ['ID','ExtID','ExtCodigo','Local','Inspetor','DataHora','Falhas','Resultado','Items','Obs','ProxInspecao'];
+
+function doGet(e){
+  const p=e.parameter;
+  if(p.action==='getAll')    return r(getAllExt());
+  if(p.action==='getInsp')   return r(getAllInsp());
+  if(p.action==='add')       return r(addExt(JSON.parse(p.row)));
+  if(p.action==='update')    return r(updateExt(p.id,JSON.parse(p.row)));
+  if(p.action==='delete')    return r(deleteExt(p.id));
+  if(p.action==='addInsp')   return r(addInsp(JSON.parse(p.row)));
+  return r({ok:false,msg:'Unknown action'});
+}
+function r(d){return ContentService.createTextOutput(JSON.stringify(d)).setMimeType(ContentService.MimeType.JSON);}
+function ss(){return SpreadsheetApp.getActiveSpreadsheet();}
+function sh(name){
+  let s=ss().getSheetByName(name);
+  if(!s){s=ss().insertSheet(name);s.appendRow(name==='Extintores'?HEADER_EXT:HEADER_INSP);}
+  return s;
+}
+function getAllExt(){return {ok:true,data:sh(SHEET_EXT).getDataRange().getValues()};}
+function getAllInsp(){const s=sh(SHEET_INSP);const d=s.getLastRow()>1?s.getDataRange().getValues():[];return {ok:true,data:d};}
+function addExt(row){sh(SHEET_EXT).appendRow(row);return {ok:true};}
+function addInsp(row){sh(SHEET_INSP).appendRow(row);return {ok:true};}
+function updateExt(id,row){
+  const s=sh(SHEET_EXT);const d=s.getDataRange().getValues();
+  for(let i=1;i<d.length;i++){if(String(d[i][0])===String(id)){s.getRange(i+1,1,1,row.length).setValues([row]);return {ok:true};}}
+  return {ok:false,msg:'Not found'};
+}
+function deleteExt(id){
+  const s=sh(SHEET_EXT);const d=s.getDataRange().getValues();
+  for(let i=d.length-1;i>=1;i--){if(String(d[i][0])===String(id)){s.deleteRow(i+1);return {ok:true};}}
+  return {ok:false};
+}`;
+
+document.getElementById('gas-code-display').textContent = GAS_CODE;
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let STATE = {
+  extintores: [],
+  inspecoes: [],
+  apiUrl: '',
+  mode: 'local'
+};
+let currentId = null;
+
+const CHECKLIST = [
+  'Extintor visível e acessível',
+  'Lacre intacto',
+  'Pino de segurança presente',
+  'Manômetro na faixa verde',
+  'Corpo sem amassados ou ferrugem',
+  'Mangueira/difusor em bom estado',
+  'Rótulo/etiqueta legível',
+  'Validade da carga vigente',
+  'Suporte fixo e sem avarias',
+  'Sinalização visível'
+];
+
+// ════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════
+function toggleInstr(){const b=document.getElementById('instr-box');b.style.display=b.style.display==='none'?'block':'none';}
+function openConfig(){document.getElementById('config-overlay').style.display='flex';}
+
+function saveConfig(){
+  const url=document.getElementById('cfg-url').value.trim();
+  if(!url){toast('Cole a URL do Web App','err');return;}
+  STATE.apiUrl=url;
+  STATE.mode='sheets';
+  localStorage.setItem('fg_config',JSON.stringify({url}));
+  document.getElementById('config-overlay').style.display='none';
+  document.getElementById('app').style.display='block';
+  sync();
+}
+
+function demoMode(){
+  STATE.mode='local';
+  loadLocal();
+  if(!STATE.extintores.length) loadDemoData();
+  document.getElementById('config-overlay').style.display='none';
+  document.getElementById('app').style.display='block';
+  refreshAll();
+  toast('Modo demonstração — dados locais','warn');
+}
+
+const URL_FIXO = 'https://script.google.com/macros/s/AKfycbyplrzqxCU9YigJjWSbDHSDRvLJ4Li6Q9WF8mhTap6xVnJcbJocfpeGnPYp7SAzA1RE/exec';
+
+window.onload=()=>{
+  // URL fixa — pula tela de configuração direto
+  STATE.apiUrl = URL_FIXO;
+  STATE.mode   = 'sheets';
+  localStorage.setItem('fg_config', JSON.stringify({ url: URL_FIXO }));
+  document.getElementById('cfg-url').value = URL_FIXO;
+  document.getElementById('config-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  sync();
+};
+
+// ════════════════════════════════════════════════════
+// LOCAL STORAGE
+// ════════════════════════════════════════════════════
+function saveLocal(){}
+function loadLocal(){ STATE.extintores=[]; STATE.inspecoes=[]; }
+
+// ════════════════════════════════════════════════════
+// API — JSONP para Google Apps Script
+// ════════════════════════════════════════════════════
+function req(params){
+  return new Promise((res,rej)=>{
+    const cb='_fg'+Date.now();
+    const to=setTimeout(()=>{cleanup();rej(new Error('Timeout'));},18000);
+    function cleanup(){delete window[cb];const s=document.getElementById(cb);if(s)s.remove();}
+    window[cb]=d=>{clearTimeout(to);cleanup();res(d);};
+    const qs=Object.entries({...params,callback:cb}).map(([k,v])=>k+'='+encodeURIComponent(typeof v==='object'?JSON.stringify(v):v)).join('&');
+    const s=document.createElement('script');
+    s.id=cb;s.src=STATE.apiUrl+'?'+qs;
+    s.onerror=()=>{clearTimeout(to);cleanup();rej(new Error('Falha de rede'));};
+    document.head.appendChild(s);
+  });
+}
+
+// ════════════════════════════════════════════════════
+// SYNC
+// ════════════════════════════════════════════════════
+async function sync(){
+  if(STATE.mode==='local'){refreshAll();return;}
+  conn('','Sincronizando...');
+  try{
+    const j=await req({action:'getAll'});
+    if(!j.ok)throw new Error('API retornou erro');
+    const rows=j.data.length>1?j.data.slice(1):[];
+    STATE.extintores=rows.map(r=>({
+      id:String(r[0]),codigo:r[1],tipo:r[2],capacidade:r[3],
+      fabricacao:r[4],recarga:r[5],inspecao:r[6],local:r[7],
+      responsavel:r[8],carga:Number(r[9])||100,obs:r[10],
+      dataCadastro:r[11],ultAtual:r[12]
+    })).filter(e=>e.id);
+
+    try{
+      const ji=await req({action:'getInsp'});
+      if(ji.ok&&ji.data&&ji.data.length>1){
+        STATE.inspecoes=ji.data.slice(1).map(r=>({
+          id:String(r[0]),extId:r[1],extCodigo:r[2],local:r[3],
+          inspetor:r[4],dataHora:r[5],falhas:Number(r[6]),resultado:r[7],
+          items:r[8],obs:r[9],proxInspecao:r[10]
+        })).reverse();
+      }
+    }catch(ie){}
+
+    conn('ok','Conectado ✓ — '+STATE.extintores.length+' extintor(es)');
+    document.getElementById('last-sync').textContent='Última sync: '+new Date().toLocaleTimeString('pt-BR');
+    refreshAll();
+    toast('Sincronizado com Google Sheets ✓','ok');
+  }catch(e){
+    conn('er','Erro de conexão');
+    toast('Falha ao conectar. Verifique a URL do Web App.','err');
+  }
+}
+
+function conn(st,msg){
+  document.getElementById('cdot').className='cdot'+(st==='ok'?' ok':st==='er'?' er':'');
+  document.getElementById('ctxt').textContent=msg;
+}
+
+// ════════════════════════════════════════════════════
+// STATUS
+// ════════════════════════════════════════════════════
+function getStatus(ext){
+  const today=new Date();today.setHours(0,0,0,0);
+  const r=ext.recarga?new Date(ext.recarga+'T00:00:00'):null;
+  const i=ext.inspecao?new Date(ext.inspecao+'T00:00:00'):null;
+  let target=null;
+  if(r&&i)target=r<i?r:i; else target=r||i;
+  if(!target)return{s:'ok',diff:999,label:'Sem data'};
+  const diff=Math.round((target-today)/86400000);
+  if(diff<0)return{s:'danger',diff,label:`Vencido há ${Math.abs(diff)}d`};
+  if(diff<=30)return{s:'warn',diff,label:`${diff}d restantes`};
+  return{s:'ok',diff,label:'Em dia'};
+}
+
+function badgeSt(ext){
+  const st=getStatus(ext);
+  const cls={ok:'b-ok',warn:'b-warn',danger:'b-danger'};
+  return `<span class="badge ${cls[st.s]||'b-ok'}">${st.label}</span>`;
+}
+
+// ════════════════════════════════════════════════════
+// REFRESH
+// ════════════════════════════════════════════════════
+function refreshAll(){dash();renderTab();renderInsp();preencheLocais();}
+
+function dash(){
+  const ok=STATE.extintores.filter(e=>getStatus(e).s==='ok').length;
+  const warn=STATE.extintores.filter(e=>getStatus(e).s==='warn').length;
+  const danger=STATE.extintores.filter(e=>getStatus(e).s==='danger').length;
+  document.getElementById('s-total').textContent=STATE.extintores.length;
+  document.getElementById('s-ok').textContent=ok;
+  document.getElementById('s-warn').textContent=warn;
+  document.getElementById('s-danger').textContent=danger;
+  document.getElementById('s-insp').textContent=STATE.inspecoes.length;
+
+  // alertas
+  const now=new Date();now.setHours(0,0,0,0);
+  const e10=new Date(now);e10.setDate(e10.getDate()+10);
+  const vencidos=STATE.extintores.filter(e=>getStatus(e).s==='danger');
+  const prx10=STATE.extintores.filter(e=>{const st=getStatus(e);return st.s==='warn'&&st.diff<=10;});
+  let h='';
+  if(vencidos.length)h+=`<div class="ab ad"><h4>🚨 ${vencidos.length} extintor(es) com data vencida</h4><ul>${vencidos.map(e=>`<li><b>${ex(e.codigo)}</b> – ${ex(e.local)} · recarga: ${fm(e.recarga)} · inspeção: ${fm(e.inspecao)}</li>`).join('')}</ul></div>`;
+  if(prx10.length)h+=`<div class="ab aw"><h4>⚠️ ${prx10.length} extintor(es) vencem em até 10 dias</h4><ul>${prx10.map(e=>`<li><b>${ex(e.codigo)}</b> – ${ex(e.local)} (${getStatus(e).diff}d)</li>`).join('')}</ul></div>`;
+  document.getElementById('alertas-dash').innerHTML=h;
+
+  // chart tipo
+  const tipos=['ABC','CO2','Água','Pó'];
+  const cores=['#cc1a2a','#2980b9','#27ae60','#f39c12'];
+  const mx=Math.max(...tipos.map(t=>STATE.extintores.filter(e=>e.tipo===t).length),1);
+  bar('chart-tipo',tipos.map((t,i)=>({l:t,v:STATE.extintores.filter(e=>e.tipo===t).length,c:cores[i]})));
+
+  // chart local
+  const lm={};STATE.extintores.forEach(e=>{lm[e.local]=(lm[e.local]||0)+1;});
+  const lcols=['#1a2060','#8e44ad','#16a085','#e67e22','#cc1a2a','#27ae60','#2980b9','#c8cdd8'];
+  bar('chart-local',Object.entries(lm).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([l,v],i)=>({l,v,c:lcols[i%8]})));
+
+  // próximos vencimentos
+  const sorted=[...STATE.extintores].sort((a,b)=>getStatus(a).diff-getStatus(b).diff).slice(0,6);
+  const icons={ABC:'🧯',CO2:'💨','Água':'💧','Pó':'🌫️'};
+  document.getElementById('prox-venc').innerHTML=sorted.length?sorted.map(e=>{
+    const st=getStatus(e);
+    const cor=st.s==='danger'?'var(--danger)':st.s==='warn'?'var(--warn)':'var(--ok)';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:1.4rem">${icons[e.tipo]||'🧯'}</span>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;color:var(--white)">${ex(e.codigo)} — ${ex(e.tipo)} ${ex(e.capacidade)}</div>
+          <div style="font-size:.75rem;color:var(--silver)">📍 ${ex(e.local)}</div>
+        </div>
+      </div>
+      <span class="badge" style="background:rgba(0,0,0,.3);color:${cor};border-color:${cor};font-family:var(--mono)">${st.label}</span>
+    </div>`;
+  }).join(''):'<p style="color:var(--silver);opacity:.5;font-size:.82rem;padding:12px 0">Nenhum extintor cadastrado.</p>';
+}
+
+function bar(id,data){
+  const mx=Math.max(...data.map(d=>d.v),1);
+  document.getElementById(id).innerHTML=data.map(d=>`<div class="bi"><span class="bl" title="${d.l}">${d.l}</span><div class="bt"><div class="bf" style="width:${(d.v/mx)*100}%;background:${d.c}"></div></div><span class="bv">${d.v}</span></div>`).join('')||'<p style="color:var(--silver);font-size:.8rem;opacity:.5">Sem dados</p>';
+}
+
+// ════════════════════════════════════════════════════
+// TABLE EXTINTORES
+// ════════════════════════════════════════════════════
+function filtrado(){
+  const q=(document.getElementById('fb-q')?.value||'').toLowerCase();
+  const fst=document.getElementById('fb-st')?.value||'';
+  const ftp=document.getElementById('fb-tp')?.value||'';
+  const flc=document.getElementById('fb-lc')?.value||'';
+  return STATE.extintores.filter(e=>{
+    if(fst&&getStatus(e).s!==fst)return false;
+    if(ftp&&e.tipo!==ftp)return false;
+    if(flc&&e.local!==flc)return false;
+    if(q&&!Object.values(e).join(' ').toLowerCase().includes(q))return false;
+    return true;
+  });
+}
+
+function renderTab(){
+  const list=filtrado();
+  const tb=document.getElementById('tb');
+  if(!list.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--silver);opacity:.5">Nenhum extintor encontrado.</td></tr>';return;}
+  const tmap={ABC:'b-abc',CO2:'b-co2','Água':'b-agua','Pó':'b-po'};
+  tb.innerHTML=list.map(e=>{
+    const st=getStatus(e);
+    const rowCls=st.s==='danger'?'ov':st.s==='warn'?'wa':'';
+    const cargaColor=e.carga>=80?'var(--ok)':e.carga>=50?'var(--warn)':'var(--danger)';
+    return `<tr class="${rowCls}" onclick="verDet('${e.id}')" style="cursor:pointer">
+      <td><b>${ex(e.codigo)}</b></td>
+      <td><span class="badge ${tmap[e.tipo]||''}">${ex(e.tipo)}</span></td>
+      <td>${ex(e.local)}</td>
+      <td style="font-family:var(--mono);font-size:.78rem">${ex(e.capacidade)||'—'}</td>
+      <td style="font-size:.78rem;color:${st.s==='danger'?'#ff6b7a':st.s==='warn'?'#f39c12':'var(--silver)'}">${fm(e.recarga)}</td>
+      <td style="font-size:.78rem;color:${st.s==='danger'?'#ff6b7a':st.s==='warn'?'#f39c12':'var(--silver)'}">${fm(e.inspecao)}</td>
+      <td>
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${e.carga}%;background:${cargaColor}"></div></div>
+          <span style="font-family:var(--mono);font-size:.75rem;color:var(--silver)">${e.carga}%</span>
+        </div>
+      </td>
+      <td>${badgeSt(e)}</td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap">
+        <button class="btn btn-i sm" onclick="abrirInspModal('${e.id}')">🔍</button>
+        <button class="btn btn-p sm" onclick="editarExt('${e.id}')">✏️</button>
+        <button class="btn btn-d sm" onclick="excluir('${e.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function preencheLocais(){
+  const locais=[...new Set(STATE.extintores.map(e=>e.local).filter(Boolean))].sort();
+  const sel=document.getElementById('fb-lc');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos</option>'+locais.map(l=>`<option${l===cur?' selected':''}>${ex(l)}</option>`).join('');
+}
+
+function limFiltros(){
+  ['fb-q','fb-st','fb-tp','fb-lc'].forEach(id=>{const e=document.getElementById(id);if(e)e.tagName==='INPUT'?e.value='':e.value='';});
+  renderTab();
+}
+
+// ════════════════════════════════════════════════════
+// DETALHE
+// ════════════════════════════════════════════════════
+function verDet(id){
+  const e=STATE.extintores.find(x=>x.id===id);if(!e)return;
+  currentId=id;
+  document.getElementById('d-tit').textContent=`${e.codigo} — ${e.tipo}`;
+  const st=getStatus(e);
+  document.getElementById('d-badges').innerHTML=`${badgeSt(e)}<span class="badge" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)">${ex(e.tipo)}</span>`;
+  const cs=[
+    ['Código',e.codigo],['Tipo',e.tipo],['Capacidade',e.capacidade],['Local',e.local],
+    ['Responsável',e.responsavel],['Fabricação',fm(e.fabricacao)],
+    ['Próx. Recarga',fm(e.recarga)],['Próx. Inspeção',fm(e.inspecao)],
+    ['Carga Atual',e.carga+'%'],['Data Cadastro',fm(e.dataCadastro)],
+    ['Observações',e.obs,1]
+  ];
+  document.getElementById('d-grid').innerHTML=cs.map(([l,v,f])=>`<div class="df${f?' full':''}"><label>${l}</label><p>${ex(v)||'—'}</p></div>`).join('');
+  goTo('detalhe');
+}
+
+// ════════════════════════════════════════════════════
+// CRUD EXTINTORES
+// ════════════════════════════════════════════════════
+function abrirNovo(){limForm();goTo('novo');}
+
+function editarExt(id){
+  const e=STATE.extintores.find(x=>x.id===id);if(!e)return;
+  document.getElementById('eid').value=e.id;
+  sv('f-cod',e.codigo);sv('f-tipo',e.tipo);sv('f-cap',e.capacidade);
+  sv('f-fab',e.fabricacao);sv('f-rec',e.recarga);sv('f-ins',e.inspecao);
+  sv('f-loc',e.local);sv('f-res',e.responsavel);sv('f-carga',e.carga);sv('f-obs',e.obs);
+  document.getElementById('ftit').textContent='Editar Extintor';
+  goTo('novo');
+}
+
+function limForm(){
+  document.getElementById('eid').value='';
+  document.getElementById('ftit').textContent='Novo Extintor';
+  ['f-cod','f-cap','f-fab','f-rec','f-ins','f-loc','f-res','f-obs'].forEach(id=>sv(id,''));
+  sv('f-tipo','');sv('f-carga','100');
+}
+
+async function salvar(){
+  const editId=g('eid');
+  const obj={
+    id:editId||'EXT-'+Date.now(),
+    codigo:v('f-cod'),tipo:v('f-tipo'),capacidade:v('f-cap'),
+    fabricacao:v('f-fab'),recarga:v('f-rec'),inspecao:v('f-ins'),
+    local:v('f-loc'),responsavel:v('f-res'),
+    carga:Number(g('f-carga'))||100,obs:v('f-obs'),
+    dataCadastro:editId?(STATE.extintores.find(x=>x.id===editId)||{}).dataCadastro||hj():hj(),
+    ultAtual:hj()
+  };
+  if(!obj.codigo||!obj.tipo||!obj.local||!obj.recarga||!obj.inspecao){
+    toast('Preencha: código, tipo, local, recarga e inspeção (*)','err');return;
+  }
+  const btn=document.getElementById('btn-salvar');
+  btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    const row=toRowExt(obj);
+    if(editId){
+      if(STATE.mode==='sheets') await req({action:'update',id:editId,row:JSON.stringify(row)});
+      const i=STATE.extintores.findIndex(x=>x.id===editId);
+      if(i>=0)STATE.extintores[i]=obj;
+    }else{
+      if(STATE.mode==='sheets') await req({action:'add',row:JSON.stringify(row)});
+      STATE.extintores.push(obj);
+    }
+    refreshAll();limForm();goTo('lista');
+    toast(editId?'Extintor atualizado ✓':'Extintor cadastrado ✓','ok');
+  }catch(e){toast('Erro ao salvar: '+e.message,'err');}
+  btn.disabled=false;btn.textContent='💾 Salvar';
+}
+
+async function excluir(id,voltar=false){
+  const ext=STATE.extintores.find(x=>x.id===id);
+  const nInsp=STATE.inspecoes.filter(i=>String(i.extId)===String(id)).length;
+  const msg='Excluir o extintor '+(ext?ext.codigo:id)+'?'+(nInsp?'\n\n⚠️ '+nInsp+' inspecão(oes) vinculada(s) também serão excluiías.':'');
+  if(!confirm(msg))return;
+  try{
+    const inspsVinc=STATE.inspecoes.filter(i=>String(i.extId)===String(id));
+    for(const insp of inspsVinc){
+      if(STATE.mode==='sheets') await req({action:'deleteInsp',id:insp.id});
+    }
+    if(STATE.mode==='sheets') await req({action:'delete',id});
+    STATE.extintores=STATE.extintores.filter(e=>e.id!==id);
+    STATE.inspecoes=STATE.inspecoes.filter(i=>String(i.extId)!==String(id));
+    refreshAll();
+    if(voltar)goTo('lista');
+    toast('Extintor'+(inspsVinc.length?' e '+inspsVinc.length+' inspeção(oes)':'')+' removido(s) ✓','ok');
+  }catch(e){toast('Erro ao excluir: '+e.message,'err');}
+}
+
+function toRowExt(e){return[e.id,e.codigo,e.tipo,e.capacidade,e.fabricacao,e.recarga,e.inspecao,e.local,e.responsavel,e.carga,e.obs,e.dataCadastro,e.ultAtual];}
+
+// ════════════════════════════════════════════════════
+// INSPEÇÕES
+// ════════════════════════════════════════════════════
+function abrirInspModal(extId){
+  const e=STATE.extintores.find(x=>x.id===extId);if(!e)return;
+  document.getElementById('insp-ext-id').value=extId;
+  document.getElementById('insp-ext-info').innerHTML=`<b>${ex(e.codigo)}</b> — ${ex(e.tipo)} ${ex(e.capacidade)} &nbsp;|&nbsp; 📍 ${ex(e.local)}`;
+  document.getElementById('insp-inspetor').value='';
+  document.getElementById('insp-obs').value='';
+  const nd=new Date();nd.setFullYear(nd.getFullYear()+1);
+  document.getElementById('insp-proxima').value=nd.toISOString().split('T')[0];
+  document.getElementById('insp-checks').innerHTML=CHECKLIST.map((item,i)=>`
+    <label class="insp-item" id="insp-lbl-${i}">
+      <input type="checkbox" id="chk-${i}" checked onchange="toggleCheckFail(${i})">
+      <span style="font-size:.82rem">${item}</span>
+    </label>`).join('');
+  document.getElementById('modal-insp').classList.add('open');
+}
+
+function toggleCheckFail(i){
+  const lbl=document.getElementById('insp-lbl-'+i);
+  const chk=document.getElementById('chk-'+i);
+  lbl.classList.toggle('fail',!chk.checked);
+}
+
+function closeInspModal(){document.getElementById('modal-insp').classList.remove('open');}
+
+async function salvarInspModal(){
+  const extId=document.getElementById('insp-ext-id').value;
+  const inspetor=document.getElementById('insp-inspetor').value.trim();
+  const obs=document.getElementById('insp-obs').value;
+  const proxInsp=document.getElementById('insp-proxima').value;
+  if(!inspetor){toast('Informe o inspetor','err');return;}
+  const checks=CHECKLIST.map((item,i)=>({item,ok:document.getElementById('chk-'+i).checked}));
+  const falhas=checks.filter(c=>!c.ok).length;
+  const resultado=falhas===0?'Aprovado':`${falhas} falha(s)`;
+  const ext=STATE.extintores.find(x=>x.id===extId);
+  const insp={
+    id:'INSP-'+Date.now(),extId,extCodigo:ext?.codigo||'',
+    local:ext?.local||'',inspetor,
+    dataHora:new Date().toLocaleString('pt-BR'),
+    falhas,resultado,items:checks.map(c=>(c.ok?'✓':'✗')+c.item).join(';'),
+    obs,proxInspecao:proxInsp
+  };
+  const btn=document.getElementById('btn-insp-salvar');
+  btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    if(STATE.mode==='sheets') await req({action:'addInsp',row:JSON.stringify(toRowInsp(insp))});
+    STATE.inspecoes.unshift(insp);
+    // atualiza proxima inspecao no extintor
+    if(ext&&proxInsp){
+      ext.inspecao=proxInsp;ext.ultAtual=hj();
+      if(STATE.mode==='sheets') await req({action:'update',id:extId,row:JSON.stringify(toRowExt(ext))});
+    }
+    refreshAll();closeInspModal();
+    toast(`Inspeção registrada — ${resultado}`+(!falhas?' ✓':''),'ok');
+  }catch(e){toast('Erro ao salvar inspeção','err');}
+  btn.disabled=false;btn.textContent='✅ Registrar';
+}
+
+function toRowInsp(i){return[i.id,i.extId,i.extCodigo,i.local,i.inspetor,i.dataHora,i.falhas,i.resultado,i.items,i.obs,i.proxInspecao];}
+
+function renderInsp(){
+  const q=(document.getElementById('fi-q')?.value||'').toLowerCase();
+  const fr=document.getElementById('fi-res')?.value||'';
+  let list=STATE.inspecoes;
+  if(fr==='ok')list=list.filter(i=>i.falhas===0||i.resultado==='Aprovado');
+  if(fr==='fail')list=list.filter(i=>i.falhas>0&&i.resultado!=='Aprovado');
+  if(q)list=list.filter(i=>Object.values(i).join(' ').toLowerCase().includes(q));
+  const tb=document.getElementById('tb-insp');
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--silver);opacity:.5">Nenhuma inspeção registrada.</td></tr>';return;}
+  tb.innerHTML=list.map(i=>{
+    const ok=i.falhas===0;
+    const badge=ok
+      ?'<span class="badge b-ok">Aprovado</span>'
+      :`<span class="badge b-danger">${i.falhas} falha(s)</span>`;
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:.77rem;color:var(--silver)">${ex(i.dataHora)}</td>
+      <td><b>${ex(i.extCodigo)}</b></td>
+      <td style="font-size:.8rem">${ex(i.local)}</td>
+      <td>${ex(i.inspetor)}</td>
+      <td style="font-family:var(--mono);color:${ok?'var(--ok)':'var(--danger)'}">${i.falhas}</td>
+      <td>${badge}</td>
+      <td style="font-size:.78rem;color:var(--silver);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${ex(i.obs)}">${ex(i.obs)||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════
+function goTo(p){
+  document.querySelectorAll('.pg').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');
+  const n=document.getElementById('nav-'+p);if(n)n.classList.add('on');
+}
+
+// ════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════
+function hj(){return new Date().toISOString().split('T')[0];}
+function fm(d){if(!d||d==='–')return'—';try{const s=String(d);if(s.includes('/'))return s;const[y,m,dy]=s.split('-');return`${dy}/${m}/${y}`;}catch(e){return d||'—';}}
+function ex(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''}
+function v(id){return(document.getElementById(id)?.value||'').trim();}
+function g(id){return document.getElementById(id)?.value||'';}
+function sv(id,val){const e=document.getElementById(id);if(!e)return;e.value=val||'';}
+
+// ════════════════════════════════════════════════════
+// DEMO DATA
+// ════════════════════════════════════════════════════
+function loadDemoData(){
+  const d=(days)=>{const x=new Date();x.setDate(x.getDate()+days);return x.toISOString().split('T')[0];};
+  STATE.extintores=[
+    {id:'EXT-001',codigo:'EXT-001',tipo:'ABC',capacidade:'6 kg',fabricacao:'2020-03-15',recarga:d(90),inspecao:d(30),local:'Recepção',responsavel:'Carlos Silva',carga:100,obs:'',dataCadastro:'2024-01-10',ultAtual:'2024-01-10'},
+    {id:'EXT-002',codigo:'EXT-002',tipo:'CO2',capacidade:'4 kg',fabricacao:'2019-06-20',recarga:d(-5),inspecao:d(-5),local:'Sala de Servidores',responsavel:'Ana Souza',carga:80,obs:'Verificar pressão',dataCadastro:'2024-01-10',ultAtual:'2024-01-10'},
+    {id:'EXT-003',codigo:'EXT-003',tipo:'Água',capacidade:'10 L',fabricacao:'2021-01-10',recarga:d(25),inspecao:d(25),local:'Cozinha',responsavel:'Pedro Lima',carga:90,obs:'',dataCadastro:'2024-01-10',ultAtual:'2024-01-10'},
+    {id:'EXT-004',codigo:'EXT-004',tipo:'ABC',capacidade:'6 kg',fabricacao:'2020-08-05',recarga:d(180),inspecao:d(60),local:'Depósito',responsavel:'Carlos Silva',carga:100,obs:'',dataCadastro:'2024-01-10',ultAtual:'2024-01-10'},
+    {id:'EXT-005',codigo:'EXT-005',tipo:'Pó',capacidade:'12 kg',fabricacao:'2018-11-22',recarga:d(-30),inspecao:d(-30),local:'Garagem',responsavel:'Marcos Oliveira',carga:65,obs:'Necessita recarga urgente',dataCadastro:'2024-01-10',ultAtual:'2024-01-10'},
+    {id:'EXT-006',codigo:'EXT-006',tipo:'ABC',capacidade:'6 kg',fabricacao:'2022-04-01',recarga:d(200),inspecao:d(90),local:'Corredor 2º Andar',responsavel:'Ana Souza',carga:100,obs:'',dataCadastro:'2024-01-10',ultAtual:'2024-01-10'},
+  ];
+}
+
+// ════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${type} show`;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
