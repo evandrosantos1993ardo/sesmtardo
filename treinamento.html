@@ -680,14 +680,41 @@ window.onload = () => {
 
 function today() { return new Date().toISOString().split('T')[0]; }
 function uid()   { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+// Converte qualquer formato de data para YYYY-MM-DD
+function normDate(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  if (!s || s === 'undefined') return '';
+  // Já é YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // DD/MM/YYYY
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+    const [dd,mm,yyyy] = s.split('/');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  // ISO timestamp ou qualquer outro formato (ex: "12T03:00:00.000Z/03/2026" vindo do Sheets)
+  // Tenta extrair só a data pelo objeto Date
+  try {
+    const dt = new Date(s);
+    if (!isNaN(dt.getTime())) {
+      return dt.toISOString().split('T')[0];
+    }
+  } catch(e) {}
+  return '';
+}
 function fmtD(d) {
-  if (!d) return '—';
-  const p = String(d).split('-');
-  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+  const n = normDate(d);
+  if (!n) return '—';
+  const [yyyy, mm, dd] = n.split('-');
+  return `${dd}/${mm}/${yyyy}`;
 }
 function calcStatus(d) {
-  if (!d) return 'Vencido';
-  const diff = Math.floor((new Date(d) - new Date()) / 86400000);
+  const n = normDate(d);
+  if (!n) return 'Vencido';
+  // Compara só por data, sem fuso horário
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const venc = new Date(n + 'T00:00:00');
+  const diff = Math.floor((venc - hoje) / 86400000);
   if (diff < 0) return 'Vencido';
   if (diff <= 30) return 'Vencendo';
   return 'Válido';
@@ -737,9 +764,9 @@ async function syncData() {
     if (r1.ok && r1.data.length > 1)
       S.colabs = r1.data.slice(1).map(r=>({id:r[0],nome:r[1],matricula:r[2],cargo:r[3],setor:r[4],funcao:r[5],tipo:r[6],telefone:r[7],admissao:r[8],status:r[9]}));
     if (r2.ok && r2.data.length > 1)
-      S.treins = r2.data.slice(1).map(r=>({id:r[0],nomeColab:r[1],matricula:r[2],treinamento:r[3],tipo:r[4],dataReal:r[5],validade:r[6],dataVenc:r[7],status:r[8],instrutor:r[9],obs:r[10]}));
+      S.treins = r2.data.slice(1).map(r=>({id:r[0],nomeColab:r[1],matricula:r[2],treinamento:r[3],tipo:r[4],dataReal:normDate(r[5]),validade:r[6],dataVenc:normDate(r[7]),status:r[8],instrutor:r[9],obs:r[10]}));
     if (r3.ok && r3.data.length > 1)
-      S.cnhs = r3.data.slice(1).map(r=>({id:r[0],nomeMotorista:r[1],matricula:r[2],categoria:r[3],numeroCNH:r[4],validadeCNH:r[5],dataToxico:r[6],vencToxico:r[7],statusCNH:r[8],statusToxico:r[9]}));
+      S.cnhs = r3.data.slice(1).map(r=>({id:r[0],nomeMotorista:r[1],matricula:r[2],categoria:r[3],numeroCNH:r[4],validadeCNH:normDate(r[5]),dataToxico:normDate(r[6]),vencToxico:normDate(r[7]),statusCNH:r[8],statusToxico:r[9]}));
     recalc();
     refreshAll();
     addLog('SYNC', `Sincronizado — ${S.colabs.length} colaboradores · ${S.treins.length} treinamentos · ${S.cnhs.length} CNH`);
