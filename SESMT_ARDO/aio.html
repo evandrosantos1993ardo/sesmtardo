@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIO – Investigação de Ocorrência · SESMT</title>
+<link rel="stylesheet" href="sesmt-theme.css">
+<style>
+.page-wrap { position: relative; z-index: 10; padding: 24px 20px 60px; max-width: 860px; margin: 0 auto; }
+.s-card .content { padding: 28px 30px 30px; }
+.step { display: none; }
+.step.active { display: block; }
+.preview-actions { text-align: center; padding: 18px 0 8px; }
+
+/* ── UNIVERSAL SIDEBAR ── */
+.s-sidebar {
+  width: 240px; flex-shrink: 0;
+  background: rgba(13,18,53,0.78);
+  backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(204,26,42,.2);
+  display: flex; flex-direction: column;
+  padding: 0 0 24px 0;
+  position: relative; z-index: 20;
+}
+.s-sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 12px;
+}
+.s-logo-mark {
+  width: 36px; height: 36px; background: #cc1a2a; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Bebas Neue", sans-serif; font-size: 18px; flex-shrink: 0; color: white;
+}
+.s-logo-text {
+  font-family: "Barlow Condensed", sans-serif; font-size: 1.05rem;
+  font-weight: 700; letter-spacing: .06em; line-height: 1.1; color: white;
+}
+.s-logo-sub {
+  font-size: .66rem; color: rgba(200,205,216,.4);
+  letter-spacing: .1em; text-transform: uppercase; font-family: "Barlow Condensed", sans-serif;
+}
+.s-sidebar-section {
+  padding: 16px 16px 4px;
+  font-family: "Barlow Condensed", sans-serif; font-size: .62rem;
+  letter-spacing: .2em; text-transform: uppercase; color: rgba(200,205,216,.28);
+}
+.s-menu { padding: 0 10px; display: flex; flex-direction: column; gap: 1px; flex: 1; overflow-y: auto; }
+.s-menu a {
+  text-decoration: none; color: rgba(200,205,216,.6);
+  padding: 8px 10px; border-radius: 8px; font-size: .82rem; font-weight: 500;
+  transition: all .18s; display: flex; align-items: center; gap: 9px;
+  font-family: "Barlow", sans-serif; white-space: nowrap;
+  border-left: 2px solid transparent; margin-left: 0;
+}
+.s-menu a:hover { background: rgba(255,255,255,.07); color: white; padding-left: 14px; }
+.s-menu a.s-active {
+  background: rgba(204,26,42,.18); color: white;
+  border-left-color: #cc1a2a; padding-left: 14px;
+}
+.s-menu a[href="#"] { opacity: .38; cursor: default; pointer-events: none; }
+.s-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+.s-sidebar-footer {
+  margin-top: auto; padding: 14px 18px 0;
+  border-top: 1px solid rgba(255,255,255,.06);
+  font-family: "Barlow Condensed", sans-serif; font-size: .63rem;
+  letter-spacing: .1em; text-transform: uppercase; color: rgba(200,205,216,.18);
+}
+/* Layout wrapper */
+.s-layout { display: flex; min-height: calc(100vh - 0px); position: relative; z-index: 10; }
+.s-content-wrap { flex: 1; display: flex; flex-direction: column; overflow: auto; min-width: 0; }
+/* Mobile toggle */
+.s-menu-toggle {
+  display: none; position: fixed; bottom: 22px; right: 22px; z-index: 9999;
+  width: 46px; height: 46px; background: #cc1a2a; border: none; border-radius: 50%;
+  color: white; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 18px rgba(204,26,42,.5);
+  align-items: center; justify-content: center;
+}
+@media (max-width: 960px) {
+  .s-sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); transition: transform .28s cubic-bezier(.22,1,.36,1); z-index: 500; }
+  .s-sidebar.s-open { transform: translateX(0); box-shadow: 8px 0 40px rgba(0,0,0,.6); }
+  .s-menu-toggle { display: flex; }
+}
+
+</style>
+</head>
+<body>
+<div class="s-bg-layer"></div>
+<div class="s-bg-grid"></div>
+<div class="s-bg-stripe"></div>
+<div class="s-accent-bar"></div>
+
+<!-- POPUP -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box" id="popupBox">
+    <div class="popup-icon" id="popupIcon">✅</div>
+    <div class="popup-title" id="popupTitle">Dados Enviados!</div>
+    <div class="popup-msg" id="popupMsg">Os dados foram registrados com sucesso no Google Drive.</div>
+    <button class="popup-btn" id="popupBtn" onclick="fecharPopup()">OK, entendido</button>
+  </div>
+</div>
+
+<div class="s-layout">
+<aside class="s-sidebar" id="sSidebar">
+  <div class="s-sidebar-logo">
+    <div class="s-logo-mark">T</div>
+    <div>
+      <div class="s-logo-text">SESMT</div>
+      <div class="s-logo-sub">Transportes Ardo</div>
+    </div>
+  </div>
+  <div class="s-sidebar-section">Módulos</div>
+  <nav class="s-menu">
+    <a href="index.html" data-page="index"><span class="s-icon">🏠</span> Dashboard</a>
+    <a href="#" data-page="#"><span class="s-icon">🔍</span> Inspeções</a>
+    <a href="integracao.html" data-page="integracao"><span class="s-icon">👷</span> Integração</a>
+    <a href="#" data-page="#"><span class="s-icon">📋</span> DDS</a>
+    <a href="aio.html" data-page="aio"><span class="s-icon">⚠️</span> Investigação</a>
+    <a href="orientacao.html" data-page="orientacao"><span class="s-icon">🤝</span> Orientação</a>
+    <a href="controleepi.html" data-page="controleepi"><span class="s-icon">🦺</span> EPI</a>
+    <a href="pgr.html" data-page="pgr"><span class="s-icon">📊</span> PGR</a>
+    <a href="atividadesdiarias.html" data-page="atividadesdiarias"><span class="s-icon">📝</span> Ativ. Diárias</a>
+    <a href="extintores.html" data-page="extintores"><span class="s-icon">🔥</span> Extintores</a>
+    <a href="#" data-page="#"><span class="s-icon">👥</span> CIPA</a>
+    <a href="treinamento.html" data-page="treinamento"><span class="s-icon">🎓</span> Treinamentos</a>
+    <a href="#" data-page="#"><span class="s-icon">📣</span> Campanhas</a>
+    <a href="#" data-page="#"><span class="s-icon">⛑</span> Primeiro Socorros</a>
+  </nav>
+  <div class="s-sidebar-footer">Uso Interno Exclusivo</div>
+</aside>
+<div class="s-content-wrap">
+<div class="s-topbar">
+  <a href="index.html" class="s-nav-btn">← Dashboard</a>
+  <span class="s-topbar-brand">SESMT · Transportes Ardo</span>
+  <div class="s-topbar-title" style="margin-left:auto;">AIO – Investigação de Ocorrência</div>
+
+</div>
+
+<div class="page-wrap">
+  <div class="s-card">
+    <div class="s-card-header">
+      <div>
+        <h1>⚠️ AIO – Aviso de Investigação de Ocorrência</h1>
+        <p>Acidente / Incidente · TransArdo</p>
+      </div>
+    </div>
+    <div class="content">
+
+        <!-- STEP 1: FORMULÁRIO -->
+        <div class="step active" id="step1">
+
+            <h2 class="s-section-title">🔍 Dados da Ocorrência</h2>
+
+            <div class="info-box">
+                <strong>Finalidade:</strong> A investigação de incidentes/acidentes busca identificar causas, aprender com o ocorrido e implementar medidas preventivas. O foco é <strong>proteger vidas e melhorar processos</strong>, não punir ou encontrar culpados.
+            </div>
+
+            <!-- SETOR + TIPO -->
+            <div class="form-row form-row-2">
+                <div class="form-group" id="fg-setor">
+                    <label>Setor *</label>
+                    <select id="setor">
+                        <option value="">— Selecione o Setor —</option>
+                        <option value="Suínos">Suínos</option>
+                        <option value="Slider">Slider</option>
+                        <option value="BI-Trem">BI-Trem</option>
+                        <option value="Ração">Ração</option>
+                        <option value="Matriz">Matriz</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-tipoOcorrencia">
+                    <label>Tipo de Ocorrência *</label>
+                    <select id="tipoOcorrencia">
+                        <option value="">— Selecione o Tipo —</option>
+                        <option value="Acidente">Acidente</option>
+                        <option value="Danos Materiais">Danos Materiais</option>
+                        <option value="Incidente">Incidente</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+            </div>
+
+            <!-- DADOS DO ENVOLVIDO -->
+            <div class="s-section-divider">👤 DADOS DO ENVOLVIDO</div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group" id="fg-nome">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="nome" placeholder="Nome do envolvido">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-cpf">
+                    <label>CPF *</label>
+                    <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label>Função / Cargo</label>
+                    <input type="text" id="funcao" placeholder="Ex: Motorista, Auxiliar...">
+                </div>
+                <div class="form-group">
+                    <label>Nº CNH</label>
+                    <input type="text" id="cnh" placeholder="Número da CNH">
+                </div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label>Contato (Telefone)</label>
+                    <input type="text" id="contato" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="form-group">
+                    <label>Testemunha</label>
+                    <input type="text" id="testemunha" placeholder="Nome da testemunha">
+                </div>
+            </div>
+
+            <!-- LOCAL E VEÍCULO -->
+            <div class="s-section-divider">📍 LOCAL E VEÍCULO</div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group" id="fg-local">
+                    <label>Local da Ocorrência *</label>
+                    <input type="text" id="local" placeholder="Cidade, rodovia, endereço...">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+                <div class="form-group" id="fg-dataHora">
+                    <label>Data e Hora *</label>
+                    <input type="datetime-local" id="dataHora">
+                    <span class="alert-required">Campo obrigatório</span>
+                </div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label>Veículo / Frota</label>
+                    <input type="text" id="veiculo" placeholder="Ex: Frota 045, Caminhão...">
+                </div>
+                <div class="form-group">
+                    <label>Placa</label>
+                    <input type="text" id="placa" placeholder="AAA-0000">
+                </div>
+            </div>
+
+            <!-- DESCRIÇÕES -->
+            <div class="s-section-divider">📝 DESCRIÇÃO DA OCORRÊNCIA</div>
+
+            <div class="form-group" id="fg-atividade">
+                <label>Descreva a atividade ou tarefa realizada no momento da ocorrência *</label>
+                <textarea id="atividade" rows="3" placeholder="Descreva o que estava sendo feito no momento..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group" id="fg-descricaoOcorrencia">
+                <label>Descreva como a ocorrência (incidente/acidente) ocorreu *</label>
+                <textarea id="descricaoOcorrencia" rows="4" placeholder="Descreva o passo a passo do que aconteceu..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <!-- CONSEQUÊNCIAS -->
+            <div class="s-section-divider">⚠️ CONSEQUÊNCIAS</div>
+
+            <div class="form-row form-row-3">
+                <div class="radio-group">
+                    <span class="radio-label">Houve lesões?</span>
+                    <div class="radio-options">
+                        <label><input type="radio" name="lesoes" value="Sim"> Sim</label>
+                        <label><input type="radio" name="lesoes" value="Não" checked> Não</label>
+                    </div>
+                </div>
+                <div class="radio-group">
+                    <span class="radio-label">Houve necessidade de atendimento médico?</span>
+                    <div class="radio-options">
+                        <label><input type="radio" name="atendimento" value="Sim"> Sim</label>
+                        <label><input type="radio" name="atendimento" value="Não" checked> Não</label>
+                    </div>
+                </div>
+                <div class="radio-group">
+                    <span class="radio-label">Houve danos materiais?</span>
+                    <div class="radio-options">
+                        <label><input type="radio" name="danos" value="Sim"> Sim</label>
+                        <label><input type="radio" name="danos" value="Não" checked> Não</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANÁLISE -->
+            <div class="s-section-divider">🔎 ANÁLISE DO ENVOLVIDO</div>
+
+            <div class="form-group" id="fg-fatores">
+                <label>Na sua opinião, quais fatores contribuíram para a ocorrência do acidente / incidente? *</label>
+                <textarea id="fatores" rows="4" placeholder="Descreva os fatores que, na sua visão, contribuíram..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group" id="fg-recomendacoes">
+                <label>Quais recomendações você faria para evitar um novo acidente / incidente? *</label>
+                <textarea id="recomendacoes" rows="4" placeholder="Liste suas recomendações preventivas..."></textarea>
+                <span class="alert-required">Campo obrigatório</span>
+            </div>
+
+            <div class="form-group">
+                <label>Observações necessárias</label>
+                <textarea id="observacoes" rows="3" placeholder="Outras informações relevantes..."></textarea>
+            </div>
+
+            <div class="navigation">
+                <div></div>
+                <div class="navigation-right">
+                    <button class="btn btn-success" id="btnEnviar" onclick="enviarDados()">📤 Enviar Dados</button>
+                    <button class="btn" onclick="gerarDocumento()">Gerar AIO →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: PREVIEW -->
+        <div class="step" id="step2">
+            <div class="preview-actions no-print">
+                <button class="btn btn-secondary" onclick="mostrarStep(1)">← Editar Dados</button>
+                <button class="btn btn-danger" onclick="gerarPDF()">⬇ Baixar PDF</button>
+                <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+
+            <div id="documentoConteudo"></div>
+
+            <div class="preview-actions no-print" style="padding-bottom:20px;">
+                <button class="btn btn-secondary" onclick="mostrarStep(1)">← Editar Dados</button>
+                <button class="btn btn-danger" onclick="gerarPDF()">⬇ Baixar PDF</button>
+                <button class="btn" onclick="window.print()">🖨 Imprimir</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+  </div>
+</div>
+
+<script>
+    // =============================================
+    // CONFIGURAÇÃO – cole aqui a URL do seu Apps Script
+    // Veja as instruções abaixo de como obter essa URL
+    // =============================================
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytyZf9DpAJzC0TDFiVt7vkYjgpqBNzZ9rabQ9MatHOPrLwir0760orttmNYw7Mz1_s-Q/exec';
+    // =============================================
+
+    function mostrarStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function e(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function validar(id) {
+        const el = document.getElementById(id);
+        const fg = document.getElementById('fg-' + id);
+        if (!el || !fg) return true;
+        if (!el.value.trim()) { fg.classList.add('error'); return false; }
+        fg.classList.remove('error');
+        return true;
+    }
+
+    function radioVal(name) {
+        const sel = document.querySelector(`input[name="${name}"]:checked`);
+        return sel ? sel.value : '—';
+    }
+
+    function checkBox(val, opcao) {
+        const marcado = val === opcao;
+        return `<span class="doc-sim-nao"><span class="check ${marcado ? 'marcado' : ''}">${marcado ? '✓' : ''}</span> ${opcao}</span>`;
+    }
+
+    function formatarDataHora(str) {
+        if (!str) return '—';
+        const d = new Date(str);
+        return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function dataAtual() {
+        return new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function logoPDF() {
+        return `<img src="imagem/LogoArdo70anos.png" alt="Logo TransArdo" style="width:55mm;height:auto;" onerror="this.style.display='none'">`;
+    }
+
+    function coletarDados() {
+        return {
+            setor:              document.getElementById('setor').value,
+            tipoOcorrencia:     document.getElementById('tipoOcorrencia').value,
+            nome:               document.getElementById('nome').value.trim(),
+            cpf:                document.getElementById('cpf').value.trim(),
+            funcao:             document.getElementById('funcao').value.trim() || '—',
+            cnh:                document.getElementById('cnh').value.trim() || '—',
+            contato:            document.getElementById('contato').value.trim() || '—',
+            testemunha:         document.getElementById('testemunha').value.trim() || '—',
+            local:              document.getElementById('local').value.trim(),
+            dataHora:           formatarDataHora(document.getElementById('dataHora').value),
+            veiculo:            document.getElementById('veiculo').value.trim() || '—',
+            placa:              document.getElementById('placa').value.trim() || '—',
+            atividade:          document.getElementById('atividade').value.trim(),
+            descOcorrencia:     document.getElementById('descricaoOcorrencia').value.trim(),
+            lesoes:             radioVal('lesoes'),
+            atendimento:        radioVal('atendimento'),
+            danos:              radioVal('danos'),
+            fatores:            document.getElementById('fatores').value.trim(),
+            recomendacoes:      document.getElementById('recomendacoes').value.trim(),
+            observacoes:        document.getElementById('observacoes').value.trim() || '—',
+            dataEnvio:          new Date().toLocaleString('pt-BR')
+        };
+    }
+
+    function mostrarPopup(sucesso, msg) {
+        const overlay = document.getElementById('popupOverlay');
+        const box = document.getElementById('popupBox');
+        const icon = document.getElementById('popupIcon');
+        const title = document.getElementById('popupTitle');
+        const msgEl = document.getElementById('popupMsg');
+
+        if (sucesso) {
+            box.className = 'popup-box';
+            icon.textContent = '✅';
+            title.textContent = 'Dados Enviados!';
+            msgEl.textContent = msg || 'Os dados foram registrados com sucesso no Google Drive. Você pode continuar e gerar o AIO normalmente.';
+        } else {
+            box.className = 'popup-box error';
+            icon.textContent = '❌';
+            title.textContent = 'Erro ao Enviar';
+            msgEl.textContent = msg || 'Não foi possível enviar os dados. Verifique a conexão e tente novamente.';
+        }
+
+        overlay.classList.add('show');
+    }
+
+    function fecharPopup() {
+        document.getElementById('popupOverlay').classList.remove('show');
+    }
+
+    async function enviarDados() {
+        // Validar campos obrigatórios antes de enviar
+        const obrigatorios = ['setor','tipoOcorrencia','nome','cpf','local','dataHora','atividade','descricaoOcorrencia','fatores','recomendacoes'];
+        let valido = true;
+        obrigatorios.forEach(id => { if (!validar(id)) valido = false; });
+        if (!valido) {
+            const err = document.querySelector('.form-group.error input, .form-group.error textarea, .form-group.error select');
+            if (err) err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT') {
+            mostrarPopup(false, '⚠️ URL do Apps Script não configurada. Siga as instruções no comentário do código para configurar o envio ao Google Drive.');
+            return;
+        }
+
+        const btn = document.getElementById('btnEnviar');
+        btn.disabled = true;
+        btn.textContent = '⏳ Enviando...';
+
+        try {
+            const dados = coletarDados();
+            const params = new URLSearchParams(dados);
+
+            // Usa fetch com no-cors para enviar ao Apps Script
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            });
+
+            // Com no-cors não conseguimos ler a resposta, mas se não lançou erro, chegou
+            mostrarPopup(true, `✅ Dados de "${dados.nome}" enviados com sucesso! Registrado em: ${dados.dataEnvio}. Você pode continuar e gerar o AIO normalmente.`);
+
+        } catch (err) {
+            mostrarPopup(false, 'Erro na conexão: ' + err.message + '. Verifique sua internet e tente novamente.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '📤 Enviar Dados';
+        }
+    }
+
+    function gerarDocumento() {
+        const obrigatorios = ['setor','tipoOcorrencia','nome','cpf','local','dataHora','atividade','descricaoOcorrencia','fatores','recomendacoes'];
+        let valido = true;
+        obrigatorios.forEach(id => { if (!validar(id)) valido = false; });
+        if (!valido) {
+            const err = document.querySelector('.form-group.error input, .form-group.error textarea, .form-group.error select');
+            if (err) err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        const d = coletarDados();
+
+        const html = `
+        <div class="documento">
+
+            <div class="doc-top no-split">
+                <div class="doc-top-logo">${logoPDF()}</div>
+                <div class="doc-top-title">
+                    <h2>AVISO DE INVESTIGAÇÃO DE OCORRÊNCIA</h2>
+                    <p>Informações relacionadas à ocorrência (Acidente / Incidente)</p>
+                </div>
+                <div class="doc-top-code">
+                    AIO – V1<br>
+                    <span style="color:#c94b4b;">Confidencial</span>
+                </div>
+            </div>
+
+            <div style="border:1px solid #dde2ea; border-left:3px solid #2a5298; padding:5px 8px; margin-bottom:8px; font-size:8pt; color:#555; font-style:italic;" class="no-split">
+                A investigação de incidentes/acidentes busca identificar causas, aprender com o ocorrido e implementar medidas preventivas. O foco é <strong>proteger vidas e melhorar processos</strong>, não punir ou encontrar culpados.
+            </div>
+
+            <!-- SETOR E TIPO -->
+            <div class="doc-section-header">IDENTIFICAÇÃO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:18%">Setor:</td>
+                    <td class="val" style="width:32%">${e(d.setor)}</td>
+                    <td class="lbl" style="width:20%">Tipo de Ocorrência:</td>
+                    <td class="val">${e(d.tipoOcorrencia)}</td>
+                </tr>
+            </table>
+
+            <div class="doc-section-header">DADOS DO ENVOLVIDO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:18%">Nome:</td>
+                    <td class="val" style="width:40%">${e(d.nome.toUpperCase())}</td>
+                    <td class="lbl" style="width:12%">CPF:</td>
+                    <td class="val">${e(d.cpf)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Função:</td>
+                    <td class="val">${e(d.funcao)}</td>
+                    <td class="lbl">CNH:</td>
+                    <td class="val">${e(d.cnh)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Contato:</td>
+                    <td class="val">${e(d.contato)}</td>
+                    <td class="lbl">Testemunha:</td>
+                    <td class="val">${e(d.testemunha)}</td>
+                </tr>
+            </table>
+
+            <div class="doc-section-header">LOCAL E VEÍCULO</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:18%">Local:</td>
+                    <td class="val" style="width:40%">${e(d.local)}</td>
+                    <td class="lbl" style="width:15%">Data / Hora:</td>
+                    <td class="val">${e(d.dataHora)}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Veículo Frota:</td>
+                    <td class="val">${e(d.veiculo)}</td>
+                    <td class="lbl">Placa:</td>
+                    <td class="val">${e(d.placa)}</td>
+                </tr>
+            </table>
+
+            <div class="doc-section-header">DESCRIÇÃO DA OCORRÊNCIA</div>
+            <table class="doc-table no-split">
+                <tr><td class="lbl" colspan="2" style="padding-bottom:3px;">Descreva a atividade ou tarefa realizada no momento da ocorrência:</td></tr>
+                <tr class="doc-textarea-row"><td colspan="2" style="min-height:16mm;">${e(d.atividade)}</td></tr>
+            </table>
+            <table class="doc-table no-split" style="margin-top:4px;">
+                <tr><td class="lbl" colspan="2" style="padding-bottom:3px;">Descreva como a ocorrência (incidente/acidente) ocorreu:</td></tr>
+                <tr class="doc-textarea-row"><td colspan="2" style="min-height:20mm;">${e(d.descOcorrencia)}</td></tr>
+            </table>
+
+            <div class="doc-section-header">CONSEQUÊNCIAS</div>
+            <table class="doc-table no-split">
+                <tr>
+                    <td class="lbl" style="width:30%"><strong>Houve lesões?</strong></td>
+                    <td style="width:20%">${checkBox(d.lesoes,'Sim')} ${checkBox(d.lesoes,'Não')}</td>
+                    <td class="lbl" style="width:30%"><strong>Houve necessidade de atendimento médico?</strong></td>
+                    <td style="width:20%">${checkBox(d.atendimento,'Sim')} ${checkBox(d.atendimento,'Não')}</td>
+                </tr>
+                <tr>
+                    <td class="lbl"><strong>Houve danos materiais?</strong></td>
+                    <td colspan="3">${checkBox(d.danos,'Sim')} ${checkBox(d.danos,'Não')}</td>
+                </tr>
+            </table>
+
+            <div class="doc-section-header">ANÁLISE DO ENVOLVIDO</div>
+            <table class="doc-table no-split">
+                <tr><td class="lbl" style="padding-bottom:3px;">Na sua opinião, quais fatores contribuíram para a ocorrência do acidente / incidente?</td></tr>
+                <tr class="doc-textarea-row"><td style="min-height:18mm;">${e(d.fatores)}</td></tr>
+            </table>
+            <table class="doc-table no-split" style="margin-top:4px;">
+                <tr><td class="lbl" style="padding-bottom:3px;">Quais recomendações você faria para evitar um novo acidente / incidente?</td></tr>
+                <tr class="doc-textarea-row"><td style="min-height:18mm;">${e(d.recomendacoes)}</td></tr>
+            </table>
+            <table class="doc-table no-split" style="margin-top:4px;">
+                <tr><td class="lbl" style="padding-bottom:3px;">Observações necessárias:</td></tr>
+                <tr class="doc-textarea-row"><td style="min-height:14mm;">${e(d.observacoes)}</td></tr>
+            </table>
+
+            <div class="doc-declaracao no-split">
+                Declaro que as informações aqui descritas são verdadeiras e que assumo inteira responsabilidade pelas mesmas.
+            </div>
+
+            <div style="margin-top:12px; font-size:9pt; text-align:right;" class="no-split">
+                <strong>Data:</strong> Carambeí, ${dataAtual()}
+            </div>
+
+            <div class="doc-assinaturas no-split">
+                <div class="doc-assinatura-box">
+                    <div style="height:25px;"></div>
+                    <div class="doc-assinatura-linha">________________________________</div>
+                    <strong>${e(d.nome.toUpperCase())}</strong><br>
+                    ${e(d.funcao !== '—' ? d.funcao : 'Envolvido')}
+                </div>
+                <div class="doc-assinatura-box">
+                    <div style="height:25px;"></div>
+                    <div class="doc-assinatura-linha">________________________________</div>
+                    <strong>Evandro dos Santos</strong><br>
+                    Tec. Segurança do Trabalho
+                </div>
+            </div>
+
+            <div class="doc-rodape">
+                AIO – Aviso de Investigação de Ocorrência | TransArdo Logística | Emitido em: ${dataAtual()}
+            </div>
+
+        </div>`;
+
+        document.getElementById('documentoConteudo').innerHTML = html;
+        mostrarStep(2);
+    }
+
+    function gerarPDF() {
+        const nome = document.getElementById('nome').value.trim().toLowerCase().replace(/\s+/g, '-');
+        const elemento = document.getElementById('documentoConteudo');
+        html2pdf().set({
+            margin: [10, 10, 10, 10],
+            filename: `aio-ocorrencia-${nome}.pdf`,
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 1.5, useCORS: true, scrollX: 0, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css'], avoid: '.no-split' }
+        }).from(elemento).save();
+    }
+
+    // Máscara CPF
+    document.getElementById('cpf').addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '').substring(0, 11);
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        this.value = v;
+    });
+
+    // Fechar popup clicando fora
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) fecharPopup();
+    });
+</script>
+
+<!--
+╔══════════════════════════════════════════════════════════════╗
+║         INSTRUÇÕES PARA CONFIGURAR O ENVIO AO GOOGLE        ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  1. Abra o Google Drive e crie uma planilha nova             ║
+║     (Google Sheets) com o nome "AIO – Ocorrências"          ║
+║                                                              ║
+║  2. Na planilha, vá em: Extensões > Apps Script             ║
+║                                                              ║
+║  3. Apague o código existente e cole este código:            ║
+║                                                              ║
+║  function doPost(e) {                                        ║
+║    var sheet = SpreadsheetApp                                ║
+║      .getActiveSpreadsheet().getActiveSheet();               ║
+║    var p = e.parameter;                                      ║
+║    if (sheet.getLastRow() === 0) {                           ║
+║      sheet.appendRow([                                       ║
+║        'Data Envio','Setor','Tipo Ocorrência','Nome','CPF',  ║
+║        'Função','CNH','Contato','Testemunha','Local',        ║
+║        'Data/Hora','Veículo','Placa','Atividade',            ║
+║        'Descrição','Lesões','Atendimento','Danos Materiais', ║
+║        'Fatores','Recomendações','Observações'               ║
+║      ]);                                                     ║
+║    }                                                         ║
+║    sheet.appendRow([                                         ║
+║      p.dataEnvio, p.setor, p.tipoOcorrencia, p.nome,        ║
+║      p.cpf, p.funcao, p.cnh, p.contato, p.testemunha,       ║
+║      p.local, p.dataHora, p.veiculo, p.placa,               ║
+║      p.atividade, p.descOcorrencia, p.lesoes,               ║
+║      p.atendimento, p.danos, p.fatores,                      ║
+║      p.recomendacoes, p.observacoes                          ║
+║    ]);                                                       ║
+║    return ContentService                                     ║
+║      .createTextOutput(JSON.stringify({status:'ok'}))        ║
+║      .setMimeType(ContentService.MimeType.JSON);             ║
+║  }                                                           ║
+║                                                              ║
+║  4. Clique em "Implantar" > "Nova implantação"               ║
+║     - Tipo: "Aplicativo da Web"                              ║
+║     - Executar como: Eu (sua conta)                         ║
+║     - Quem tem acesso: Qualquer pessoa                       ║
+║     - Clique em "Implantar" e copie a URL gerada             ║
+║                                                              ║
+║  5. Cole a URL na variável APPS_SCRIPT_URL no topo           ║
+║     do <script> deste arquivo HTML                           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+-->
+</div>
+</div>
+</div>
+<button class="s-menu-toggle" id="sMenuToggle" title="Menu">☰</button>
+
+<script>
+(function(){
+  var path = window.location.pathname.split('/').pop().replace('.html','');
+  if(!path) path = 'index';
+  document.querySelectorAll('.s-menu a[data-page]').forEach(function(a){
+    if(a.getAttribute('data-page') === path) a.classList.add('s-active');
+  });
+  var btn = document.getElementById('sMenuToggle');
+  var sb = document.getElementById('sSidebar');
+  if(btn && sb){
+    btn.addEventListener('click', function(e){ e.stopPropagation(); sb.classList.toggle('s-open'); });
+    document.addEventListener('click', function(e){ if(sb && !sb.contains(e.target) && e.target !== btn) sb.classList.remove('s-open'); });
+  }
+})();
+</script>
+
+</body>

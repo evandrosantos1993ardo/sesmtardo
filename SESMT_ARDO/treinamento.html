@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treinamentos · SESMT</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0d1235; --surface:rgba(13,18,53,0.85); --surface2:rgba(26,32,96,0.45); --border:rgba(255,255,255,0.08);
+  --accent:#cc1a2a; --accent2:#f0a500; --green:#27ae60; --red:#e74c3c;
+  --yellow:#f39c12; --blue:#2980b9; --text:#e8edf5; --muted:rgba(200,205,216,0.45);
+  --mono:'IBM Plex Mono',monospace; --sans:'Barlow',sans-serif;
+  --display:'Barlow Condensed',sans-serif; --bar:'Barlow Condensed',sans-serif;
+  --silver:#c8cdd8; --dark:#0d1235; --navy:#1a2060;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;padding-top:36px;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(26,32,96,.75) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 50% at 85% 90%,rgba(204,26,42,.22) 0%,transparent 55%),
+  linear-gradient(160deg,#0b0f2a 0%,#111640 50%,#0f0c24 100%);}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.04;
+  background-image:linear-gradient(var(--silver) 1px,transparent 1px),linear-gradient(90deg,var(--silver) 1px,transparent 1px);
+  background-size:60px 60px;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:rgba(13,18,53,.5);}
+::-webkit-scrollbar-thumb{background:rgba(204,26,42,.3);border-radius:3px;}
+/* TOPNAV */
+#topnav{position:fixed;top:0;left:0;right:0;height:36px;background:rgba(10,13,28,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,26,42,.2);z-index:9999;display:flex;align-items:center;padding:0 20px;gap:14px;}
+#topnav span{font-family:var(--bar);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,205,216,.3);}
+#topnav button{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#c8cdd8;padding:4px 13px;border-radius:50px;font-family:var(--bar);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:.2s;}
+#topnav button:hover{border-color:rgba(204,26,42,.5);color:#fff;}
+/* CONFIG OVERLAY */
+#cfg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(10px);z-index:1000;display:none;align-items:center;justify-content:center;}
+#cfg-overlay.open{display:flex;}
+.cfg-box{background:rgba(13,18,53,.95);border:1px solid rgba(204,26,42,.25);border-radius:16px;padding:40px;width:540px;max-width:95vw;}
+.cfg-box h2{font-family:var(--bar);font-size:1.5rem;font-weight:700;color:var(--accent);margin-bottom:6px;letter-spacing:.04em;}
+.cfg-box p{color:var(--muted);font-size:.875rem;margin-bottom:24px;line-height:1.7;}
+.cfg-box a{color:var(--accent);}
+.fld{margin-bottom:16px;}
+.fld label{display:block;font-size:.7rem;font-family:var(--mono);color:var(--muted);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;}
+.fld input{width:100%;padding:11px 13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.83rem;outline:none;transition:border .2s;}
+.fld input:focus{border-color:var(--accent);}
+.btn-primary{width:100%;padding:13px;background:var(--accent);color:#fff;font-family:var(--bar);font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
+.btn-primary:hover{opacity:.85;}
+/* LAYOUT */
+.topbar{height:62px;background:rgba(13,18,53,.7);border-bottom:1px solid rgba(204,26,42,.2);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.logo{font-family:var(--bar);font-size:1.05rem;font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+.logo em{color:var(--accent2);font-style:normal;}
+.sync-btn{display:flex;align-items:center;gap:7px;padding:7px 15px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:50px;color:var(--text);font-family:var(--bar);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .2s;}
+.sync-btn:hover{border-color:var(--accent);color:var(--accent);}
+.main{display:flex;height:calc(100vh - 62px);position:relative;z-index:10;}
+/* SIDEBAR */
+.sidebar{width:220px;background:rgba(13,18,53,.88);border-right:1px solid rgba(204,26,42,.2);padding:14px 0;flex-shrink:0;overflow-y:auto;backdrop-filter:blur(12px);}
+.nav-lbl{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;padding:0 14px;margin:14px 0 5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:.85rem;transition:background .15s;border-left:2px solid transparent;color:var(--muted);border:none;background:none;width:100%;text-align:left;font-family:var(--sans);}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--text);}
+.nav-item.active{background:rgba(204,26,42,.12);color:var(--accent);border-left:2px solid var(--accent);}
+.nav-sep{border:none;border-top:1px solid rgba(255,255,255,.06);margin:8px 14px;}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:26px 28px;background:transparent;}
+.page{display:none;}.page.active{display:block;}
+.page-title{font-family:var(--bar);font-size:1.6rem;font-weight:700;margin-bottom:4px;letter-spacing:.04em;}
+.page-sub{color:var(--muted);font-size:.85rem;margin-bottom:22px;}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi.k-blue::before{background:var(--blue);} .kpi.k-green::before{background:var(--green);} .kpi.k-yellow::before{background:var(--yellow);} .kpi.k-red::before{background:var(--red);} .kpi.k-accent::before{background:var(--accent);} .kpi.k-orange::before{background:#e67e22;}
+.kpi-lbl{font-family:var(--mono);font-size:.63rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;}
+.kpi-val{font-family:var(--bar);font-size:2.1rem;font-weight:700;line-height:1;}
+.kpi.k-blue .kpi-val{color:var(--blue);} .kpi.k-green .kpi-val{color:var(--green);} .kpi.k-yellow .kpi-val{color:var(--yellow);} .kpi.k-red .kpi-val{color:var(--red);} .kpi.k-accent .kpi-val{color:var(--accent);} .kpi.k-orange .kpi-val{color:#e67e22;}
+.kpi-desc{font-size:.72rem;color:var(--muted);margin-top:3px;}
+/* CHARTS */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.chart-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;}
+.chart-card h3{font-family:var(--bar);font-size:.88rem;font-weight:700;margin-bottom:12px;letter-spacing:.04em;}
+.chart-wrap{position:relative;height:190px;}
+/* TABLE */
+.tbl-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.tbl-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);gap:10px;flex-wrap:wrap;}
+.tbl-title{font-family:var(--bar);font-size:.9rem;font-weight:700;letter-spacing:.04em;}
+.tbl-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.si{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 11px;color:var(--text);font-family:var(--mono);font-size:.76rem;outline:none;transition:border-color .2s;}
+.si:focus{border-color:var(--accent);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:rgba(26,32,96,.5);}
+th{text-align:left;padding:10px 13px;font-family:var(--bar);font-size:.66rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+td{padding:11px 13px;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(26,32,96,.3);}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:9000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:rgba(13,18,53,.97);border:1px solid rgba(204,26,42,.25);border-radius:16px;padding:28px;width:520px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.55);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-family:var(--bar);font-size:1.05rem;font-weight:700;letter-spacing:.04em;}
+.modal-close{background:none;border:none;color:rgba(200,205,216,.4);cursor:pointer;font-size:1.1rem;transition:color .2s;}
+.modal-close:hover{color:var(--text);}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-family:var(--bar);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:.88rem;padding:10px 13px;outline:none;transition:border-color .2s;resize:vertical;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:rgba(204,26,42,.6);background:rgba(255,255,255,.09);}
+select option{background:#1a2060;}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:50px;font-family:var(--bar);font-size:.68rem;font-weight:700;letter-spacing:.07em;white-space:nowrap;}
+.badge-ok{background:rgba(39,174,96,.15);color:var(--green);border:1px solid rgba(39,174,96,.3);}
+.badge-warn{background:rgba(243,156,18,.12);color:var(--yellow);border:1px solid rgba(243,156,18,.3);}
+.badge-danger{background:rgba(204,26,42,.15);color:#ff8a93;border:1px solid rgba(204,26,42,.3);}
+.badge-info{background:rgba(41,128,185,.15);color:var(--blue);border:1px solid rgba(41,128,185,.3);}
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:50px;font-family:var(--bar);font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;border:none;letter-spacing:.08em;text-transform:uppercase;}
+.btn-sm{padding:5px 10px;font-size:.72rem;}
+.btn-acc{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(204,26,42,.3);}
+.btn-acc:hover{background:#a8141f;transform:translateY(-1px);}
+.btn-ghost{background:rgba(255,255,255,.07);color:rgba(200,205,216,.7);border:1px solid rgba(255,255,255,.1);}
+.btn-ghost:hover{background:rgba(255,255,255,.12);color:var(--text);}
+.btn-danger{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+.btn-green{background:rgba(39,174,96,.15);color:var(--green);border:1px solid rgba(39,174,96,.3);}
+/* FILTERS */
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;}
+select,input[type=text],input[type=date],input[type=search]{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:.84rem;padding:7px 10px;outline:none;transition:border-color .15s;}
+select:focus,input:focus{border-color:rgba(204,26,42,.5);}
+</style>
+</head>
+<body>
+
+<div id="topnav">
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#c8cdd8;padding:4px 13px;border-radius:50px;font-family:var(--bar);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:.2s;" onmouseover="this.style.borderColor='rgba(204,26,42,.5)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'">← Dashboard</a>
+  <span>SESMT · Transportes Ardo</span>
+  <button onclick="openCfg()">⚙ Configurações</button>
+</div>
+
+<div class="loading-bar" id="lbar"></div>
+<div id="toast"></div>
+
+<!-- CONFIG OVERLAY -->
+<div id="cfg-overlay">
+  <div class="cfg-box">
+    <h2>⚙️ Configurações</h2>
+    <p>Altere a URL do script ou ID da planilha se necessário.<br>
+    <a href="#" id="show-inst">Ver instruções do Apps Script →</a></p>
+    <div class="fld">
+      <label>URL do Web App (Apps Script)</label>
+      <input id="cfg-url" type="text" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div class="fld">
+      <label>ID da Planilha Google</label>
+      <input id="cfg-sid" type="text" placeholder="1BxiMVs0XRA5...">
+    </div>
+    <button class="btn-primary" onclick="saveCfg()">Salvar e Reconectar</button>
+    <p style="margin-top:12px;text-align:center;font-size:.78rem">
+      <a href="#" onclick="closeCfg()" style="color:var(--muted)">← Voltar ao sistema</a>
+    </p>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS MODAL -->
+<div class="modal-overlay" id="inst-modal">
+  <div class="modal" style="width:620px;">
+    <h3>📋 Código do Apps Script</h3>
+    <p style="color:var(--muted);font-size:.83rem;margin-bottom:10px;">Cole no Apps Script (Extensões → Apps Script) substituindo SEU_ID pelo ID da sua planilha:</p>
+    <div class="code-blk">const SHEET_ID = 'SEU_ID_AQUI';
+
+function doGet(e) {
+  const a = e.parameter.action;
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  function tab(name, headers) {
+    let s = ss.getSheetByName(name);
+    if (!s) { s = ss.insertSheet(name); s.appendRow(headers); }
+    return s;
+  }
+  const SC = tab('COLABORADORES',['ID','Nome','Matricula','Cargo','Setor','Funcao','Tipo','Telefone','Admissao','Status']);
+  const ST = tab('TREINAMENTOS',['ID','NomeColab','Matricula','Treinamento','Tipo','DataReal','Validade','DataVenc','Status','Instrutor','Obs']);
+  const SN = tab('CNH',['ID','NomeMotorista','Matricula','Categoria','NumeroCNH','ValidadeCNH','DataToxico','VencToxico','StatusCNH','StatusToxico']);
+  const SL = tab('LOG',['DataHora','Tipo','Descricao']);
+
+  if (a==='getColaboradores') return out({ok:true,data:SC.getDataRange().getValues()});
+  if (a==='getTreinamentos')  return out({ok:true,data:ST.getDataRange().getValues()});
+  if (a==='getCNH')           return out({ok:true,data:SN.getDataRange().getValues()});
+  if (a==='getLog')           return out({ok:true,data:SL.getDataRange().getValues()});
+
+  if (a==='addColaborador') { SC.appendRow([e.parameter.id,e.parameter.nome,e.parameter.matricula,e.parameter.cargo,e.parameter.setor,e.parameter.funcao,e.parameter.tipo,e.parameter.telefone,e.parameter.admissao,e.parameter.status||'Ativo']); return out({ok:true}); }
+  if (a==='addTreinamento') { ST.appendRow([e.parameter.id,e.parameter.nomeColab,e.parameter.matricula,e.parameter.treinamento,e.parameter.tipo,e.parameter.dataReal,e.parameter.validade,e.parameter.dataVenc,e.parameter.status,e.parameter.instrutor,e.parameter.obs||'']); return out({ok:true}); }
+  if (a==='addCNH')         { SN.appendRow([e.parameter.id,e.parameter.nomeMotorista,e.parameter.matricula,e.parameter.categoria,e.parameter.numeroCNH,e.parameter.validadeCNH,e.parameter.dataToxico,e.parameter.vencToxico,e.parameter.statusCNH,e.parameter.statusToxico]); return out({ok:true}); }
+  if (a==='addLog')         { SL.appendRow([e.parameter.dataHora,e.parameter.tipo,e.parameter.descricao]); return out({ok:true}); }
+
+  if (a==='deleteColab') { delRow(SC,e.parameter.id); return out({ok:true}); }
+  if (a==='deleteTrein') { delRow(ST,e.parameter.id); return out({ok:true}); }
+  if (a==='deleteCNH')   { delRow(SN,e.parameter.id); return out({ok:true}); }
+
+  return out({ok:false});
+}
+function delRow(sheet,id){
+  const rows=sheet.getDataRange().getValues();
+  for(let i=1;i&lt;rows.length;i++){if(String(rows[i][0])===String(id)){sheet.deleteRow(i+1);return;}}
+}
+function out(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}</div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="document.getElementById('inst-modal').classList.remove('open')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR TREINAMENTO -->
+<div class="modal-overlay" id="modal-etrein">
+  <div class="modal">
+    <h3>✏️ Editar Treinamento</h3>
+    <input type="hidden" id="et-id">
+    <div class="grid2">
+      <div class="ff"><label>Treinamento</label><input type="text" id="et-nome"></div>
+      <div class="ff"><label>Instrutor</label><input type="text" id="et-inst"></div>
+    </div>
+    <div class="grid3">
+      <div class="ff"><label>Data Realização *</label><input type="date" id="et-data" oninput="calcEtVenc()"></div>
+      <div class="ff"><label>Validade (meses)</label><input type="number" id="et-val" min="1" oninput="calcEtVenc()"></div>
+      <div class="ff"><label>Data Vencimento</label><input type="date" id="et-venc" readonly style="opacity:.6"></div>
+    </div>
+    <div class="ff" style="margin-bottom:14px"><label>Observações</label><textarea id="et-obs"></textarea></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-etrein')">Cancelar</button>
+      <button class="btn-save" onclick="salvarTrein()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CNH -->
+<div class="modal-overlay" id="modal-ecnh">
+  <div class="modal">
+    <h3>✏️ Editar CNH & Toxicológico</h3>
+    <input type="hidden" id="ec-id">
+    <div class="grid3">
+      <div class="ff"><label>Categoria</label>
+        <select id="ec-cat"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>AB</option><option>AE</option></select>
+      </div>
+      <div class="ff"><label>Número CNH</label><input type="text" id="ec-num"></div>
+      <div class="ff"><label>Validade CNH *</label><input type="date" id="ec-vald"></div>
+    </div>
+    <div class="grid2">
+      <div class="ff"><label>Data Exame Toxicológico</label><input type="date" id="ec-tdata"></div>
+      <div class="ff"><label>Vencimento Toxicológico</label><input type="date" id="ec-tvenc"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-ecnh')">Cancelar</button>
+      <button class="btn-save" onclick="salvarCNH()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="logo"><div class="logo-dot"></div>TST<em>·</em>Control</div>
+    <button class="sync-btn" onclick="syncData()">↻ Sincronizar</button>
+  </div>
+  <div class="main">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="nav-lbl">Painel</div>
+      <div class="nav-item active" onclick="go('dashboard')">◈ Dashboard</div>
+      <div class="nav-item" onclick="go('alertas')">⚠ Alertas</div>
+      <div class="nav-lbl">Colaboradores</div>
+      <div class="nav-item" onclick="go('colaboradores')">👷 Colaboradores</div>
+      <div class="nav-item" onclick="go('novo-colab')">＋ Novo Colaborador</div>
+      <div class="nav-lbl">Treinamentos</div>
+      <div class="nav-item" onclick="go('treinamentos')">🎓 Treinamentos</div>
+      <div class="nav-item" onclick="go('novo-trein')">＋ Lançar Treinamento</div>
+      <div class="nav-lbl">CNH / Motoristas</div>
+      <div class="nav-item" onclick="go('cnh')">🪪 CNH & Toxicológico</div>
+      <div class="nav-item" onclick="go('nova-cnh')">＋ Cadastrar CNH</div>
+      <div class="nav-lbl">Sistema</div>
+      <div class="nav-item" onclick="go('relatorios')">📊 Relatórios</div>
+      <div class="nav-item" onclick="go('log')">📋 Log de Alterações</div>
+      <hr class="nav-sep">
+      <div class="nav-item" onclick="openCfg()">⚙ Configurações</div>
+
+<div class="sesmt-nav-section">
+  <div class="sesmt-nav-label">Todos os Módulos</div>
+  <a href="index.html" class="sesmt-nav-link" data-page="index"><span class="sesmt-nav-icon">🏠</span> Dashboard</a>
+  <a href="#" class="sesmt-nav-link" data-page="#"><span class="sesmt-nav-icon">🔍</span> Inspeções</a>
+  <a href="integracao.html" class="sesmt-nav-link" data-page="integracao"><span class="sesmt-nav-icon">👷</span> Integração</a>
+  <a href="#" class="sesmt-nav-link" data-page="#"><span class="sesmt-nav-icon">📋</span> DDS</a>
+  <a href="aio.html" class="sesmt-nav-link" data-page="aio"><span class="sesmt-nav-icon">⚠️</span> Investigação</a>
+  <a href="orientacao.html" class="sesmt-nav-link" data-page="orientacao"><span class="sesmt-nav-icon">🤝</span> Orientação</a>
+  <a href="controleepi.html" class="sesmt-nav-link" data-page="controleepi"><span class="sesmt-nav-icon">🦺</span> EPI</a>
+  <a href="pgr.html" class="sesmt-nav-link" data-page="pgr"><span class="sesmt-nav-icon">📊</span> PGR</a>
+  <a href="atividadesdiarias.html" class="sesmt-nav-link" data-page="atividadesdiarias"><span class="sesmt-nav-icon">📝</span> Ativ. Diárias</a>
+  <a href="extintores.html" class="sesmt-nav-link" data-page="extintores"><span class="sesmt-nav-icon">🔥</span> Extintores</a>
+  <a href="#" class="sesmt-nav-link" data-page="#"><span class="sesmt-nav-icon">👥</span> CIPA</a>
+  <a href="treinamento.html" class="sesmt-nav-link" data-page="treinamento"><span class="sesmt-nav-icon">🎓</span> Treinamentos</a>
+  <a href="#" class="sesmt-nav-link" data-page="#"><span class="sesmt-nav-icon">📣</span> Campanhas</a>
+  <a href="#" class="sesmt-nav-link" data-page="#"><span class="sesmt-nav-icon">⛑</span> Primeiros Socorros</a>
+</div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Visão geral · Treinamentos & CNH</div>
+        <div class="kpi-grid">
+          <div class="kpi k-blue"><div class="kpi-lbl">Colaboradores</div><div class="kpi-val" id="k-colab">0</div><div class="kpi-desc">Ativos</div></div>
+          <div class="kpi k-green"><div class="kpi-lbl">Trein. Válidos</div><div class="kpi-val" id="k-tok">0</div><div class="kpi-desc">Certificados vigentes</div></div>
+          <div class="kpi k-yellow"><div class="kpi-lbl">Vencendo 30d</div><div class="kpi-val" id="k-twarn">0</div><div class="kpi-desc">Requer atenção</div></div>
+          <div class="kpi k-red"><div class="kpi-lbl">Vencidos</div><div class="kpi-val" id="k-terr">0</div><div class="kpi-desc">Expirados</div></div>
+          <div class="kpi k-accent"><div class="kpi-lbl">Motoristas</div><div class="kpi-val" id="k-mot">0</div><div class="kpi-desc">CNH cadastradas</div></div>
+          <div class="kpi k-yellow"><div class="kpi-lbl">CNH Vencendo</div><div class="kpi-val" id="k-cwarn">0</div><div class="kpi-desc">Próx. 30 dias</div></div>
+          <div class="kpi k-red"><div class="kpi-lbl">CNH Vencida</div><div class="kpi-val" id="k-cerr">0</div><div class="kpi-desc">Irregulares</div></div>
+          <div class="kpi k-orange"><div class="kpi-lbl">Tox. Irregular</div><div class="kpi-val" id="k-terrir">0</div><div class="kpi-desc">Vencendo/Vencido</div></div>
+        </div>
+        <div class="row2">
+          <div class="chart-card"><h3>Treinamentos por Tipo</h3><div class="chart-wrap"><canvas id="ch-tipo"></canvas></div></div>
+          <div class="chart-card"><h3>Vencimentos por Mês</h3><div class="chart-wrap"><canvas id="ch-venc"></canvas></div></div>
+        </div>
+        <div class="row2">
+          <div class="tbl-wrap">
+            <div class="tbl-head"><div class="tbl-title">⚠ Treinamentos Críticos</div></div>
+            <table><thead><tr><th>Colaborador</th><th>Treinamento</th><th>Vencimento</th><th>Status</th></tr></thead>
+            <tbody id="dash-trein"></tbody></table>
+          </div>
+          <div class="tbl-wrap">
+            <div class="tbl-head"><div class="tbl-title">⛔ CNH Irregulares</div></div>
+            <table><thead><tr><th>Motorista</th><th>Validade CNH</th><th>Venc. Tox.</th><th>Status</th></tr></thead>
+            <tbody id="dash-cnh"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERTAS -->
+      <div class="page" id="page-alertas">
+        <div class="page-title">Central de Alertas</div>
+        <div class="page-sub">Todos os vencimentos e irregularidades</div>
+        <div class="alert-list" id="alert-list"></div>
+      </div>
+
+      <!-- COLABORADORES -->
+      <div class="page" id="page-colaboradores">
+        <div class="page-title">Colaboradores</div>
+        <div class="page-sub">Todos os colaboradores cadastrados</div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div class="tbl-title">Cadastro</div>
+            <div class="tbl-tools">
+              <input class="si" type="text" placeholder="Buscar nome/matrícula..." id="s-colab" oninput="renderColabs()">
+              <select class="si" id="f-colab-tipo" onchange="renderColabs()">
+                <option value="">Todos os tipos</option><option>Motorista</option><option>Operacional</option><option>Administrativo</option>
+              </select>
+              <select class="si" id="f-colab-status" onchange="renderColabs()">
+                <option value="">Todos status</option><option>Ativo</option><option>Inativo</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Matrícula</th><th>Nome</th><th>Cargo</th><th>Setor</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="tb-colabs"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOVO COLABORADOR -->
+      <div class="page" id="page-novo-colab">
+        <div class="page-title">Novo Colaborador</div>
+        <div class="page-sub">Cadastre o colaborador e já lance treinamentos e CNH na mesma tela</div>
+
+        <div class="form-card">
+          <h3>👷 Dados do Colaborador</h3>
+          <div class="grid3">
+            <div class="ff"><label>Nome Completo *</label><input type="text" id="nc-nome" placeholder="João da Silva"></div>
+            <div class="ff"><label>Matrícula *</label><input type="text" id="nc-mat" placeholder="MAT-001"></div>
+            <div class="ff"><label>Telefone</label><input type="text" id="nc-tel" placeholder="(41) 99999-9999"></div>
+          </div>
+          <div class="grid3">
+            <div class="ff"><label>Cargo *</label><input type="text" id="nc-cargo" placeholder="Motorista"></div>
+            <div class="ff"><label>Setor</label><input type="text" id="nc-setor" placeholder="Logística"></div>
+            <div class="ff"><label>Função</label><input type="text" id="nc-funcao" placeholder="Motorista Carreteiro"></div>
+          </div>
+          <div class="grid3">
+            <div class="ff"><label>Tipo *</label>
+              <select id="nc-tipo" onchange="toggleCNHBlk()">
+                <option>Motorista</option><option>Operacional</option><option>Administrativo</option>
+              </select>
+            </div>
+            <div class="ff"><label>Admissão</label><input type="date" id="nc-adm"></div>
+            <div class="ff"><label>Status</label>
+              <select id="nc-status"><option>Ativo</option><option>Inativo</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h3 style="display:flex;align-items:center;justify-content:space-between;">
+            <span>🎓 Treinamentos <span style="font-weight:400;font-size:.8rem;color:var(--muted)">(opcional)</span></span>
+            <button class="btn-save" style="font-size:.78rem;padding:6px 14px" onclick="addTrRow()">+ Adicionar</button>
+          </h3>
+          <div id="tr-rows"></div>
+          <div id="tr-empty" style="text-align:center;padding:18px;color:var(--muted);font-size:.83rem">Clique em <strong>+ Adicionar</strong> para lançar treinamentos.</div>
+        </div>
+
+        <div class="form-card" id="cnh-blk">
+          <h3>🪪 CNH & Toxicológico <span style="font-weight:400;font-size:.8rem;color:var(--muted)">(opcional — só para motoristas)</span></h3>
+          <div class="grid3">
+            <div class="ff"><label>Categoria CNH</label>
+              <select id="nc-ccat"><option>A</option><option>B</option><option>C</option><option>D</option><option selected>E</option><option>AB</option><option>AE</option></select>
+            </div>
+            <div class="ff"><label>Número CNH</label><input type="text" id="nc-cnum" placeholder="00000000000"></div>
+            <div class="ff"><label>Validade CNH</label><input type="date" id="nc-cvald"></div>
+          </div>
+          <div class="grid2">
+            <div class="ff"><label>Data Exame Toxicológico</label><input type="date" id="nc-tdata"></div>
+            <div class="ff"><label>Vencimento Toxicológico</label><input type="date" id="nc-tvenc"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-cancel" onclick="limparColab()">Limpar</button>
+          <button class="btn-save" style="padding:11px 28px;font-size:.95rem" onclick="salvarColab()">✔ Salvar Colaborador</button>
+        </div>
+      </div>
+
+      <!-- TREINAMENTOS -->
+      <div class="page" id="page-treinamentos">
+        <div class="page-title">Treinamentos</div>
+        <div class="page-sub">Histórico e controle de certificados</div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div class="tbl-title">Certificados</div>
+            <div class="tbl-tools">
+              <input class="si" type="text" placeholder="Buscar colaborador/treinamento..." id="s-trein" oninput="renderTreins()">
+              <select class="si" id="f-trein-status" onchange="renderTreins()">
+                <option value="">Todos status</option><option>Válido</option><option>Vencendo</option><option>Vencido</option>
+              </select>
+              <select class="si" id="f-trein-tipo" onchange="renderTreins()">
+                <option value="">Todos treinamentos</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Colaborador</th><th>Matrícula</th><th>Treinamento</th><th>Realização</th><th>Vencimento</th><th>Instrutor</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="tb-treins"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOVO TREINAMENTO -->
+      <div class="page" id="page-novo-trein">
+        <div class="page-title">Lançar Treinamento</div>
+        <div class="page-sub">Registrar treinamento para colaborador existente</div>
+        <div class="form-card">
+          <div class="grid2">
+            <div class="ff"><label>Colaborador *</label>
+              <select id="nt-colab" onchange="onSelColab()"><option value="">-- Selecione --</option></select>
+            </div>
+            <div class="ff"><label>Matrícula</label><input type="text" id="nt-mat" readonly style="opacity:.6"></div>
+          </div>
+          <div class="grid2">
+            <div class="ff"><label>Treinamento *</label>
+              <select id="nt-tipo" onchange="onSelTrein()">
+                <option value="">-- Selecione --</option>
+                <option value="Trabalho em Altura NR35|12">Trabalho em Altura NR35 (12m)</option>
+                <option value="Espaço Confinado NR33|12">Espaço Confinado NR33 (12m)</option>
+                <option value="Direção Defensiva|24">Direção Defensiva (24m)</option>
+                <option value="MOPP|24">MOPP (24m)</option>
+                <option value="NR20 Inflamáveis|12">NR20 Inflamáveis (12m)</option>
+                <option value="Primeiros Socorros|12">Primeiros Socorros (12m)</option>
+                <option value="Brigada de Incêndio|12">Brigada de Incêndio (12m)</option>
+                <option value="Integração de Segurança|12">Integração de Segurança (12m)</option>
+                <option value="DDS|1">DDS (1m)</option>
+                <option value="Uso de EPIs|12">Uso de EPIs (12m)</option>
+                <option value="custom">✚ Personalizado...</option>
+              </select>
+            </div>
+            <div class="ff"><label>Validade (meses)</label><input type="number" id="nt-val" min="1" placeholder="12" oninput="calcNtVenc()"></div>
+          </div>
+          <div class="grid2" id="nt-custom-row" style="display:none">
+            <div class="ff full"><label>Nome do Treinamento Personalizado</label><input type="text" id="nt-custom" placeholder="Ex: NR10 Eletricidade"></div>
+          </div>
+          <div class="grid3">
+            <div class="ff"><label>Data de Realização *</label><input type="date" id="nt-data" oninput="calcNtVenc()"></div>
+            <div class="ff"><label>Data de Vencimento</label><input type="date" id="nt-venc" readonly style="opacity:.6"></div>
+            <div class="ff"><label>Instrutor</label><input type="text" id="nt-inst" placeholder="Nome do instrutor"></div>
+          </div>
+          <div class="ff" style="margin-bottom:14px"><label>Observações</label><textarea id="nt-obs" placeholder="Observações..."></textarea></div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="limparTrein()">Limpar</button>
+            <button class="btn-save" onclick="lancarTrein()">Lançar Treinamento</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CNH -->
+      <div class="page" id="page-cnh">
+        <div class="page-title">CNH & Toxicológico</div>
+        <div class="page-sub">Controle de habilitação e exames dos motoristas</div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div class="tbl-title">Motoristas</div>
+            <div class="tbl-tools">
+              <input class="si" type="text" placeholder="Buscar motorista..." id="s-cnh" oninput="renderCNHs()">
+              <select class="si" id="f-cnh-s" onchange="renderCNHs()">
+                <option value="">Todos</option><option>Válido</option><option>Vencendo</option><option>Vencido</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Motorista</th><th>Matrícula</th><th>Cat.</th><th>N° CNH</th><th>Val. CNH</th><th>Status CNH</th><th>Venc. Tox.</th><th>Status Tox.</th><th>Ações</th></tr></thead>
+            <tbody id="tb-cnh"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOVA CNH -->
+      <div class="page" id="page-nova-cnh">
+        <div class="page-title">Cadastrar CNH</div>
+        <div class="page-sub">Registrar CNH e toxicológico de motorista</div>
+        <div class="form-card">
+          <div class="grid2">
+            <div class="ff"><label>Motorista *</label>
+              <select id="ncnh-colab" onchange="onSelColabCNH()"><option value="">-- Selecione --</option></select>
+            </div>
+            <div class="ff"><label>Matrícula</label><input type="text" id="ncnh-mat" readonly style="opacity:.6"></div>
+          </div>
+          <div class="grid3">
+            <div class="ff"><label>Categoria CNH *</label>
+              <select id="ncnh-cat"><option>A</option><option>B</option><option>C</option><option>D</option><option selected>E</option><option>AB</option><option>AE</option></select>
+            </div>
+            <div class="ff"><label>Número CNH *</label><input type="text" id="ncnh-num" placeholder="00000000000"></div>
+            <div class="ff"><label>Validade CNH *</label><input type="date" id="ncnh-vald"></div>
+          </div>
+          <div class="grid2">
+            <div class="ff"><label>Data Exame Toxicológico</label><input type="date" id="ncnh-tdata"></div>
+            <div class="ff"><label>Vencimento Toxicológico</label><input type="date" id="ncnh-tvenc"></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="limparCNH()">Limpar</button>
+            <button class="btn-save" onclick="salvarNovaCNH()">Cadastrar CNH</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RELATÓRIOS -->
+      <div class="page" id="page-relatorios">
+        <div class="page-title">Relatórios</div>
+        <div class="page-sub">Exportar dados em CSV</div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+          <div class="kpi k-red" style="cursor:pointer" onclick="exportar('vencidos')">
+            <div class="kpi-lbl">Exportar CSV</div>
+            <div style="font-family:var(--display);font-size:1rem;font-weight:700;margin:6px 0">Treinamentos Vencidos</div>
+            <div class="kpi-desc">Lista para renovação imediata → CSV</div>
+          </div>
+          <div class="kpi k-yellow" style="cursor:pointer" onclick="exportar('vencendo')">
+            <div class="kpi-lbl">Exportar CSV</div>
+            <div style="font-family:var(--display);font-size:1rem;font-weight:700;margin:6px 0">Vencendo em 30 dias</div>
+            <div class="kpi-desc">Treinamentos a vencer → CSV</div>
+          </div>
+          <div class="kpi k-green" style="cursor:pointer" onclick="exportar('todos-trein')">
+            <div class="kpi-lbl">Exportar CSV</div>
+            <div style="font-family:var(--display);font-size:1rem;font-weight:700;margin:6px 0">Todos os Treinamentos</div>
+            <div class="kpi-desc">Histórico completo → CSV</div>
+          </div>
+          <div class="kpi k-accent" style="cursor:pointer" onclick="exportar('cnh-irregular')">
+            <div class="kpi-lbl">Exportar CSV</div>
+            <div style="font-family:var(--display);font-size:1rem;font-weight:700;margin:6px 0">CNH Irregulares</div>
+            <div class="kpi-desc">CNH e Tox. vencidos → CSV</div>
+          </div>
+          <div class="kpi k-blue" style="cursor:pointer" onclick="exportar('colaboradores')">
+            <div class="kpi-lbl">Exportar CSV</div>
+            <div style="font-family:var(--display);font-size:1rem;font-weight:700;margin:6px 0">Colaboradores</div>
+            <div class="kpi-desc">Lista completa → CSV</div>
+          </div>
+        </div>
+        <div class="tbl-wrap" style="margin-top:16px">
+          <div class="tbl-head">
+            <div class="tbl-title">Treinamentos por Colaborador</div>
+            <select class="si" id="f-rel-colab" onchange="renderRelColab()">
+              <option value="">-- Selecione colaborador --</option>
+            </select>
+          </div>
+          <table><thead><tr><th>Treinamento</th><th>Realização</th><th>Vencimento</th><th>Instrutor</th><th>Status</th></tr></thead>
+          <tbody id="tb-rel"></tbody></table>
+        </div>
+      </div>
+
+      <!-- LOG -->
+      <div class="page" id="page-log">
+        <div class="page-title">Log de Alterações</div>
+        <div class="page-sub">Histórico de todas as ações realizadas no sistema</div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <div class="tbl-title">Atividades</div>
+            <div class="tbl-tools">
+              <input class="si" type="text" placeholder="Buscar..." id="s-log" oninput="renderLog()">
+              <select class="si" id="f-log-tipo" onchange="renderLog()">
+                <option value="">Todos</option><option>CADASTRO</option><option>EDIÇÃO</option><option>EXCLUSÃO</option><option>TREINAMENTO</option><option>CNH</option><option>SYNC</option>
+              </select>
+              <button class="btn" style="padding:6px 12px;background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.25)" onclick="limparLog()">🗑 Limpar</button>
+            </div>
+          </div>
+          <div id="log-wrap"></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG — URL e ID FIXOS
+// ═══════════════════════════════════════════
+const API_URL = 'https://script.google.com/macros/s/AKfycbx0phi2vwyjc2yZbBrQL48dg5oIQMbc7hvbmJWDR13bcy3lBUW-4A1i3ooyVWBMQemo/exec';
+const SHEET_ID = '1TC6oovaehnLgMvGZtq-7_hjNocETSR22ukSUtSPcCx8';
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const S = {
+  colabs: [],
+  treins: [],
+  cnhs: [],
+  log: JSON.parse(localStorage.getItem('tst_log') || '[]'),
+};
+let charts = {};
+let trRowN = 0;
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.onload = () => {
+  document.getElementById('nc-adm').value = today();
+  document.getElementById('nt-data').value = today();
+  syncData();
+};
+
+function today() { return new Date().toISOString().split('T')[0]; }
+function uid()   { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+// Converte qualquer formato de data para YYYY-MM-DD
+function normDate(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  if (!s || s === 'undefined') return '';
+  // Já é YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // DD/MM/YYYY
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+    const [dd,mm,yyyy] = s.split('/');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  // ISO timestamp ou qualquer outro formato (ex: "12T03:00:00.000Z/03/2026" vindo do Sheets)
+  // Tenta extrair só a data pelo objeto Date
+  try {
+    const dt = new Date(s);
+    if (!isNaN(dt.getTime())) {
+      return dt.toISOString().split('T')[0];
+    }
+  } catch(e) {}
+  return '';
+}
+function fmtD(d) {
+  const n = normDate(d);
+  if (!n) return '—';
+  const [yyyy, mm, dd] = n.split('-');
+  return `${dd}/${mm}/${yyyy}`;
+}
+function calcStatus(d) {
+  const n = normDate(d);
+  if (!n) return 'Vencido';
+  // Compara só por data, sem fuso horário
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const venc = new Date(n + 'T00:00:00');
+  const diff = Math.floor((venc - hoje) / 86400000);
+  if (diff < 0) return 'Vencido';
+  if (diff <= 30) return 'Vencendo';
+  return 'Válido';
+}
+function badge(s) {
+  if (s==='Válido')   return `<span class="bdg bdg-ok"><span class="dot dok"></span>Válido</span>`;
+  if (s==='Vencendo') return `<span class="bdg bdg-warn"><span class="dot dwarn"></span>Vencendo</span>`;
+  return `<span class="bdg bdg-err"><span class="dot derr"></span>Vencido</span>`;
+}
+function tipoBdg(t) {
+  const m={Motorista:'bdg-blue',Operacional:'bdg-ok',Administrativo:'bdg-warn'};
+  return `<span class="bdg ${m[t]||'bdg-blue'}">${t}</span>`;
+}
+function statusBdg(s) {
+  return `<span class="bdg ${s==='Ativo'?'bdg-ok':'bdg-err'}">${s}</span>`;
+}
+
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+function openCfg() {
+  document.getElementById('cfg-url').value = API_URL;
+  document.getElementById('cfg-sid').value = SHEET_ID;
+  document.getElementById('cfg-overlay').classList.add('open');
+}
+function closeCfg() { document.getElementById('cfg-overlay').classList.remove('open'); }
+function saveCfg() {
+  toast('Para alterar URL/ID, edite as variáveis API_URL e SHEET_ID no arquivo HTML.', 'warn');
+  closeCfg();
+}
+document.getElementById('show-inst').onclick = e => {
+  e.preventDefault();
+  document.getElementById('inst-modal').classList.add('open');
+};
+
+// ═══════════════════════════════════════════
+// SYNC / API
+// ═══════════════════════════════════════════
+async function syncData() {
+  setLoad(true);
+  try {
+    const [r1,r2,r3] = await Promise.all([
+      fetch(`${API_URL}?action=getColaboradores`).then(r=>r.json()),
+      fetch(`${API_URL}?action=getTreinamentos`).then(r=>r.json()),
+      fetch(`${API_URL}?action=getCNH`).then(r=>r.json()),
+    ]);
+    if (r1.ok && r1.data.length > 1)
+      S.colabs = r1.data.slice(1).map(r=>({id:r[0],nome:r[1],matricula:r[2],cargo:r[3],setor:r[4],funcao:r[5],tipo:r[6],telefone:r[7],admissao:r[8],status:r[9]}));
+    if (r2.ok && r2.data.length > 1)
+      S.treins = r2.data.slice(1).map(r=>({id:r[0],nomeColab:r[1],matricula:r[2],treinamento:r[3],tipo:r[4],dataReal:normDate(r[5]),validade:r[6],dataVenc:normDate(r[7]),status:r[8],instrutor:r[9],obs:r[10]}));
+    if (r3.ok && r3.data.length > 1)
+      S.cnhs = r3.data.slice(1).map(r=>({id:r[0],nomeMotorista:r[1],matricula:r[2],categoria:r[3],numeroCNH:r[4],validadeCNH:normDate(r[5]),dataToxico:normDate(r[6]),vencToxico:normDate(r[7]),statusCNH:r[8],statusToxico:r[9]}));
+    recalc();
+    refreshAll();
+    addLog('SYNC', `Sincronizado — ${S.colabs.length} colaboradores · ${S.treins.length} treinamentos · ${S.cnhs.length} CNH`);
+    toast('Sincronizado com Google Sheets ✓', 'ok');
+  } catch(e) {
+    toast('Falha ao sincronizar. Verifique a URL do Apps Script.', 'err');
+  }
+  setLoad(false);
+}
+
+async function api(params) {
+  const p = new URLSearchParams(params);
+  const r = await fetch(`${API_URL}?${p}`);
+  const t = await r.text();
+  try { return JSON.parse(t); } catch { return {ok:true}; }
+}
+
+function recalc() {
+  S.treins.forEach(t => { t.status = calcStatus(t.dataVenc); });
+  S.cnhs.forEach(c => { c.statusCNH = calcStatus(c.validadeCNH); c.statusToxico = calcStatus(c.vencToxico); });
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATE
+// ═══════════════════════════════════════════
+function go(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')===`go('${page}')`) n.classList.add('active');
+  });
+  const fn = {dashboard:renderDash,alertas:renderAlertas,colaboradores:renderColabs,
+    treinamentos:renderTreins,cnh:renderCNHs,relatorios:renderRel,log:renderLog};
+  if(fn[page]) fn[page]();
+  if(page==='novo-trein') populateColabSel('nt-colab');
+  if(page==='nova-cnh') populateColabSel('ncnh-colab', true);
+}
+
+function refreshAll() {
+  recalc();
+  renderDash(); renderColabs(); renderTreins(); renderCNHs();
+  renderAlertas(); renderLog();
+  populateColabSel('nt-colab');
+  populateColabSel('ncnh-colab', true);
+  populateTreinFilter();
+  populateRelSel();
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function renderDash() {
+  const ativos = S.colabs.filter(c=>c.status!=='Inativo').length;
+  const tok  = S.treins.filter(t=>t.status==='Válido').length;
+  const twarn= S.treins.filter(t=>t.status==='Vencendo').length;
+  const terr = S.treins.filter(t=>t.status==='Vencido').length;
+  const cwarn= S.cnhs.filter(c=>c.statusCNH==='Vencendo').length;
+  const cerr = S.cnhs.filter(c=>c.statusCNH==='Vencido').length;
+  const tirr = S.cnhs.filter(c=>c.statusToxico==='Vencendo'||c.statusToxico==='Vencido').length;
+  document.getElementById('k-colab').textContent = ativos;
+  document.getElementById('k-tok').textContent   = tok;
+  document.getElementById('k-twarn').textContent = twarn;
+  document.getElementById('k-terr').textContent  = terr;
+  document.getElementById('k-mot').textContent   = S.cnhs.length;
+  document.getElementById('k-cwarn').textContent = cwarn;
+  document.getElementById('k-cerr').textContent  = cerr;
+  document.getElementById('k-terrir').textContent= tirr;
+
+  const criticos = S.treins.filter(t=>t.status!=='Válido').slice(0,10);
+  const b1 = document.getElementById('dash-trein');
+  b1.innerHTML = criticos.length ? criticos.map(t=>`<tr>
+    <td style="font-weight:500">${t.nomeColab}</td><td>${t.treinamento}</td>
+    <td class="mono">${fmtD(t.dataVenc)}</td><td>${badge(t.status)}</td>
+  </tr>`).join('') : `<tr class="empty"><td colspan="4">✓ Todos os treinamentos estão válidos</td></tr>`;
+
+  const irregCNH = S.cnhs.filter(c=>c.statusCNH!=='Válido'||c.statusToxico!=='Válido').slice(0,8);
+  const b2 = document.getElementById('dash-cnh');
+  b2.innerHTML = irregCNH.length ? irregCNH.map(c=>`<tr>
+    <td style="font-weight:500">${c.nomeMotorista}</td>
+    <td class="mono">${fmtD(c.validadeCNH)}</td>
+    <td class="mono">${fmtD(c.vencToxico)}</td>
+    <td>${badge(c.statusCNH==='Válido'?c.statusToxico:c.statusCNH)}</td>
+  </tr>`).join('') : `<tr class="empty"><td colspan="4">✓ Todas as CNH estão regulares</td></tr>`;
+
+  renderCharts();
+}
+
+function renderCharts() {
+  const tc={};
+  S.treins.forEach(t=>{tc[t.treinamento]=(tc[t.treinamento]||0)+1;});
+  const l1=Object.keys(tc).slice(0,8);
+  const cols=['#1a56e8','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#ec4899'];
+  if(charts.tipo) charts.tipo.destroy();
+  charts.tipo=new Chart(document.getElementById('ch-tipo').getContext('2d'),{
+    type:'bar',
+    data:{labels:l1.map(l=>l.length>16?l.slice(0,16)+'…':l),datasets:[{data:l1.map(l=>tc[l]),backgroundColor:cols,borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#1e2535'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#1e2535'}}}}
+  });
+  const now=new Date(), ms=[], ml=[];
+  for(let i=0;i<6;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()+i,1);
+    ms.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
+    ml.push(d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}));
+  }
+  const mc={};ms.forEach(m=>mc[m]=0);
+  S.treins.forEach(t=>{const m=String(t.dataVenc).slice(0,7);if(mc[m]!==undefined)mc[m]++;});
+  if(charts.venc) charts.venc.destroy();
+  charts.venc=new Chart(document.getElementById('ch-venc').getContext('2d'),{
+    type:'line',
+    data:{labels:ml,datasets:[{data:ms.map(m=>mc[m]),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)',tension:.4,fill:true,pointBackgroundColor:'#f59e0b',pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#1e2535'}},y:{beginAtZero:true,ticks:{color:'#64748b',font:{size:10}},grid:{color:'#1e2535'}}}}
+  });
+}
+
+// ═══════════════════════════════════════════
+// ALERTAS
+// ═══════════════════════════════════════════
+function renderAlertas() {
+  const list = document.getElementById('alert-list');
+  const items = [];
+  S.treins.filter(t=>t.status!=='Válido').forEach(t=>{
+    items.push({cls:t.status==='Vencido'?'al-red':'al-yellow',
+      icon:t.status==='Vencido'?'❌':'⚠️',nome:t.nomeColab,
+      sub:`${t.treinamento} · Vencimento: ${fmtD(t.dataVenc)}`,bdg:badge(t.status)});
+  });
+  S.cnhs.forEach(c=>{
+    if(c.statusCNH!=='Válido') items.push({cls:c.statusCNH==='Vencido'?'al-red':'al-yellow',
+      icon:c.statusCNH==='Vencido'?'⛔':'⚠️',nome:c.nomeMotorista,
+      sub:`CNH Cat.${c.categoria} · Validade: ${fmtD(c.validadeCNH)}`,bdg:badge(c.statusCNH)});
+    if(c.statusToxico!=='Válido') items.push({cls:c.statusToxico==='Vencido'?'al-red':'al-yellow',
+      icon:'🔬',nome:c.nomeMotorista,
+      sub:`Toxicológico · Vencimento: ${fmtD(c.vencToxico)}`,bdg:badge(c.statusToxico)});
+  });
+  list.innerHTML = items.length ? items.map(i=>`
+    <div class="al ${i.cls}">
+      <span style="font-size:1.1rem">${i.icon}</span>
+      <div class="al-info"><div class="al-name">${i.nome}</div><div class="al-sub">${i.sub}</div></div>
+      ${i.bdg}
+    </div>`).join('') : `<div style="text-align:center;padding:48px;color:var(--muted)">✅ Nenhum alerta ativo. Tudo em dia!</div>`;
+}
+
+// ═══════════════════════════════════════════
+// COLABORADORES
+// ═══════════════════════════════════════════
+function renderColabs() {
+  const q=(document.getElementById('s-colab')?.value||'').toLowerCase();
+  const tipo=document.getElementById('f-colab-tipo')?.value||'';
+  const st=document.getElementById('f-colab-status')?.value||'';
+  let list=S.colabs;
+  if(q) list=list.filter(c=>c.nome.toLowerCase().includes(q)||(c.matricula||'').toLowerCase().includes(q));
+  if(tipo) list=list.filter(c=>c.tipo===tipo);
+  if(st) list=list.filter(c=>c.status===st);
+  const tb=document.getElementById('tb-colabs');
+  tb.innerHTML = list.length ? list.map(c=>`<tr>
+    <td class="mono">${c.matricula}</td>
+    <td style="font-weight:500">${c.nome}</td>
+    <td>${c.cargo||'—'}</td><td>${c.setor||'—'}</td>
+    <td>${tipoBdg(c.tipo)}</td>
+    <td>${statusBdg(c.status)}</td>
+    <td><div class="acts">
+      <button class="btn btn-vw" onclick="verTreinsColab('${c.nome}')">📋</button>
+      <button class="btn btn-rm" onclick="delColab('${c.id}')">✕</button>
+    </div></td>
+  </tr>`).join('') : `<tr class="empty"><td colspan="7">Nenhum colaborador encontrado</td></tr>`;
+}
+
+function verTreinsColab(nome) {
+  document.getElementById('f-rel-colab').value = nome;
+  go('relatorios'); renderRelColab();
+}
+
+async function salvarColab() {
+  const nome = document.getElementById('nc-nome').value.trim();
+  const mat  = document.getElementById('nc-mat').value.trim();
+  if (!nome||!mat) { toast('Nome e matrícula são obrigatórios','err'); return; }
+  if (S.colabs.find(c=>c.matricula===mat)) { toast('Matrícula já cadastrada!','err'); return; }
+  const colab = {
+    id:uid(), nome, matricula:mat,
+    cargo:document.getElementById('nc-cargo').value.trim(),
+    setor:document.getElementById('nc-setor').value.trim(),
+    funcao:document.getElementById('nc-funcao').value.trim(),
+    tipo:document.getElementById('nc-tipo').value,
+    telefone:document.getElementById('nc-tel').value.trim(),
+    admissao:document.getElementById('nc-adm').value,
+    status:document.getElementById('nc-status').value,
+  };
+  setLoad(true);
+  try {
+    await api({action:'addColaborador',...colab});
+    S.colabs.push(colab);
+    addLog('CADASTRO',`Colaborador: ${nome} (${mat}) — ${colab.tipo}`);
+
+    // treinamentos adicionados
+    const rows = document.getElementById('tr-rows').querySelectorAll('[id^="tr-row-"]');
+    for (const row of rows) {
+      const rid = row.id.replace('tr-row-','');
+      const tv = document.getElementById('trr-tipo-'+rid)?.value||'';
+      if (!tv) continue;
+      let tnome = tv==='custom' ? (document.getElementById('trr-custom-'+rid)?.value.trim()||'') : tv.split('|')[0];
+      if (!tnome) continue;
+      const dr = document.getElementById('trr-data-'+rid)?.value||'';
+      const dv = document.getElementById('trr-venc-'+rid)?.value||'';
+      const val= document.getElementById('trr-val-'+rid)?.value||'';
+      const trein={id:uid(),nomeColab:nome,matricula:mat,treinamento:tnome,tipo:tnome,
+        dataReal:dr,validade:val,dataVenc:dv,status:calcStatus(dv),
+        instrutor:document.getElementById('trr-inst-'+rid)?.value.trim()||'',obs:''};
+      await api({action:'addTreinamento',...trein});
+      S.treins.push(trein);
+      addLog('TREINAMENTO',`${tnome} lançado para ${nome} · Venc: ${fmtD(dv)}`);
+    }
+
+    // CNH
+    const cnum = document.getElementById('nc-cnum')?.value.trim();
+    if (colab.tipo==='Motorista' && cnum) {
+      const vald=document.getElementById('nc-cvald').value;
+      const tvenc=document.getElementById('nc-tvenc').value;
+      const cnh={id:uid(),nomeMotorista:nome,matricula:mat,
+        categoria:document.getElementById('nc-ccat').value,
+        numeroCNH:cnum,validadeCNH:vald,
+        dataToxico:document.getElementById('nc-tdata').value,
+        vencToxico:tvenc,statusCNH:calcStatus(vald),
+        statusToxico:tvenc?calcStatus(tvenc):'Vencido'};
+      await api({action:'addCNH',...cnh});
+      S.cnhs.push(cnh);
+      addLog('CNH',`CNH cadastrada: ${nome} Cat.${cnh.categoria} N°${cnum}`);
+    }
+
+    refreshAll();
+    limparColab();
+    toast(`✔ ${nome} cadastrado com sucesso!`,'ok');
+    go('colaboradores');
+  } catch(e) { toast('Erro ao salvar. Verifique a conexão.','err'); }
+  setLoad(false);
+}
+
+async function delColab(id) {
+  if (!confirm('Remover este colaborador?')) return;
+  setLoad(true);
+  try {
+    const rem = S.colabs.find(c=>c.id===id);
+    await api({action:'deleteColab',id});
+    S.colabs = S.colabs.filter(c=>c.id!==id);
+    if(rem) addLog('EXCLUSÃO',`Colaborador removido: ${rem.nome} (${rem.matricula})`);
+    refreshAll(); toast('Colaborador removido','ok');
+  } catch(e) { toast('Erro ao remover','err'); }
+  setLoad(false);
+}
+
+function limparColab() {
+  ['nc-nome','nc-mat','nc-tel','nc-cargo','nc-setor','nc-funcao','nc-cnum','nc-cvald','nc-tdata','nc-tvenc']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('nc-adm').value=today();
+  document.getElementById('tr-rows').innerHTML='';
+  document.getElementById('tr-empty').style.display='block';
+  trRowN=0;
+}
+
+// TREIN ROWS NO CADASTRO
+const TROPS=[
+  ['','-- Selecione --'],
+  ['Trabalho em Altura NR35|12','NR35 Trabalho em Altura (12m)'],
+  ['Espaço Confinado NR33|12','NR33 Espaço Confinado (12m)'],
+  ['Direção Defensiva|24','Direção Defensiva (24m)'],
+  ['MOPP|24','MOPP (24m)'],
+  ['NR20 Inflamáveis|12','NR20 Inflamáveis (12m)'],
+  ['Primeiros Socorros|12','Primeiros Socorros (12m)'],
+  ['Brigada de Incêndio|12','Brigada de Incêndio (12m)'],
+  ['Integração de Segurança|12','Integração de Segurança (12m)'],
+  ['DDS|1','DDS (1m)'],
+  ['Uso de EPIs|12','Uso de EPIs (12m)'],
+  ['custom','✚ Personalizado...'],
+];
+
+function addTrRow() {
+  trRowN++;
+  const id=trRowN;
+  const opts=TROPS.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  document.getElementById('tr-rows').insertAdjacentHTML('beforeend',`
+  <div id="tr-row-${id}" class="trein-row-item">
+    <button onclick="rmTrRow(${id})" style="position:absolute;top:10px;right:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:6px;padding:2px 8px;font-size:.72rem;cursor:pointer">✕</button>
+    <div class="grid3" style="margin-bottom:10px">
+      <div class="ff"><label>Treinamento *</label>
+        <select id="trr-tipo-${id}" onchange="onTrRowChg(${id})"><option value="">--</option>${opts}</select>
+      </div>
+      <div class="ff" id="trr-cw-${id}" style="display:none"><label>Nome Personalizado</label>
+        <input type="text" id="trr-custom-${id}" placeholder="Ex: NR10 Eletricidade">
+      </div>
+      <div class="ff"><label>Validade (meses)</label>
+        <input type="number" id="trr-val-${id}" min="1" placeholder="12" oninput="calcTrRowVenc(${id})">
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="ff"><label>Data Realização *</label>
+        <input type="date" id="trr-data-${id}" value="${today()}" oninput="calcTrRowVenc(${id})">
+      </div>
+      <div class="ff"><label>Data Vencimento</label>
+        <input type="date" id="trr-venc-${id}" readonly style="opacity:.6">
+      </div>
+      <div class="ff"><label>Instrutor</label>
+        <input type="text" id="trr-inst-${id}" placeholder="Instrutor">
+      </div>
+    </div>
+  </div>`);
+  document.getElementById('tr-empty').style.display='none';
+}
+function rmTrRow(id) {
+  document.getElementById('tr-row-'+id)?.remove();
+  if(!document.getElementById('tr-rows').children.length) document.getElementById('tr-empty').style.display='block';
+}
+function onTrRowChg(id) {
+  const v=document.getElementById('trr-tipo-'+id).value;
+  document.getElementById('trr-cw-'+id).style.display=v==='custom'?'block':'none';
+  if(v&&v!=='custom'){document.getElementById('trr-val-'+id).value=v.split('|')[1]||'';calcTrRowVenc(id);}
+}
+function calcTrRowVenc(id) {
+  const dr=document.getElementById('trr-data-'+id)?.value;
+  const vm=parseInt(document.getElementById('trr-val-'+id)?.value)||0;
+  if(dr&&vm){const d=new Date(dr);d.setMonth(d.getMonth()+vm);document.getElementById('trr-venc-'+id).value=d.toISOString().split('T')[0];}
+}
+function toggleCNHBlk() {
+  document.getElementById('cnh-blk').style.display = document.getElementById('nc-tipo').value==='Motorista'?'block':'none';
+}
+
+// ═══════════════════════════════════════════
+// TREINAMENTOS
+// ═══════════════════════════════════════════
+function populateTreinFilter() {
+  const tipos=[...new Set(S.treins.map(t=>t.treinamento))];
+  const sel=document.getElementById('f-trein-tipo'); if(!sel) return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos treinamentos</option>'+tipos.map(t=>`<option ${t===cur?'selected':''}>${t}</option>`).join('');
+}
+
+function renderTreins() {
+  const q=(document.getElementById('s-trein')?.value||'').toLowerCase();
+  const st=document.getElementById('f-trein-status')?.value||'';
+  const tp=document.getElementById('f-trein-tipo')?.value||'';
+  let list=S.treins;
+  if(q) list=list.filter(t=>t.nomeColab.toLowerCase().includes(q)||t.treinamento.toLowerCase().includes(q)||(t.matricula||'').toLowerCase().includes(q));
+  if(st) list=list.filter(t=>t.status===st);
+  if(tp) list=list.filter(t=>t.treinamento===tp);
+  const tb=document.getElementById('tb-treins');
+  tb.innerHTML = list.length ? list.map(t=>`<tr>
+    <td style="font-weight:500">${t.nomeColab}</td>
+    <td class="mono">${t.matricula||'—'}</td>
+    <td>${t.treinamento}</td>
+    <td class="mono">${fmtD(t.dataReal)}</td>
+    <td class="mono">${fmtD(t.dataVenc)}</td>
+    <td>${t.instrutor||'—'}</td>
+    <td>${badge(t.status)}</td>
+    <td><div class="acts">
+      <button class="btn btn-ed" onclick="abrirEditTrein('${t.id}')">✏️ Editar</button>
+      <button class="btn btn-rm" onclick="delTrein('${t.id}')">✕</button>
+    </div></td>
+  </tr>`).join('') : `<tr class="empty"><td colspan="8">Nenhum treinamento encontrado</td></tr>`;
+}
+
+function populateColabSel(selId, onlyMot=false) {
+  const sel=document.getElementById(selId); if(!sel) return;
+  const cur=sel.value;
+  let list=S.colabs.filter(c=>c.status!=='Inativo');
+  if(onlyMot) list=list.filter(c=>c.tipo==='Motorista');
+  sel.innerHTML='<option value="">-- Selecione --</option>'+list.map(c=>`<option value="${c.matricula}" data-nome="${c.nome}" ${c.matricula===cur?'selected':''}>${c.nome} (${c.matricula})</option>`).join('');
+}
+function onSelColab() {
+  const sel=document.getElementById('nt-colab');
+  document.getElementById('nt-mat').value=sel.value;
+}
+function onSelTrein() {
+  const v=document.getElementById('nt-tipo').value;
+  document.getElementById('nt-custom-row').style.display=v==='custom'?'grid':'none';
+  if(v&&v!=='custom'){document.getElementById('nt-val').value=v.split('|')[1]||'';calcNtVenc();}
+}
+function calcNtVenc() {
+  const dr=document.getElementById('nt-data').value;
+  const vm=parseInt(document.getElementById('nt-val').value)||0;
+  if(dr&&vm){const d=new Date(dr);d.setMonth(d.getMonth()+vm);document.getElementById('nt-venc').value=d.toISOString().split('T')[0];}
+}
+async function lancarTrein() {
+  const sel=document.getElementById('nt-colab');
+  const mat=sel.value;
+  const opt=sel.options[sel.selectedIndex];
+  const nome=opt?opt.getAttribute('data-nome'):'';
+  const tv=document.getElementById('nt-tipo').value;
+  let tnome=tv==='custom'?document.getElementById('nt-custom').value.trim():tv.split('|')[0];
+  const dr=document.getElementById('nt-data').value;
+  const dv=document.getElementById('nt-venc').value;
+  if(!mat||!nome){toast('Selecione o colaborador','err');return;}
+  if(!tnome){toast('Selecione o treinamento','err');return;}
+  if(!dr){toast('Informe a data de realização','err');return;}
+  const trein={id:uid(),nomeColab:nome,matricula:mat,treinamento:tnome,tipo:tnome,
+    dataReal:dr,validade:document.getElementById('nt-val').value,dataVenc:dv||'',
+    status:calcStatus(dv),instrutor:document.getElementById('nt-inst').value.trim(),
+    obs:document.getElementById('nt-obs').value.trim()};
+  setLoad(true);
+  try {
+    await api({action:'addTreinamento',...trein});
+    S.treins.push(trein);
+    addLog('TREINAMENTO',`${tnome} lançado para ${nome} · Venc: ${fmtD(dv)}`);
+    refreshAll(); limparTrein();
+    toast(`Treinamento "${tnome}" lançado para ${nome}!`,'ok');
+    go('treinamentos');
+  } catch(e){toast('Erro ao lançar','err');}
+  setLoad(false);
+}
+async function delTrein(id) {
+  if(!confirm('Remover este treinamento?')) return;
+  setLoad(true);
+  try {
+    const rem=S.treins.find(t=>t.id===id);
+    await api({action:'deleteTrein',id});
+    S.treins=S.treins.filter(t=>t.id!==id);
+    if(rem) addLog('EXCLUSÃO',`Treinamento removido: ${rem.treinamento} — ${rem.nomeColab}`);
+    refreshAll(); toast('Treinamento removido','ok');
+  } catch(e){toast('Erro ao remover','err');}
+  setLoad(false);
+}
+function limparTrein() {
+  ['nt-mat','nt-venc','nt-inst','nt-obs','nt-custom','nt-val'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nt-colab').value='';
+  document.getElementById('nt-tipo').value='';
+  document.getElementById('nt-data').value=today();
+  document.getElementById('nt-custom-row').style.display='none';
+}
+
+// ═══════════════════════════════════════════
+// EDITAR TREINAMENTO
+// ═══════════════════════════════════════════
+function abrirEditTrein(id) {
+  const t=S.treins.find(x=>x.id===id); if(!t) return;
+  document.getElementById('et-id').value=id;
+  document.getElementById('et-nome').value=t.treinamento||'';
+  document.getElementById('et-inst').value=t.instrutor||'';
+  document.getElementById('et-data').value=t.dataReal||'';
+  document.getElementById('et-val').value=t.validade||'';
+  document.getElementById('et-venc').value=t.dataVenc||'';
+  document.getElementById('et-obs').value=t.obs||'';
+  openModal('modal-etrein');
+}
+function calcEtVenc() {
+  const dr=document.getElementById('et-data').value;
+  const vm=parseInt(document.getElementById('et-val').value)||0;
+  if(dr&&vm){const d=new Date(dr);d.setMonth(d.getMonth()+vm);document.getElementById('et-venc').value=d.toISOString().split('T')[0];}
+}
+async function salvarTrein() {
+  const id=document.getElementById('et-id').value;
+  const idx=S.treins.findIndex(x=>x.id===id); if(idx===-1) return;
+  const dv=document.getElementById('et-venc').value;
+  const upd={...S.treins[idx],
+    treinamento:document.getElementById('et-nome').value.trim()||S.treins[idx].treinamento,
+    instrutor:document.getElementById('et-inst').value.trim(),
+    dataReal:document.getElementById('et-data').value,
+    validade:document.getElementById('et-val').value,
+    dataVenc:dv, obs:document.getElementById('et-obs').value.trim(),
+    status:calcStatus(dv)};
+  setLoad(true);
+  try {
+    await api({action:'deleteTrein',id});
+    await api({action:'addTreinamento',...upd});
+    S.treins[idx]=upd;
+    addLog('EDIÇÃO',`Treinamento editado: ${upd.treinamento} — ${upd.nomeColab} · Novo venc: ${fmtD(dv)}`);
+    closeModal('modal-etrein');
+    refreshAll();
+    toast('Treinamento atualizado! ✓','ok');
+  } catch(e){toast('Erro ao salvar','err');}
+  setLoad(false);
+}
+
+// ═══════════════════════════════════════════
+// CNH
+// ═══════════════════════════════════════════
+function renderCNHs() {
+  const q=(document.getElementById('s-cnh')?.value||'').toLowerCase();
+  const st=document.getElementById('f-cnh-s')?.value||'';
+  let list=S.cnhs;
+  if(q) list=list.filter(c=>c.nomeMotorista.toLowerCase().includes(q)||(c.matricula||'').toLowerCase().includes(q)||(c.numeroCNH||'').toLowerCase().includes(q));
+  if(st) list=list.filter(c=>c.statusCNH===st||c.statusToxico===st);
+  const tb=document.getElementById('tb-cnh');
+  tb.innerHTML = list.length ? list.map(c=>`<tr>
+    <td style="font-weight:500">${c.nomeMotorista}</td>
+    <td class="mono">${c.matricula||'—'}</td>
+    <td><span class="bdg bdg-blue">${c.categoria}</span></td>
+    <td class="mono">${c.numeroCNH||'—'}</td>
+    <td class="mono">${fmtD(c.validadeCNH)}</td>
+    <td>${badge(c.statusCNH)}</td>
+    <td class="mono">${fmtD(c.vencToxico)}</td>
+    <td>${badge(c.statusToxico)}</td>
+    <td><div class="acts">
+      <button class="btn btn-ed" onclick="abrirEditCNH('${c.id}')">✏️ Editar</button>
+      <button class="btn btn-rm" onclick="delCNH('${c.id}')">✕</button>
+    </div></td>
+  </tr>`).join('') : `<tr class="empty"><td colspan="9">Nenhuma CNH cadastrada</td></tr>`;
+}
+
+function onSelColabCNH() {
+  const sel=document.getElementById('ncnh-colab');
+  document.getElementById('ncnh-mat').value=sel.value;
+}
+async function salvarNovaCNH() {
+  const sel=document.getElementById('ncnh-colab');
+  const mat=sel.value;
+  const opt=sel.options[sel.selectedIndex];
+  const nome=opt?opt.getAttribute('data-nome'):'';
+  const num=document.getElementById('ncnh-num').value.trim();
+  const vald=document.getElementById('ncnh-vald').value;
+  if(!nome){toast('Selecione o motorista','err');return;}
+  if(!num||!vald){toast('Número e validade da CNH são obrigatórios','err');return;}
+  const tvenc=document.getElementById('ncnh-tvenc').value;
+  const cnh={id:uid(),nomeMotorista:nome,matricula:mat,
+    categoria:document.getElementById('ncnh-cat').value,
+    numeroCNH:num,validadeCNH:vald,
+    dataToxico:document.getElementById('ncnh-tdata').value,
+    vencToxico:tvenc,statusCNH:calcStatus(vald),
+    statusToxico:tvenc?calcStatus(tvenc):'Vencido'};
+  setLoad(true);
+  try {
+    await api({action:'addCNH',...cnh});
+    S.cnhs.push(cnh);
+    addLog('CNH',`CNH cadastrada: ${nome} Cat.${cnh.categoria} N°${num} · Vald: ${fmtD(vald)}`);
+    refreshAll(); limparCNH();
+    toast(`CNH de "${nome}" cadastrada!`,'ok');
+    go('cnh');
+  } catch(e){toast('Erro ao cadastrar CNH','err');}
+  setLoad(false);
+}
+async function delCNH(id) {
+  if(!confirm('Remover esta CNH?')) return;
+  setLoad(true);
+  try {
+    const rem=S.cnhs.find(c=>c.id===id);
+    await api({action:'deleteCNH',id});
+    S.cnhs=S.cnhs.filter(c=>c.id!==id);
+    if(rem) addLog('EXCLUSÃO',`CNH removida: ${rem.nomeMotorista} N°${rem.numeroCNH}`);
+    refreshAll(); toast('CNH removida','ok');
+  } catch(e){toast('Erro ao remover','err');}
+  setLoad(false);
+}
+function limparCNH() {
+  ['ncnh-mat','ncnh-num','ncnh-vald','ncnh-tdata','ncnh-tvenc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ncnh-colab').value='';
+}
+
+// EDITAR CNH
+function abrirEditCNH(id) {
+  const c=S.cnhs.find(x=>x.id===id); if(!c) return;
+  document.getElementById('ec-id').value=id;
+  document.getElementById('ec-cat').value=c.categoria||'E';
+  document.getElementById('ec-num').value=c.numeroCNH||'';
+  document.getElementById('ec-vald').value=c.validadeCNH||'';
+  document.getElementById('ec-tdata').value=c.dataToxico||'';
+  document.getElementById('ec-tvenc').value=c.vencToxico||'';
+  openModal('modal-ecnh');
+}
+async function salvarCNH() {
+  const id=document.getElementById('ec-id').value;
+  const idx=S.cnhs.findIndex(x=>x.id===id); if(idx===-1) return;
+  const vald=document.getElementById('ec-vald').value;
+  const tvenc=document.getElementById('ec-tvenc').value;
+  const upd={...S.cnhs[idx],
+    categoria:document.getElementById('ec-cat').value,
+    numeroCNH:document.getElementById('ec-num').value.trim(),
+    validadeCNH:vald,dataToxico:document.getElementById('ec-tdata').value,
+    vencToxico:tvenc,statusCNH:calcStatus(vald),
+    statusToxico:tvenc?calcStatus(tvenc):'Vencido'};
+  setLoad(true);
+  try {
+    await api({action:'deleteCNH',id});
+    await api({action:'addCNH',...upd});
+    S.cnhs[idx]=upd;
+    addLog('EDIÇÃO',`CNH editada: ${upd.nomeMotorista} · Validade: ${fmtD(vald)} · Tox: ${fmtD(tvenc)}`);
+    closeModal('modal-ecnh');
+    refreshAll();
+    toast('CNH atualizada! ✓','ok');
+  } catch(e){toast('Erro ao salvar CNH','err');}
+  setLoad(false);
+}
+
+// ═══════════════════════════════════════════
+// RELATÓRIOS
+// ═══════════════════════════════════════════
+function renderRel() { populateRelSel(); renderRelColab(); }
+function populateRelSel() {
+  const sel=document.getElementById('f-rel-colab'); if(!sel) return;
+  const cur=sel.value;
+  const nomes=[...new Set(S.treins.map(t=>t.nomeColab))].sort();
+  sel.innerHTML='<option value="">-- Selecione colaborador --</option>'+nomes.map(n=>`<option ${n===cur?'selected':''}>${n}</option>`).join('');
+}
+function renderRelColab() {
+  const nome=document.getElementById('f-rel-colab')?.value||'';
+  const tb=document.getElementById('tb-rel');
+  if(!nome){tb.innerHTML=`<tr class="empty"><td colspan="5">Selecione um colaborador</td></tr>`;return;}
+  const list=S.treins.filter(t=>t.nomeColab===nome);
+  tb.innerHTML=list.length?list.map(t=>`<tr>
+    <td style="font-weight:500">${t.treinamento}</td>
+    <td class="mono">${fmtD(t.dataReal)}</td>
+    <td class="mono">${fmtD(t.dataVenc)}</td>
+    <td>${t.instrutor||'—'}</td>
+    <td>${badge(t.status)}</td>
+  </tr>`).join(''):`<tr class="empty"><td colspan="5">Nenhum treinamento para ${nome}</td></tr>`;
+}
+function exportar(tipo) {
+  let headers=[],rows=[];
+  if(tipo==='vencidos'){headers=['Colaborador','Matrícula','Treinamento','Realização','Vencimento','Instrutor'];rows=S.treins.filter(t=>t.status==='Vencido').map(t=>[t.nomeColab,t.matricula,t.treinamento,t.dataReal,t.dataVenc,t.instrutor]);}
+  else if(tipo==='vencendo'){headers=['Colaborador','Matrícula','Treinamento','Vencimento','Instrutor'];rows=S.treins.filter(t=>t.status==='Vencendo').map(t=>[t.nomeColab,t.matricula,t.treinamento,t.dataVenc,t.instrutor]);}
+  else if(tipo==='todos-trein'){headers=['Colaborador','Matrícula','Treinamento','Realização','Vencimento','Instrutor','Status'];rows=S.treins.map(t=>[t.nomeColab,t.matricula,t.treinamento,t.dataReal,t.dataVenc,t.instrutor,t.status]);}
+  else if(tipo==='cnh-irregular'){headers=['Motorista','Matrícula','Categoria','N°CNH','Val.CNH','StatusCNH','Venc.Tox','StatusTox'];rows=S.cnhs.filter(c=>c.statusCNH!=='Válido'||c.statusToxico!=='Válido').map(c=>[c.nomeMotorista,c.matricula,c.categoria,c.numeroCNH,c.validadeCNH,c.statusCNH,c.vencToxico,c.statusToxico]);}
+  else if(tipo==='colaboradores'){headers=['Nome','Matrícula','Cargo','Setor','Tipo','Admissão','Status'];rows=S.colabs.map(c=>[c.nome,c.matricula,c.cargo,c.setor,c.tipo,c.admissao,c.status]);}
+  if(!rows.length){toast('Nenhum dado para exportar','warn');return;}
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${v||''}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`tst_${tipo}_${today()}.csv`;
+  a.click();
+  toast('Relatório exportado!','ok');
+}
+
+// ═══════════════════════════════════════════
+// LOG
+// ═══════════════════════════════════════════
+function addLog(tipo, descricao) {
+  const entry={dataHora:new Date().toLocaleString('pt-BR'),tipo,descricao};
+  S.log.unshift(entry);
+  if(S.log.length>500) S.log=S.log.slice(0,500);
+  localStorage.setItem('tst_log',JSON.stringify(S.log));
+  // send to sheets async (fire and forget)
+  api({action:'addLog',dataHora:entry.dataHora,tipo,descricao}).catch(()=>{});
+}
+function renderLog() {
+  const q=(document.getElementById('s-log')?.value||'').toLowerCase();
+  const tp=document.getElementById('f-log-tipo')?.value||'';
+  let list=S.log;
+  if(q) list=list.filter(l=>l.descricao.toLowerCase().includes(q)||l.tipo.toLowerCase().includes(q));
+  if(tp) list=list.filter(l=>l.tipo===tp);
+  const wrap=document.getElementById('log-wrap'); if(!wrap) return;
+  const cores={CADASTRO:'bdg-ok',EDIÇÃO:'bdg-warn',EXCLUSÃO:'bdg-err',TREINAMENTO:'bdg-blue',CNH:'bdg-blue',SYNC:'bdg-warn'};
+  wrap.innerHTML = list.length ? `<div style="background:var(--surface)">` + list.map(l=>`
+    <div class="log-item">
+      <span class="log-time">${l.dataHora}</span>
+      <span class="bdg ${cores[l.tipo]||'bdg-blue'}" style="min-width:90px;justify-content:center">${l.tipo}</span>
+      <span class="log-desc">${l.descricao}</span>
+    </div>`).join('') + `</div>`
+  : `<div style="text-align:center;padding:48px;color:var(--muted)">Nenhuma atividade registrada ainda.</div>`;
+}
+function limparLog() {
+  if(!confirm('Limpar todo o histórico de log?')) return;
+  S.log=[];localStorage.setItem('tst_log','[]');renderLog();toast('Log limpo','ok');
+}
+
+// ═══════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function setLoad(on) {
+  const b=document.getElementById('lbar');
+  b.style.width=on?'70%':'0';
+  if(!on) setTimeout(()=>b.style.width='0',300);
+}
+function toast(msg,type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`show ${type}`;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='',3500);
+}
+</script>
+<button class="s-menu-toggle" id="sMenuToggle" title="Módulos">☰</button>
+<script>
+(function(){
+  var path = window.location.pathname.split('/').pop().replace('.html','');
+  if(!path) path = 'index';
+  document.querySelectorAll('.sesmt-nav-link[data-page]').forEach(function(a){
+    if(a.getAttribute('data-page') === path) a.classList.add('s-active');
+  });
+})();
+</script>
+</body>
+</html>
+
