@@ -584,10 +584,25 @@ function conn(st,msg){
 // ════════════════════════════════════════════════════
 // STATUS
 // ════════════════════════════════════════════════════
+function parseDate(val){
+  if(!val||val==='–'||val==='—')return null;
+  // já é Date
+  if(val instanceof Date)return isNaN(val)?null:val;
+  const s=String(val).trim();
+  if(!s)return null;
+  // formato DD/MM/YYYY ou DD/MM/YYYY HH:MM:SS
+  const dmyMatch=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(dmyMatch){const[,d,m,y]=dmyMatch;return new Date(+y,+m-1,+d);}
+  // formato YYYY-MM-DD
+  const isoMatch=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(isoMatch){const[,y,m,d]=isoMatch;return new Date(+y,+m-1,+d);}
+  // fallback
+  const dt=new Date(s);return isNaN(dt)?null:dt;
+}
 function getStatus(ext){
   const today=new Date();today.setHours(0,0,0,0);
-  const r=ext.recarga?new Date(ext.recarga+'T00:00:00'):null;
-  const i=ext.inspecao?new Date(ext.inspecao+'T00:00:00'):null;
+  const r=parseDate(ext.recarga);
+  const i=parseDate(ext.inspecao);
   let target=null;
   if(r&&i)target=r<i?r:i; else target=r||i;
   if(!target)return{s:'ok',diff:999,label:'Sem data'};
@@ -921,7 +936,7 @@ function goTo(p){
 // HELPERS
 // ════════════════════════════════════════════════════
 function hj(){return new Date().toISOString().split('T')[0];}
-function fm(d){if(!d||d==='–')return'—';try{const s=String(d);if(s.includes('/'))return s;const[y,m,dy]=s.split('-');return`${dy}/${m}/${y}`;}catch(e){return d||'—';}}
+function fm(d){if(!d||d==='–'||d==='—')return'—';try{const dt=parseDate(d);if(dt){const dd=String(dt.getDate()).padStart(2,'0');const mm=String(dt.getMonth()+1).padStart(2,'0');const yy=dt.getFullYear();return`${dd}/${mm}/${yy}`;}const s=String(d);if(s.includes('/'))return s;const[y,m,dy]=s.split('-');return`${dy}/${m}/${y}`;}catch(e){return String(d)||'—';}}
 function ex(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''}
 function v(id){return(document.getElementById(id)?.value||'').trim();}
 function g(id){return document.getElementById(id)?.value||'';}
