@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit Primeiros Socorros</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0d0b;
+  --surface:  #0f1510;
+  --surface2: #161d17;
+  --border:   #1d2a1e;
+  --accent:   #00c896;
+  --accent2:  #00a87e;
+  --red:      #e74c3c;
+  --green:    #00c896;
+  --yellow:   #F5C400;
+  --orange:   #f39c12;
+  --blue:     #3b82f6;
+  --text:     #ddeedd;
+  --muted:    #4a6050;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'IBM Plex Sans', sans-serif;
+  --display:  'Bebas Neue', cursive;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:var(--sans); min-height:100vh; overflow-x:hidden; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height:56px; background:var(--surface); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px; position:sticky; top:0; z-index:200;
+}
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon {
+  width:32px; height:32px; background:var(--accent); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; color:#000;
+}
+.logo-text { font-family:var(--display); font-size:1.3rem; letter-spacing:.04em; }
+.logo-text span { color:var(--accent); }
+.logo-sub { font-family:var(--mono); font-size:.62rem; color:var(--muted); letter-spacing:.1em; margin-top:-2px; }
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.sync-status { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:.72rem; color:var(--muted); }
+.sync-dot { width:7px; height:7px; border-radius:50%; background:var(--muted); transition:.3s; }
+.sync-dot.ok { background:var(--green); box-shadow:0 0 6px var(--green); }
+.sync-dot.err { background:var(--red); }
+.sync-dot.loading { background:var(--accent); animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.btn-sync {
+  padding:6px 14px; background:transparent; border:1px solid var(--border);
+  color:var(--muted); border-radius:6px; font-family:var(--mono); font-size:.72rem;
+  cursor:pointer; transition:.2s;
+}
+.btn-sync:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ── LAYOUT ── */
+.layout { display:flex; height:calc(100vh - 56px); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:220px; background:var(--surface); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; padding:16px 0; flex-shrink:0;
+}
+.nav-section { padding:0 12px 8px; font-family:var(--mono); font-size:.6rem; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; margin-top:12px; }
+.nav-item {
+  display:flex; align-items:center; gap:10px; padding:9px 16px;
+  cursor:pointer; transition:.15s; color:var(--muted); font-size:.85rem;
+  border-left:2px solid transparent; position:relative;
+}
+.nav-item:hover { color:var(--text); background:var(--surface2); }
+.nav-item.active { color:var(--accent); border-left-color:var(--accent); background:rgba(0,200,150,.05); }
+.nav-icon { font-size:1rem; width:20px; text-align:center; }
+.nav-badge {
+  margin-left:auto; background:var(--red); color:#fff;
+  font-family:var(--mono); font-size:.6rem; padding:1px 5px;
+  border-radius:10px; min-width:18px; text-align:center;
+}
+.nav-badge.warn { background:var(--orange); }
+
+/* ── MAIN ── */
+.main { flex:1; overflow-y:auto; padding:24px; }
+.page { display:none; }
+.page.active { display:block; }
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom:24px; }
+.page-title { font-family:var(--display); font-size:2rem; letter-spacing:.04em; }
+.page-title span { color:var(--accent); }
+.page-sub { font-family:var(--mono); font-size:.72rem; color:var(--muted); margin-top:4px; }
+
+/* ── CARDS DASHBOARD ── */
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+.card {
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:18px 16px; transition:.2s;
+}
+.card:hover { border-color:var(--accent); }
+.card-label { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+.card-value { font-family:var(--display); font-size:2.4rem; margin:4px 0 2px; }
+.card-value.ok   { color:var(--green); }
+.card-value.warn { color:var(--yellow); }
+.card-value.err  { color:var(--red); }
+.card-sub { font-size:.75rem; color:var(--muted); }
+
+/* ── TABLE ── */
+.table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.table-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-bottom:1px solid var(--border);
+}
+.table-title { font-family:var(--mono); font-size:.8rem; font-weight:600; }
+.btn-add {
+  padding:7px 14px; background:var(--accent); color:#000; border:none;
+  border-radius:6px; font-family:var(--mono); font-size:.72rem; font-weight:600;
+  cursor:pointer; transition:.2s;
+}
+.btn-add:hover { background:var(--accent2); }
+table { width:100%; border-collapse:collapse; }
+th {
+  padding:10px 14px; text-align:left; font-family:var(--mono); font-size:.65rem;
+  color:var(--muted); letter-spacing:.08em; text-transform:uppercase;
+  border-bottom:1px solid var(--border); background:var(--surface2);
+}
+td { padding:10px 14px; font-size:.82rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(0,200,150,.03); }
+.empty { padding:32px; text-align:center; color:var(--muted); font-family:var(--mono); font-size:.78rem; }
+
+/* ── BADGES ── */
+.badge {
+  display:inline-block; padding:2px 8px; border-radius:4px;
+  font-family:var(--mono); font-size:.65rem; font-weight:600;
+}
+.badge-ok     { background:rgba(0,200,150,.15); color:var(--green); }
+.badge-warn   { background:rgba(245,196,0,.15);  color:var(--yellow); }
+.badge-err    { background:rgba(231,76,60,.15);  color:var(--red); }
+.badge-blue   { background:rgba(59,130,246,.15); color:var(--blue); }
+.badge-orange { background:rgba(243,156,18,.15); color:var(--orange); }
+
+/* ── ACTIONS ── */
+.act-btn {
+  background:transparent; border:1px solid var(--border); color:var(--muted);
+  padding:3px 8px; border-radius:4px; font-size:.72rem; cursor:pointer; transition:.15s;
+}
+.act-btn:hover { border-color:var(--accent); color:var(--accent); }
+.act-btn.del:hover { border-color:var(--red); color:var(--red); }
+
+/* ── PROGRESS BAR ── */
+.prog-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:2px; transition:.4s; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.7);
+  z-index:500; align-items:center; justify-content:center; backdrop-filter:blur(4px);
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  width:520px; max-width:95vw; max-height:90vh; overflow-y:auto;
+}
+.modal-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 22px; border-bottom:1px solid var(--border);
+}
+.modal-head h3 { font-family:var(--display); font-size:1.4rem; letter-spacing:.04em; }
+.modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
+.modal-close:hover { color:var(--red); }
+.modal-body { padding:22px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-row.full { grid-template-columns:1fr; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+label { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+input, select, textarea {
+  background:var(--surface2); border:1px solid var(--border); color:var(--text);
+  padding:8px 10px; border-radius:6px; font-family:var(--sans); font-size:.85rem;
+  transition:.2s; outline:none;
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+select option { background:var(--surface2); }
+.modal-foot { display:flex; gap:10px; justify-content:flex-end; padding:0 22px 22px; }
+.btn-cancel {
+  padding:8px 18px; background:transparent; border:1px solid var(--border);
+  color:var(--muted); border-radius:6px; font-family:var(--mono); font-size:.75rem; cursor:pointer;
+}
+.btn-cancel:hover { border-color:var(--red); color:var(--red); }
+.btn-save {
+  padding:8px 18px; background:var(--accent); color:#000; border:none;
+  border-radius:6px; font-family:var(--mono); font-size:.75rem; font-weight:600; cursor:pointer;
+}
+.btn-save:hover { background:var(--accent2); }
+
+/* ── TOAST ── */
+#toast {
+  position:fixed; bottom:24px; right:24px; padding:10px 18px;
+  border-radius:8px; font-family:var(--mono); font-size:.78rem;
+  opacity:0; transform:translateY(8px); transition:.3s; pointer-events:none; z-index:999;
+}
+#toast.show { opacity:1; transform:translateY(0); }
+#toast.ok  { background:rgba(0,200,150,.15); border:1px solid var(--green); color:var(--green); }
+#toast.err { background:rgba(231,76,60,.15);  border:1px solid var(--red);  color:var(--red); }
+
+/* ── LOADING BAR ── */
+#loadbar {
+  position:fixed; top:0; left:0; height:2px; width:0;
+  background:var(--accent); transition:width .3s; z-index:999;
+}
+
+/* ── ALERTA VENCIMENTO ── */
+.alert-box {
+  background:rgba(231,76,60,.08); border:1px solid rgba(231,76,60,.3);
+  border-radius:8px; padding:12px 16px; margin-bottom:20px;
+  font-size:.82rem; color:var(--red); display:flex; gap:10px; align-items:center;
+}
+.alert-box.warn { background:rgba(243,156,18,.08); border-color:rgba(243,156,18,.3); color:var(--orange); }
+</style>
+</head>
+<body>
+
+<div id="loadbar"></div>
+<div id="toast"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🩺</div>
+    <div>
+      <div class="logo-text">KIT <span>PRIMEIROS SOCORROS</span></div>
+      <div class="logo-sub">CONTROLE DE ESTOQUE · NR-07</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="sync-status">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncText">Aguardando...</span>
+    </div>
+    <button class="btn-sync" onclick="syncAll()">↻ Sincronizar</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-section">Menu</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item" onclick="nav('itens',this)"><span class="nav-icon">🗂️</span> Itens do Kit <span class="nav-badge" id="badge-baixo" style="display:none"></span></div>
+    <div class="nav-item" onclick="nav('validade',this)"><span class="nav-icon">📅</span> Validades <span class="nav-badge" id="badge-venc" style="display:none"></span></div>
+    <div class="nav-item" onclick="nav('uso',this)"><span class="nav-icon">📋</span> Histórico de Uso</div>
+    <div class="nav-item" onclick="nav('reposicao',this)"><span class="nav-icon">🛒</span> Reposição <span class="nav-badge warn" id="badge-repo" style="display:none"></span></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">DASH<span>BOARD</span></div>
+        <div class="page-sub">VISÃO GERAL DO KIT DE PRIMEIROS SOCORROS</div>
+      </div>
+      <div class="cards" id="dash-cards">
+        <div class="card"><div class="card-label">Total de Itens</div><div class="card-value ok" id="d-total">0</div><div class="card-sub">tipos cadastrados</div></div>
+        <div class="card"><div class="card-label">Estoque Baixo</div><div class="card-value warn" id="d-baixo">0</div><div class="card-sub">abaixo do mínimo</div></div>
+        <div class="card"><div class="card-label">Vencidos</div><div class="card-value err" id="d-vencido">0</div><div class="card-sub">já vencidos</div></div>
+        <div class="card"><div class="card-label">A Vencer (30d)</div><div class="card-value warn" id="d-avencer">0</div><div class="card-sub">próximos 30 dias</div></div>
+        <div class="card"><div class="card-label">Reposições</div><div class="card-value blue" id="d-repo">0</div><div class="card-sub">pendentes</div></div>
+        <div class="card"><div class="card-label">Usos (mês)</div><div class="card-value ok" id="d-usos">0</div><div class="card-sub">registros este mês</div></div>
+      </div>
+
+      <div id="dash-alerts"></div>
+
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">⚠ ITENS COM ATENÇÃO</span></div>
+        <table><thead><tr><th>Item</th><th>Categoria</th><th>Qtd Atual</th><th>Mínimo</th><th>Status</th></tr></thead>
+        <tbody id="dash-table"><tr><td colspan="5" class="empty">Carregando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- ITENS -->
+    <div class="page" id="page-itens">
+      <div class="page-header">
+        <div class="page-title">ITENS DO <span>KIT</span></div>
+        <div class="page-sub">ESTOQUE ATUAL DE TODOS OS ITENS</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">📦 ESTOQUE</span>
+          <button class="btn-add" onclick="openModal('itens')">+ Novo Item</button>
+        </div>
+        <table><thead><tr><th>Nome</th><th>Categoria</th><th>Quantidade</th><th>Mínimo</th><th>Localização</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-itens"><tr><td colspan="7" class="empty">Carregando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- VALIDADE -->
+    <div class="page" id="page-validade">
+      <div class="page-header">
+        <div class="page-title">CONTROLE DE <span>VALIDADE</span></div>
+        <div class="page-sub">LOTES E DATAS DE VENCIMENTO</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">📅 VALIDADES</span>
+          <button class="btn-add" onclick="openModal('validade')">+ Registrar Lote</button>
+        </div>
+        <table><thead><tr><th>Item</th><th>Lote</th><th>Validade</th><th>Dias Restantes</th><th>Quantidade</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-validade"><tr><td colspan="7" class="empty">Carregando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- USO -->
+    <div class="page" id="page-uso">
+      <div class="page-header">
+        <div class="page-title">HISTÓRICO DE <span>USO</span></div>
+        <div class="page-sub">REGISTROS DE UTILIZAÇÃO DOS ITENS</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">📋 REGISTROS</span>
+          <button class="btn-add" onclick="openModal('uso')">+ Registrar Uso</button>
+        </div>
+        <table><thead><tr><th>Data</th><th>Item</th><th>Quantidade</th><th>Responsável</th><th>Motivo</th><th>Observação</th><th></th></tr></thead>
+        <tbody id="tb-uso"><tr><td colspan="7" class="empty">Carregando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- REPOSIÇÃO -->
+    <div class="page" id="page-reposicao">
+      <div class="page-header">
+        <div class="page-title">SOLICITAÇÃO DE <span>REPOSIÇÃO</span></div>
+        <div class="page-sub">PEDIDOS DE COMPRA E REABASTECIMENTO</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">🛒 REPOSIÇÕES</span>
+          <button class="btn-add" onclick="openModal('reposicao')">+ Nova Solicitação</button>
+        </div>
+        <table><thead><tr><th>Data</th><th>Item</th><th>Qtd Pedida</th><th>Urgência</th><th>Solicitante</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-reposicao"><tr><td colspan="7" class="empty">Carregando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-title">Modal</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" id="btn-save" onclick="saveModal()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// KIT PRIMEIROS SOCORROS — Script Principal
+// ══════════════════════════════════════════════════════
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbx6ok5CBllviVb4HYUEbvDvfRXaMMl-KMwWeXRz3szQGkQilHu0u6WT2tAJpjqxGQpWGA/exec';
+
+const DB = { itens: [], validade: [], uso: [], reposicao: [] };
+
+let modalSheet = '';
+let editId = null;
+
+// ── API ──────────────────────────────────────────────
+async function api(params) {
+  const p = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => p.append(k, v));
+  const res = await fetch(API_URL + '?' + p.toString());
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e) { return { ok: false }; }
+}
+
+async function loadSheet(sheet, dbKey, headers) {
+  try {
+    const r = await api({ action: 'getAll', sheet });
+    if (!r.ok || !r.data || r.data.length < 2) { DB[dbKey] = []; return; }
+    DB[dbKey] = r.data.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+      return obj;
+    });
+  } catch(e) { DB[dbKey] = []; }
+}
+
+async function syncAll() {
+  setDot('loading');
+  document.getElementById('syncText').textContent = 'Carregando...';
+  setBar(true);
+  try {
+    await Promise.all([
+      loadSheet('itens',     'itens',     ['id','nome','categoria','quantidade','minimo','unidade','localizacao','status']),
+      loadSheet('validade',  'validade',  ['id','itemId','itemNome','lote','validade','quantidade','status']),
+      loadSheet('uso',       'uso',       ['id','data','itemId','itemNome','quantidade','responsavel','motivo','observacao']),
+      loadSheet('reposicao', 'reposicao', ['id','data','itemId','itemNome','quantidadePedida','urgencia','solicitante','status','dataConclusao']),
+    ]);
+    renderAll();
+    setDot('ok');
+    document.getElementById('syncText').textContent = 'Conectado ✓';
+    toast('Dados carregados ✓', 'ok');
+  } catch(e) {
+    setDot('err');
+    document.getElementById('syncText').textContent = 'Erro na conexão';
+    toast('Falha ao sincronizar.', 'err');
+  }
+  setBar(false);
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+
+// ── NAVEGAÇÃO ─────────────────────────────────────────
+function nav(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── RENDER ALL ────────────────────────────────────────
+function renderAll() {
+  renderDashboard();
+  renderItens();
+  renderValidade();
+  renderUso();
+  renderReposicao();
+  updateBadges();
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function diasAteVencer(dataStr) {
+  if (!dataStr) return 9999;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const d = new Date(dataStr + 'T00:00:00');
+  return Math.floor((d - hoje) / 86400000);
+}
+
+function fmtData(d) {
+  if (!d) return '—';
+  const parts = d.split('-');
+  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return d;
+}
+
+function statusEstoque(item) {
+  const q = parseFloat(item.quantidade) || 0;
+  const m = parseFloat(item.minimo) || 0;
+  if (q === 0) return ['ZERADO', 'err'];
+  if (q <= m)  return ['BAIXO', 'warn'];
+  return ['OK', 'ok'];
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+function renderDashboard() {
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const mesAtual = hoje.toISOString().slice(0,7);
+
+  const baixo    = DB.itens.filter(i => parseFloat(i.quantidade)||0 <= parseFloat(i.minimo)||0).length;
+  const vencidos = DB.validade.filter(i => diasAteVencer(i.validade) < 0).length;
+  const avencer  = DB.validade.filter(i => { const d = diasAteVencer(i.validade); return d >= 0 && d <= 30; }).length;
+  const repo     = DB.reposicao.filter(i => i.status === 'Pendente' || i.status === 'Em andamento').length;
+  const usos     = DB.uso.filter(i => i.data && i.data.startsWith(mesAtual)).length;
+
+  document.getElementById('d-total').textContent  = DB.itens.length;
+  document.getElementById('d-baixo').textContent  = baixo;
+  document.getElementById('d-vencido').textContent = vencidos;
+  document.getElementById('d-avencer').textContent = avencer;
+  document.getElementById('d-repo').textContent   = repo;
+  document.getElementById('d-usos').textContent   = usos;
+
+  // Alertas
+  const alerts = document.getElementById('dash-alerts');
+  alerts.innerHTML = '';
+  if (vencidos > 0) alerts.innerHTML += `<div class="alert-box">⚠ ${vencidos} item(s) com validade VENCIDA! Remova do kit imediatamente.</div>`;
+  if (avencer  > 0) alerts.innerHTML += `<div class="alert-box warn">⚠ ${avencer} item(s) vencem nos próximos 30 dias. Providencie reposição.</div>`;
+  if (baixo    > 0) alerts.innerHTML += `<div class="alert-box warn">⚠ ${baixo} item(s) com estoque abaixo do mínimo.</div>`;
+
+  // Tabela atenção
+  const criticos = DB.itens.filter(i => {
+    const q = parseFloat(i.quantidade)||0;
+    const m = parseFloat(i.minimo)||0;
+    return q <= m;
+  });
+  const tb = document.getElementById('dash-table');
+  if (!criticos.length) {
+    tb.innerHTML = '<tr><td colspan="5" class="empty">✓ Todos os itens com estoque adequado</td></tr>';
+    return;
+  }
+  tb.innerHTML = criticos.map(i => {
+    const [label, cls] = statusEstoque(i);
+    const q = parseFloat(i.quantidade)||0;
+    const m = parseFloat(i.minimo)||0;
+    const pct = m > 0 ? Math.min(100, Math.round((q/m)*100)) : 100;
+    const barColor = cls === 'err' ? 'var(--red)' : cls === 'warn' ? 'var(--yellow)' : 'var(--green)';
+    return `<tr>
+      <td>${i.nome}</td>
+      <td>${i.categoria||'—'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span>${q} ${i.unidade||''}</span>
+          <div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        </div>
+      </td>
+      <td>${m} ${i.unidade||''}</td>
+      <td><span class="badge badge-${cls}">${label}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ITENS ─────────────────────────────────────────────
+function renderItens() {
+  const tb = document.getElementById('tb-itens');
+  if (!DB.itens.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Nenhum item cadastrado</td></tr>'; return; }
+  tb.innerHTML = DB.itens.map(i => {
+    const [label, cls] = statusEstoque(i);
+    return `<tr>
+      <td><strong>${i.nome}</strong></td>
+      <td>${i.categoria||'—'}</td>
+      <td>${i.quantidade||0} ${i.unidade||''}</td>
+      <td>${i.minimo||0} ${i.unidade||''}</td>
+      <td>${i.localizacao||'—'}</td>
+      <td><span class="badge badge-${cls}">${label}</span></td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="act-btn" onclick="openEdit('itens','${i.id}')">✏</button>
+        <button class="act-btn del" onclick="delRow('itens','${i.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── VALIDADE ──────────────────────────────────────────
+function renderValidade() {
+  const tb = document.getElementById('tb-validade');
+  if (!DB.validade.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Nenhum lote registrado</td></tr>'; return; }
+  const sorted = [...DB.validade].sort((a,b) => new Date(a.validade) - new Date(b.validade));
+  tb.innerHTML = sorted.map(v => {
+    const dias = diasAteVencer(v.validade);
+    let cls, label;
+    if (dias < 0)        { cls = 'err';    label = 'VENCIDO'; }
+    else if (dias <= 30) { cls = 'warn';   label = `${dias}d`; }
+    else if (dias <= 90) { cls = 'orange'; label = `${dias}d`; }
+    else                 { cls = 'ok';     label = `${dias}d`; }
+    return `<tr>
+      <td>${v.itemNome||'—'}</td>
+      <td><code style="font-size:.78rem;color:var(--muted)">${v.lote||'—'}</code></td>
+      <td>${fmtData(v.validade)}</td>
+      <td><span class="badge badge-${cls}">${label}</span></td>
+      <td>${v.quantidade||0}</td>
+      <td><span class="badge badge-${dias<0?'err':dias<=30?'warn':'ok'}">${dias<0?'VENCIDO':dias<=30?'URGENTE':'OK'}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="act-btn" onclick="openEdit('validade','${v.id}')">✏</button>
+        <button class="act-btn del" onclick="delRow('validade','${v.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── USO ───────────────────────────────────────────────
+function renderUso() {
+  const tb = document.getElementById('tb-uso');
+  if (!DB.uso.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Nenhum uso registrado</td></tr>'; return; }
+  const sorted = [...DB.uso].sort((a,b) => new Date(b.data) - new Date(a.data));
+  tb.innerHTML = sorted.map(u => `<tr>
+    <td>${fmtData(u.data)}</td>
+    <td>${u.itemNome||'—'}</td>
+    <td>${u.quantidade||0}</td>
+    <td>${u.responsavel||'—'}</td>
+    <td>${u.motivo||'—'}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.observacao||'—'}</td>
+    <td><button class="act-btn del" onclick="delRow('uso','${u.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+// ── REPOSIÇÃO ─────────────────────────────────────────
+function renderReposicao() {
+  const tb = document.getElementById('tb-reposicao');
+  if (!DB.reposicao.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Nenhuma solicitação registrada</td></tr>'; return; }
+  const sorted = [...DB.reposicao].sort((a,b) => new Date(b.data) - new Date(a.data));
+  tb.innerHTML = sorted.map(r => {
+    const urgMap = { 'Alta':'err', 'Média':'warn', 'Baixa':'ok' };
+    const stMap  = { 'Pendente':'warn', 'Em andamento':'blue', 'Concluído':'ok', 'Cancelado':'err' };
+    return `<tr>
+      <td>${fmtData(r.data)}</td>
+      <td>${r.itemNome||'—'}</td>
+      <td>${r.quantidadePedida||0}</td>
+      <td><span class="badge badge-${urgMap[r.urgencia]||'ok'}">${r.urgencia||'—'}</span></td>
+      <td>${r.solicitante||'—'}</td>
+      <td><span class="badge badge-${stMap[r.status]||'ok'}">${r.status||'—'}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="act-btn" onclick="openEdit('reposicao','${r.id}')">✏</button>
+        <button class="act-btn del" onclick="delRow('reposicao','${r.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── BADGES SIDEBAR ────────────────────────────────────
+function updateBadges() {
+  const baixo   = DB.itens.filter(i => parseFloat(i.quantidade)||0 <= parseFloat(i.minimo)||0).length;
+  const venc    = DB.validade.filter(i => diasAteVencer(i.validade) <= 30).length;
+  const repo    = DB.reposicao.filter(i => i.status === 'Pendente').length;
+
+  const bBaixo = document.getElementById('badge-baixo');
+  const bVenc  = document.getElementById('badge-venc');
+  const bRepo  = document.getElementById('badge-repo');
+
+  bBaixo.textContent = baixo; bBaixo.style.display = baixo ? '' : 'none';
+  bVenc.textContent  = venc;  bVenc.style.display  = venc  ? '' : 'none';
+  bRepo.textContent  = repo;  bRepo.style.display  = repo  ? '' : 'none';
+}
+
+// ── FORMS ─────────────────────────────────────────────
+const FORMS = {
+  itens: {
+    title: 'Item do Kit',
+    fields: () => `
+      <div class="form-row full"><div class="form-group"><label>Nome do Item</label><input id="f-nome" placeholder="Ex: Atadura 15cm"/></div></div>
+      <div class="form-row">
+        <div class="form-group"><label>Categoria</label>
+          <select id="f-categoria">
+            <option>Curativo</option><option>Medicamento</option><option>Equipamento</option>
+            <option>Imobilização</option><option>Higiene</option><option>Outro</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Unidade</label><input id="f-unidade" placeholder="un, cx, pct..."/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Quantidade Atual</label><input id="f-quantidade" type="number" min="0"/></div>
+        <div class="form-group"><label>Quantidade Mínima</label><input id="f-minimo" type="number" min="0"/></div>
+      </div>
+      <div class="form-row full"><div class="form-group"><label>Localização no Kit</label><input id="f-localizacao" placeholder="Ex: Gaveta 1 / Compartimento A"/></div></div>
+      <div class="form-row full"><div class="form-group"><label>Status</label>
+        <select id="f-status"><option>Ativo</option><option>Inativo</option></select>
+      </div></div>`,
+    collect: () => ({
+      nome: v('nome'), categoria: v('categoria'), quantidade: v('quantidade'),
+      minimo: v('minimo'), unidade: v('unidade'), localizacao: v('localizacao'), status: v('status')
+    }),
+    populate: (obj) => {
+      sv('nome',obj.nome); sv('categoria',obj.categoria); sv('quantidade',obj.quantidade);
+      sv('minimo',obj.minimo); sv('unidade',obj.unidade); sv('localizacao',obj.localizacao); sv('status',obj.status);
+    }
+  },
+  validade: {
+    title: 'Lote / Validade',
+    fields: () => `
+      <div class="form-row full"><div class="form-group"><label>Item</label>
+        <select id="f-itemId" onchange="preencheNome(this)">
+          <option value="">Selecione...</option>
+          ${DB.itens.map(i=>`<option value="${i.id}">${i.nome}</option>`).join('')}
+        </select>
+      </div></div>
+      <input type="hidden" id="f-itemNome"/>
+      <div class="form-row">
+        <div class="form-group"><label>Lote</label><input id="f-lote" placeholder="Nº do lote"/></div>
+        <div class="form-group"><label>Validade</label><input id="f-validade" type="date"/></div>
+      </div>
+      <div class="form-row full"><div class="form-group"><label>Quantidade neste lote</label><input id="f-quantidade" type="number" min="1"/></div></div>
+      <div class="form-row full"><div class="form-group"><label>Status</label>
+        <select id="f-status"><option>Ativo</option><option>Vencido</option><option>Descartado</option></select>
+      </div></div>`,
+    collect: () => ({
+      itemId: v('itemId'), itemNome: document.getElementById('f-itemNome').value,
+      lote: v('lote'), validade: v('validade'), quantidade: v('quantidade'), status: v('status')
+    }),
+    populate: (obj) => {
+      sv('itemId',obj.itemId); document.getElementById('f-itemNome').value=obj.itemNome;
+      sv('lote',obj.lote); sv('validade',obj.validade); sv('quantidade',obj.quantidade); sv('status',obj.status);
+    }
+  },
+  uso: {
+    title: 'Registrar Uso',
+    fields: () => `
+      <div class="form-row full"><div class="form-group"><label>Item Utilizado</label>
+        <select id="f-itemId" onchange="preencheNome(this)">
+          <option value="">Selecione...</option>
+          ${DB.itens.map(i=>`<option value="${i.id}">${i.nome}</option>`).join('')}
+        </select>
+      </div></div>
+      <input type="hidden" id="f-itemNome"/>
+      <div class="form-row">
+        <div class="form-group"><label>Data</label><input id="f-data" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+        <div class="form-group"><label>Quantidade Usada</label><input id="f-quantidade" type="number" min="1"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Responsável</label><input id="f-responsavel" placeholder="Nome"/></div>
+        <div class="form-group"><label>Motivo</label>
+          <select id="f-motivo">
+            <option>Acidente de trabalho</option><option>Primeiros socorros</option>
+            <option>Treinamento</option><option>Vencimento</option><option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full"><div class="form-group"><label>Observação</label>
+        <textarea id="f-observacao" rows="2" placeholder="Detalhes adicionais..."></textarea>
+      </div></div>`,
+    collect: () => ({
+      data: v('data'), itemId: v('itemId'), itemNome: document.getElementById('f-itemNome').value,
+      quantidade: v('quantidade'), responsavel: v('responsavel'), motivo: v('motivo'), observacao: v('observacao')
+    }),
+    populate: (obj) => {
+      sv('data',obj.data); sv('itemId',obj.itemId); document.getElementById('f-itemNome').value=obj.itemNome;
+      sv('quantidade',obj.quantidade); sv('responsavel',obj.responsavel); sv('motivo',obj.motivo); sv('observacao',obj.observacao);
+    }
+  },
+  reposicao: {
+    title: 'Solicitação de Reposição',
+    fields: () => `
+      <div class="form-row full"><div class="form-group"><label>Item</label>
+        <select id="f-itemId" onchange="preencheNome(this)">
+          <option value="">Selecione...</option>
+          ${DB.itens.map(i=>`<option value="${i.id}">${i.nome}</option>`).join('')}
+        </select>
+      </div></div>
+      <input type="hidden" id="f-itemNome"/>
+      <div class="form-row">
+        <div class="form-group"><label>Data Solicitação</label><input id="f-data" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+        <div class="form-group"><label>Quantidade Pedida</label><input id="f-quantidadePedida" type="number" min="1"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Urgência</label>
+          <select id="f-urgencia"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+        </div>
+        <div class="form-group"><label>Solicitante</label><input id="f-solicitante" placeholder="Nome"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label>
+          <select id="f-status"><option>Pendente</option><option>Em andamento</option><option>Concluído</option><option>Cancelado</option></select>
+        </div>
+        <div class="form-group"><label>Data Conclusão</label><input id="f-dataConclusao" type="date"/></div>
+      </div>`,
+    collect: () => ({
+      data: v('data'), itemId: v('itemId'), itemNome: document.getElementById('f-itemNome').value,
+      quantidadePedida: v('quantidadePedida'), urgencia: v('urgencia'), solicitante: v('solicitante'),
+      status: v('status'), dataConclusao: v('dataConclusao')
+    }),
+    populate: (obj) => {
+      sv('data',obj.data); sv('itemId',obj.itemId); document.getElementById('f-itemNome').value=obj.itemNome;
+      sv('quantidadePedida',obj.quantidadePedida); sv('urgencia',obj.urgencia); sv('solicitante',obj.solicitante);
+      sv('status',obj.status); sv('dataConclusao',obj.dataConclusao);
+    }
+  }
+};
+
+function v(id) { const el=document.getElementById('f-'+id); return el?el.value:''; }
+function sv(id, val) { const el=document.getElementById('f-'+id); if(el && val!==undefined) el.value=val; }
+
+function preencheNome(sel) {
+  const item = DB.itens.find(i => i.id === sel.value);
+  const nomeEl = document.getElementById('f-itemNome');
+  if (nomeEl) nomeEl.value = item ? item.nome : '';
+}
+
+// ── MODAL ─────────────────────────────────────────────
+function openModal(sheet) {
+  modalSheet = sheet; editId = null;
+  const f = FORMS[sheet];
+  document.getElementById('modal-title').textContent = '+ ' + f.title;
+  document.getElementById('modal-body').innerHTML = f.fields();
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openEdit(sheet, id) {
+  modalSheet = sheet; editId = id;
+  const f = FORMS[sheet];
+  const obj = DB[sheet].find(x => x.id === id);
+  if (!obj) return;
+  document.getElementById('modal-title').textContent = '✏ Editar ' + f.title;
+  document.getElementById('modal-body').innerHTML = f.fields();
+  f.populate(obj);
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+async function saveModal() {
+  const f = FORMS[modalSheet];
+  const data = f.collect();
+
+  const btn = document.getElementById('btn-save');
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+
+  try {
+    let r;
+    if (editId) {
+      r = await api({ action: 'update', sheet: modalSheet, id: editId, ...data });
+    } else {
+      r = await api({ action: 'add', sheet: modalSheet, id: uid(), ...data });
+    }
+    if (r.ok) {
+      toast('Salvo com sucesso ✓', 'ok');
+      closeModal();
+      await syncAll();
+    } else {
+      toast('Erro ao salvar: ' + (r.erro||'?'), 'err');
+    }
+  } catch(e) {
+    toast('Erro de conexão', 'err');
+  }
+  btn.textContent = 'Salvar'; btn.disabled = false;
+}
+
+async function delRow(sheet, id) {
+  if (!confirm('Excluir este registro?')) return;
+  const r = await api({ action: 'delete', sheet, id });
+  if (r.ok) { toast('Excluído ✓', 'ok'); await syncAll(); }
+  else toast('Erro ao excluir', 'err');
+}
+
+// ── UI HELPERS ────────────────────────────────────────
+function setDot(s) { document.getElementById('syncDot').className = 'sync-dot ' + s; }
+function setBar(on) { document.getElementById('loadbar').style.width = on ? '60%' : '0'; }
+let _toast;
+function toast(msg, type) {
+  clearTimeout(_toast);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  _toast = setTimeout(() => t.className = '', 3000);
+}
+
+// ── INIT ──────────────────────────────────────────────
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+syncAll();
+</script>
+</body>
+</html>
