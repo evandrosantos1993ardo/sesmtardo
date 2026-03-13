@@ -376,10 +376,12 @@ let editId = null;
 // ── API ──────────────────────────────────────────────
 async function api(params) {
   const p = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => p.append(k, v));
+  Object.entries(params).forEach(([k, val]) => {
+    p.append(k, (val === undefined || val === null) ? '' : String(val));
+  });
   const res = await fetch(API_URL + '?' + p.toString());
   const text = await res.text();
-  try { return JSON.parse(text); } catch(e) { return { ok: false }; }
+  try { return JSON.parse(text); } catch(e) { return { ok: false, erro: text }; }
 }
 
 async function loadSheet(sheet, dbKey, headers) {
@@ -670,11 +672,11 @@ const FORMS = {
         <select id="f-status"><option>Ativo</option><option>Vencido</option><option>Descartado</option></select>
       </div></div>`,
     collect: () => ({
-      itemId: v('itemId'), itemNome: document.getElementById('f-itemNome').value,
+      itemId: v('itemId'), itemNome: (document.getElementById('f-itemNome')||{value:''}).value,
       lote: v('lote'), validade: v('validade'), quantidade: v('quantidade'), status: v('status')
     }),
     populate: (obj) => {
-      sv('itemId',obj.itemId); document.getElementById('f-itemNome').value=obj.itemNome;
+      sv('itemId',obj.itemId); (document.getElementById('f-itemNome')||{value:''}).value=obj.itemNome;
       sv('lote',obj.lote); sv('validade',obj.validade); sv('quantidade',obj.quantidade); sv('status',obj.status);
     }
   },
@@ -705,11 +707,11 @@ const FORMS = {
         <textarea id="f-observacao" rows="2" placeholder="Detalhes adicionais..."></textarea>
       </div></div>`,
     collect: () => ({
-      data: v('data'), itemId: v('itemId'), itemNome: document.getElementById('f-itemNome').value,
+      data: v('data'), itemId: v('itemId'), itemNome: (document.getElementById('f-itemNome')||{value:''}).value,
       quantidade: v('quantidade'), responsavel: v('responsavel'), motivo: v('motivo'), observacao: v('observacao')
     }),
     populate: (obj) => {
-      sv('data',obj.data); sv('itemId',obj.itemId); document.getElementById('f-itemNome').value=obj.itemNome;
+      sv('data',obj.data); sv('itemId',obj.itemId); (document.getElementById('f-itemNome')||{value:''}).value=obj.itemNome;
       sv('quantidade',obj.quantidade); sv('responsavel',obj.responsavel); sv('motivo',obj.motivo); sv('observacao',obj.observacao);
     }
   },
@@ -740,12 +742,12 @@ const FORMS = {
         <div class="form-group"><label>Data Conclusão</label><input id="f-dataConclusao" type="date"/></div>
       </div>`,
     collect: () => ({
-      data: v('data'), itemId: v('itemId'), itemNome: document.getElementById('f-itemNome').value,
+      data: v('data'), itemId: v('itemId'), itemNome: (document.getElementById('f-itemNome')||{value:''}).value,
       quantidadePedida: v('quantidadePedida'), urgencia: v('urgencia'), solicitante: v('solicitante'),
       status: v('status'), dataConclusao: v('dataConclusao')
     }),
     populate: (obj) => {
-      sv('data',obj.data); sv('itemId',obj.itemId); document.getElementById('f-itemNome').value=obj.itemNome;
+      sv('data',obj.data); sv('itemId',obj.itemId); (document.getElementById('f-itemNome')||{value:''}).value=obj.itemNome;
       sv('quantidadePedida',obj.quantidadePedida); sv('urgencia',obj.urgencia); sv('solicitante',obj.solicitante);
       sv('status',obj.status); sv('dataConclusao',obj.dataConclusao);
     }
@@ -787,17 +789,23 @@ function closeModal() {
 
 async function saveModal() {
   const f = FORMS[modalSheet];
-  const data = f.collect();
+  if (!f) { toast('Erro interno: formulário não encontrado.', 'err'); return; }
+  let data;
+  try { data = f.collect(); } catch(e) { toast('Erro ao ler formulário: ' + e.message, 'err'); return; }
 
   const btn = document.getElementById('btn-save');
   btn.textContent = 'Salvando...'; btn.disabled = true;
 
+  // Sanitiza: converte undefined/null para string vazia
+  const safe = {};
+  Object.entries(data).forEach(([k, val]) => { safe[k] = (val === undefined || val === null) ? '' : String(val); });
+
   try {
     let r;
     if (editId) {
-      r = await api({ action: 'update', sheet: modalSheet, id: editId, ...data });
+      r = await api({ action: 'update', sheet: modalSheet, id: editId, ...safe });
     } else {
-      r = await api({ action: 'add', sheet: modalSheet, id: uid(), ...data });
+      r = await api({ action: 'add', sheet: modalSheet, id: uid(), ...safe });
     }
     if (r.ok) {
       toast('Salvo com sucesso ✓', 'ok');
@@ -807,7 +815,7 @@ async function saveModal() {
       toast('Erro ao salvar: ' + (r.erro||'?'), 'err');
     }
   } catch(e) {
-    toast('Erro de conexão', 'err');
+    toast('Erro de conexão: ' + e.message, 'err');
   }
   btn.textContent = 'Salvar'; btn.disabled = false;
 }
