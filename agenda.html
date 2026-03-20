@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrainTrack SST — Agenda de Treinamentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --bg:      #0b0e14;
+  --bg2:     #111520;
+  --bg3:     #181e2c;
+  --bg4:     #1f2840;
+  --border:  #232d42;
+  --border2: #2e3d5e;
+  --text:    #e4eaf6;
+  --text2:   #7d90b0;
+  --text3:   #44556e;
+  --accent:  #f5a623;
+  --accent2: #d4881a;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --orange:  #f97316;
+  --yellow:  #eab308;
+  --blue:    #3b82f6;
+  --teal:    #14b8a6;
+  --purple:  #a855f7;
+  --radius:  13px;
+  --radius-sm: 8px;
+  --shadow:  0 6px 32px rgba(0,0,0,.5);
+  --shadow-sm: 0 2px 10px rgba(0,0,0,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ---- SIDEBAR ---- */
+.sidebar{position:fixed;top:0;left:0;width:230px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;transition:transform .3s;}
+.logo{padding:22px 18px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--border);}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),#e05b0a);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(245,166,35,.3);}
+.logo-text{font-size:16px;font-weight:800;letter-spacing:-.3px;}
+.logo-sub{font-size:10.5px;color:var(--text3);font-weight:500;letter-spacing:.04em;}
+nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+.nav-label{font-size:9.5px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:14px 10px 5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:rgba(245,166,35,.13);color:var(--accent);}
+.nav-item .icon{width:17px;height:17px;opacity:.65;flex-shrink:0;}
+.nav-item.active .icon{opacity:1;}
+.sidebar-footer{padding:14px;border-top:1px solid var(--border);}
+.conn-badge{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);font-size:11.5px;color:var(--text2);}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 7px var(--green);}
+.conn-dot.offline{background:var(--red);box-shadow:0 0 7px var(--red);}
+
+/* ---- MAIN ---- */
+.main{margin-left:230px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:58px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:14px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:15px;font-weight:700;flex:1;display:flex;align-items:center;gap:8px;}
+.topbar-title .page-label{color:var(--text2);font-weight:500;font-size:12.5px;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:var(--radius-sm);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:inherit;letter-spacing:.01em;}
+.btn-primary{background:var(--accent);color:#111;}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(245,166,35,.3);}
+.btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--bg4);color:var(--text);}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.btn-danger:hover{background:rgba(239,68,68,.22);}
+.btn-sm{padding:5px 10px;font-size:11.5px;}
+.btn-teal{background:rgba(20,184,166,.15);color:var(--teal);border:1px solid rgba(20,184,166,.3);}
+.btn-teal:hover{background:rgba(20,184,166,.25);}
+
+/* ---- CONTENT ---- */
+.content{flex:1;padding:22px;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ---- ALERTS ---- */
+.alerts-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.alert-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:11.5px;font-weight:600;animation:slideIn .3s ease;}
+.alert-chip.warn{background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.22);}
+.alert-chip.danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.22);}
+.alert-chip.info{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.22);}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---- CARDS ---- */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:13px;margin-bottom:22px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;transition:transform .15s,border-color .15s;}
+.card:hover{transform:translateY(-2px);border-color:var(--border2);}
+.card-accent{position:absolute;top:0;left:0;width:100%;height:3px;}
+.card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;}
+.card-value{font-size:30px;font-weight:800;line-height:1;margin-bottom:3px;}
+.card-label{font-size:11.5px;color:var(--text2);font-weight:600;letter-spacing:.02em;}
+
+/* ---- CHARTS ---- */
+.charts-row{display:grid;grid-template-columns:1fr 1.7fr;gap:15px;margin-bottom:22px;}
+.chart-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.chart-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.chart-sub{font-size:11px;color:var(--text2);margin-bottom:14px;}
+
+/* ---- NORMATIVOS SUMMARY ---- */
+.norm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:22px;}
+.norm-chip{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;transition:border-color .15s;}
+.norm-chip:hover{border-color:var(--border2);}
+.norm-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.norm-name{font-size:12px;font-weight:700;color:var(--text);}
+.norm-count{font-size:10.5px;color:var(--text2);margin-top:1px;}
+
+/* ---- FILTERS ---- */
+.filters-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:15px;align-items:center;}
+.filter-group{display:flex;align-items:center;gap:6px;}
+.filter-label{font-size:11.5px;color:var(--text2);font-weight:600;}
+select,input[type=text],input[type=date],input[type=search],textarea{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:12.5px;padding:7px 10px;outline:none;transition:border-color .15s;}
+select:focus,input:focus,textarea:focus{border-color:var(--accent);}
+select option{background:var(--bg3);}
+.search-wrap{position:relative;flex:1;max-width:240px;}
+.search-wrap input{width:100%;padding-left:30px;}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;}
+
+/* ---- TABLE ---- */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--bg3);}
+th{padding:10px 13px;font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;text-align:left;white-space:nowrap;}
+td{padding:11px 13px;font-size:12.5px;border-top:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:rgba(255,255,255,.018);}
+tr.vencido td{background:rgba(239,68,68,.04);}
+tr.vencendo td{background:rgba(234,179,8,.03);}
+
+/* ---- BADGES ---- */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+.badge-agendado{background:rgba(100,116,139,.15);color:#94a3b8;}
+.badge-andamento{background:rgba(59,130,246,.15);color:var(--blue);}
+.badge-realizado{background:rgba(34,197,94,.15);color:var(--green);}
+.badge-cancelado{background:rgba(239,68,68,.15);color:var(--red);}
+.badge-vencido{background:rgba(239,68,68,.15);color:var(--red);}
+
+.norm-badge{display:inline-flex;padding:2px 8px;border-radius:5px;font-size:10.5px;font-weight:700;font-family:'DM Mono',monospace;background:rgba(245,166,35,.12);color:var(--accent);border:1px solid rgba(245,166,35,.2);}
+
+.actions-cell{display:flex;gap:5px;}
+.icon-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .15s;}
+.icon-btn:hover{background:var(--bg4);color:var(--text);border-color:var(--border2);}
+.icon-btn.del:hover{background:rgba(239,68,68,.15);color:var(--red);border-color:rgba(239,68,68,.3);}
+.icon-btn.view:hover{background:rgba(20,184,166,.15);color:var(--teal);border-color:rgba(20,184,166,.3);}
+
+/* ---- EMPTY ---- */
+.empty{text-align:center;padding:55px 20px;}
+.empty-icon{font-size:42px;margin-bottom:10px;opacity:.35;}
+.empty-text{font-size:13px;color:var(--text2);}
+
+/* ---- KANBAN ---- */
+.kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;align-items:start;}
+.kanban-col{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.kanban-header{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.kanban-col-title{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.kanban-count{background:var(--bg3);color:var(--text2);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.kanban-cards{min-height:180px;padding:10px;display:flex;flex-direction:column;gap:7px;}
+.kanban-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px;cursor:grab;transition:all .15s;user-select:none;}
+.kanban-card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+.kanban-card.dragging{opacity:.45;cursor:grabbing;}
+.kanban-col.drag-over .kanban-cards{background:rgba(245,166,35,.04);border-radius:var(--radius-sm);}
+.kanban-card-title{font-size:12.5px;font-weight:600;margin-bottom:6px;}
+.kanban-card-norm{margin-bottom:6px;}
+.kanban-card-meta{font-size:11px;color:var(--text2);display:flex;align-items:center;justify-content:space-between;}
+.deadline-chip{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;}
+.deadline-ok{background:rgba(34,197,94,.12);color:var(--green);}
+.deadline-warn{background:rgba(234,179,8,.12);color:var(--yellow);}
+.deadline-over{background:rgba(239,68,68,.12);color:var(--red);}
+
+/* ---- CALENDAR ---- */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-nav{display:flex;align-items:center;gap:10px;}
+.cal-month{font-size:15px;font-weight:800;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;}
+.cal-day-name{background:var(--bg3);text-align:center;padding:9px;font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;}
+.cal-cell{background:var(--bg2);min-height:85px;padding:7px;font-size:11.5px;position:relative;}
+.cal-cell.other-month .cal-num{color:var(--text3);}
+.cal-cell.today .cal-num{background:var(--accent);color:#111;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cal-num{font-size:11.5px;font-weight:700;margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.cal-task{font-size:9.5px;padding:2px 5px;border-radius:3px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;}
+.cal-task.agendado{background:rgba(100,116,139,.2);color:#94a3b8;}
+.cal-task.andamento{background:rgba(59,130,246,.2);color:var(--blue);}
+.cal-task.realizado{background:rgba(34,197,94,.2);color:var(--green);}
+.cal-task.cancelado{background:rgba(239,68,68,.2);color:var(--red);}
+
+/* ---- MODAL ---- */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(5px);}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .2s;}
+.modal-overlay.open .modal{transform:scale(1);}
+.modal-header{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:800;}
+.modal-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.modal-close:hover{background:var(--bg4);color:var(--text);}
+.modal-body{padding:18px 24px;}
+.form-grid{display:grid;gap:13px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:11.5px;font-weight:700;color:var(--text2);letter-spacing:.03em;}
+.form-group input,.form-group select,.form-group textarea{width:100%;}
+.form-group textarea{resize:vertical;min-height:78px;line-height:1.5;}
+.modal-footer{padding:0 24px 22px;display:flex;gap:10px;justify-content:flex-end;}
+.form-section{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding-top:4px;border-top:1px solid var(--border);margin-top:2px;}
+
+/* ---- DETAIL MODAL ---- */
+.detail-field{margin-bottom:12px;}
+.detail-label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.detail-value{font-size:13.5px;color:var(--text);line-height:1.5;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;}
+
+/* ---- HISTORY ---- */
+.history-list{display:flex;flex-direction:column;gap:7px;max-height:300px;overflow-y:auto;}
+.history-item{background:var(--bg3);border-radius:var(--radius-sm);padding:11px;font-size:12px;}
+.history-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
+.history-user{font-weight:700;color:var(--text);}
+.history-time{color:var(--text3);font-family:'DM Mono',monospace;font-size:10.5px;}
+.history-desc{color:var(--text2);}
+
+/* ---- TOAST ---- */
+.toast-container{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+.toast{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 15px;font-size:12.5px;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow);animation:toastIn .25s ease;min-width:220px;}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--red);}
+.toast.info{border-left:3px solid var(--accent);}
+@keyframes toastIn{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:translateX(0);}}
+
+/* ---- LOADING ---- */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s;}
+.loading-overlay.hidden{opacity:0;pointer-events:none;}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{color:var(--text2);font-size:13.5px;}
+
+/* ---- CONFIG ---- */
+.config-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:580px;margin-bottom:16px;}
+.config-card h3{font-size:14.5px;font-weight:800;margin-bottom:4px;}
+.config-card p{font-size:12.5px;color:var(--text2);margin-bottom:16px;line-height:1.5;}
+.config-step{display:flex;gap:11px;margin-bottom:11px;align-items:flex-start;}
+.step-num{width:24px;height:24px;border-radius:50%;background:rgba(245,166,35,.18);color:var(--accent);font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:12.5px;color:var(--text2);line-height:1.55;}
+.step-text code{background:var(--bg3);padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11.5px;color:var(--accent);}
+.url-field{display:flex;gap:8px;margin-top:12px;}
+.url-field input{flex:1;}
+.gs-code{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);white-space:pre;overflow-x:auto;max-height:200px;overflow-y:auto;line-height:1.6;}
+
+/* ---- SECTION TITLE ---- */
+.section-title{font-size:13.5px;font-weight:800;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;}
+.section-title-left{display:flex;align-items:center;gap:8px;}
+.section-title-left::before{content:'';width:3px;height:15px;background:var(--accent);border-radius:2px;}
+
+/* ---- MENU TOGGLE ---- */
+.menu-toggle{display:none;width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);align-items:center;justify-content:center;cursor:pointer;font-size:15px;}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:920px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .kanban-board{grid-template-columns:1fr 1fr;}
+  .charts-row{grid-template-columns:1fr;}
+  .cards-grid{grid-template-columns:repeat(2,1fr);}
+  .menu-toggle{display:flex;}
+}
+@media(max-width:600px){
+  .kanban-board{grid-template-columns:1fr;}
+  .cards-grid{grid-template-columns:1fr 1fr;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .content{padding:14px;}
+  .topbar{padding:0 12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Carregando treinamentos...</div>
+</div>
+
+<!-- Toasts -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🛡️</div>
+    <div>
+      <div class="logo-text">TrainTrack SST</div>
+      <div class="logo-sub">Segurança do Trabalho</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-label">Visualizações</div>
+    <button class="nav-item active" onclick="showPage('dashboard',this)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" onclick="showPage('list',this)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Lista
+    </button>
+    <button class="nav-item" onclick="showPage('kanban',this)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="11" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/></svg>
+      Kanban
+    </button>
+    <button class="nav-item" onclick="showPage('calendar',this)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendário
+    </button>
+    <div class="nav-label">Sistema</div>
+    <button class="nav-item" onclick="showPage('config',this)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Configurações
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="conn-badge">
+      <div class="conn-dot offline" id="connDot"></div>
+      <span id="connLabel">Sem conexão</span>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-title">
+      TrainTrack SST
+      <span class="page-label" id="topbarSub">Dashboard</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="exportExcel()">⬇ Excel</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal()">+ Novo Treinamento</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ===================== DASHBOARD PAGE ===================== -->
+    <div class="page active" id="page-dashboard">
+      <div class="alerts-bar" id="alertsBar"></div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-accent" style="background:linear-gradient(90deg,var(--accent),var(--orange))"></div>
+          <div class="card-icon" style="background:rgba(245,166,35,.12)">📋</div>
+          <div class="card-value" id="cardTotal">0</div>
+          <div class="card-label">Total de Treinamentos</div>
+        </div>
+        <div class="card">
+          <div class="card-accent" style="background:var(--blue)"></div>
+          <div class="card-icon" style="background:rgba(59,130,246,.12)">🔄</div>
+          <div class="card-value" id="cardAndamento" style="color:var(--blue)">0</div>
+          <div class="card-label">Em Andamento</div>
+        </div>
+        <div class="card">
+          <div class="card-accent" style="background:var(--green)"></div>
+          <div class="card-icon" style="background:rgba(34,197,94,.12)">✅</div>
+          <div class="card-value" id="cardRealizado" style="color:var(--green)">0</div>
+          <div class="card-label">Realizados</div>
+        </div>
+        <div class="card">
+          <div class="card-accent" style="background:var(--yellow)"></div>
+          <div class="card-icon" style="background:rgba(234,179,8,.12)">⚠️</div>
+          <div class="card-value" id="cardVencendo" style="color:var(--yellow)">0</div>
+          <div class="card-label">Vencendo em 30 dias</div>
+        </div>
+        <div class="card">
+          <div class="card-accent" style="background:var(--red)"></div>
+          <div class="card-icon" style="background:rgba(239,68,68,.12)">🚨</div>
+          <div class="card-value" id="cardVencido" style="color:var(--red)">0</div>
+          <div class="card-label">Vencidos / Atrasados</div>
+        </div>
+        <div class="card">
+          <div class="card-accent" style="background:var(--teal)"></div>
+          <div class="card-icon" style="background:rgba(20,184,166,.12)">📊</div>
+          <div class="card-value" id="cardConformidade" style="color:var(--teal)">0%</div>
+          <div class="card-label">Conformidade</div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <div class="section-title-left">Normativos Regulamentadores</div>
+      </div>
+      <div class="norm-grid" id="normGrid"></div>
+
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-title">Status dos Treinamentos</div>
+          <div class="chart-sub">Distribuição atual</div>
+          <canvas id="chartPie" height="180"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Treinamentos por Normativo</div>
+          <div class="chart-sub">Realizados vs Pendentes</div>
+          <canvas id="chartBar" height="180"></canvas>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <div class="section-title-left">Próximos Vencimentos</div>
+      </div>
+      <div class="table-wrap" id="upcomingTable">
+        <table>
+          <thead><tr>
+            <th>Treinamento</th><th>Normativo</th><th>Responsável</th><th>Validade</th><th>Situação</th>
+          </tr></thead>
+          <tbody id="upcomingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================== LIST PAGE ===================== -->
+    <div class="page" id="page-list">
+      <div class="section-title">
+        <div class="section-title-left">Todos os Treinamentos</div>
+        <button class="btn btn-ghost btn-sm" onclick="exportPDF()">📄 PDF</button>
+      </div>
+      <div class="filters-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="searchInput" placeholder="Buscar treinamento..." oninput="renderList()">
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Normativo:</span>
+          <select id="filterNorm" onchange="renderList()">
+            <option value="">Todos</option>
+            <option>NR-01</option><option>NR-05</option><option>NR-06</option>
+            <option>NR-07</option><option>NR-09</option><option>NR-10</option>
+            <option>NR-11</option><option>NR-12</option><option>NR-17</option>
+            <option>NR-20</option><option>NR-23</option><option>NR-33</option>
+            <option>NR-35</option><option>Curso Profissional</option><option>Outro</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Status:</span>
+          <select id="filterStatus" onchange="renderList()">
+            <option value="">Todos</option>
+            <option>Agendado</option><option>Em Andamento</option>
+            <option>Realizado</option><option>Cancelado</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Modalidade:</span>
+          <select id="filterModal" onchange="renderList()">
+            <option value="">Todas</option>
+            <option>Presencial</option><option>EAD</option><option>Híbrido</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Treinamento</th><th>Normativo</th><th>Responsável</th>
+            <th>Data</th><th>Validade</th><th>Carga H.</th>
+            <th>Status</th><th>Ações</th>
+          </tr></thead>
+          <tbody id="listBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================== KANBAN PAGE ===================== -->
+    <div class="page" id="page-kanban">
+      <div class="section-title">
+        <div class="section-title-left">Quadro Kanban — Treinamentos</div>
+      </div>
+      <div class="kanban-board">
+        <div class="kanban-col" data-status="Agendado" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropCard(event,this)">
+          <div class="kanban-header"><div class="kanban-col-title"><span style="color:#94a3b8">📅</span> Agendado</div><span class="kanban-count" id="kc-ag">0</span></div>
+          <div class="kanban-cards" id="kc-ag-cards"></div>
+        </div>
+        <div class="kanban-col" data-status="Em Andamento" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropCard(event,this)">
+          <div class="kanban-header"><div class="kanban-col-title"><span style="color:var(--blue)">🔄</span> Em Andamento</div><span class="kanban-count" id="kc-and">0</span></div>
+          <div class="kanban-cards" id="kc-and-cards"></div>
+        </div>
+        <div class="kanban-col" data-status="Realizado" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropCard(event,this)">
+          <div class="kanban-header"><div class="kanban-col-title"><span style="color:var(--green)">✅</span> Realizado</div><span class="kanban-count" id="kc-re">0</span></div>
+          <div class="kanban-cards" id="kc-re-cards"></div>
+        </div>
+        <div class="kanban-col" data-status="Cancelado" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropCard(event,this)">
+          <div class="kanban-header"><div class="kanban-col-title"><span style="color:var(--red)">🚫</span> Cancelado</div><span class="kanban-count" id="kc-can">0</span></div>
+          <div class="kanban-cards" id="kc-can-cards"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CALENDAR PAGE ===================== -->
+    <div class="page" id="page-calendar">
+      <div class="cal-header">
+        <button class="btn btn-ghost btn-sm" onclick="calPrev()">← Anterior</button>
+        <div class="cal-nav"><div class="cal-month" id="calTitle"></div></div>
+        <button class="btn btn-ghost btn-sm" onclick="calNext()">Próximo →</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <!-- ===================== CONFIG PAGE ===================== -->
+    <div class="page" id="page-config">
+      <div class="section-title"><div class="section-title-left">Integração Google Sheets</div></div>
+      <div class="config-card">
+        <h3>🔗 Como conectar com sua planilha</h3>
+        <p>Siga os passos abaixo para salvar os treinamentos automaticamente no Google Sheets.</p>
+        <div class="config-step"><div class="step-num">1</div><div class="step-text">Crie uma nova planilha no <strong>Google Sheets</strong>.</div></div>
+        <div class="config-step"><div class="step-num">2</div><div class="step-text">Abra: <code>Extensões → Apps Script</code></div></div>
+        <div class="config-step"><div class="step-num">3</div><div class="step-text">Apague o conteúdo existente e cole o código do arquivo <code>traintrack-script.gs</code> que veio junto com este arquivo.</div></div>
+        <div class="config-step"><div class="step-num">4</div><div class="step-text">Salve (<code>Ctrl+S</code>), depois clique em <code>Implantar → Nova implantação → App da Web</code>. Em "Quem pode acessar", selecione <code>Qualquer pessoa</code>. Clique em Implantar e autorize.</div></div>
+        <div class="config-step"><div class="step-num">5</div><div class="step-text">Copie a URL gerada e cole abaixo:</div></div>
+        <div class="url-field">
+          <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/...">
+          <button class="btn btn-primary" onclick="saveApiUrl()">Salvar</button>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="testConnection()">🔌 Testar conexão</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearApiUrl()">🗑 Limpar URL</button>
+        </div>
+      </div>
+      <div class="config-card">
+        <h3>📋 Colunas da planilha</h3>
+        <p>O script criará automaticamente a aba <code>Treinamentos</code> com as colunas:</p>
+        <div class="gs-code">ID | Titulo | Normativo | Instrutor | Responsavel | DataTreinamento | Validade | CargaHoraria | Modalidade | NumParticipantes | Observacoes | Status | UltimaAtualizacao</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ===================== MODAL NOVO/EDITAR ===================== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">📋 Novo Treinamento</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-section">Dados do Treinamento</div>
+        <div class="form-group">
+          <label class="form-label">Título do Treinamento *</label>
+          <input type="text" id="fTitle" placeholder="Ex: Treinamento NR-35 — Trabalho em Altura">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Normativo / Regulamento *</label>
+            <select id="fNorm">
+              <option value="">Selecione...</option>
+              <option>NR-01</option><option>NR-05</option><option>NR-06</option>
+              <option>NR-07</option><option>NR-09</option><option>NR-10</option>
+              <option>NR-11</option><option>NR-12</option><option>NR-17</option>
+              <option>NR-20</option><option>NR-23</option><option>NR-33</option>
+              <option>NR-35</option><option>Curso Profissional</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Modalidade</label>
+            <select id="fModal">
+              <option>Presencial</option><option>EAD</option><option>Híbrido</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Instrutor / Empresa</label>
+            <input type="text" id="fInstrutor" placeholder="Nome do instrutor ou empresa">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Responsável *</label>
+            <input type="text" id="fResp" placeholder="Quem coordena o treinamento">
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Data do Treinamento</label>
+            <input type="date" id="fData">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Validade (vencimento)</label>
+            <input type="date" id="fValidade">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Carga Horária (h)</label>
+            <input type="number" id="fCargaH" placeholder="Ex: 8" min="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nº de Participantes</label>
+            <input type="number" id="fParticipantes" placeholder="Ex: 25" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="fStatus">
+              <option>Agendado</option><option>Em Andamento</option>
+              <option>Realizado</option><option>Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-section">Observações e Orientações</div>
+        <div class="form-group">
+          <label class="form-label">Observações / Orientações do Profissional</label>
+          <textarea id="fObs" placeholder="Conteúdo programático, orientações do SESMT, requisitos legais, EPIs necessários..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTraining()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL DETALHE ===================== -->
+<div class="modal-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📄 Detalhe do Treinamento</div>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDetail()">Fechar</button>
+      <button class="btn btn-teal" id="detailEditBtn">✏️ Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL HISTÓRICO ===================== -->
+<div class="modal-overlay" id="historyOverlay" onclick="if(event.target===this)closeHistory()">
+  <div class="modal" style="width:440px">
+    <div class="modal-header">
+      <div class="modal-title">📜 Histórico de Alterações</div>
+      <button class="modal-close" onclick="closeHistory()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeHistory()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG & STATE
+// ============================================================
+const API_KEY     = 'traintrack_sst_api_url';
+const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbzlkRcNwO9zoxvXbzQt4UlXRTHUJnvqQbG4s6nnjWDwmaF1XV5LGHfb9kNzmntFgcDF/exec';
+let trainings = [];
+let historyLog = [];
+let editingId = null;
+let draggedId = null;
+let calYear, calMonth;
+let chartPie, chartBar;
+
+const NR_COLORS = {
+  'NR-01':'#f5a623','NR-05':'#22c55e','NR-06':'#3b82f6','NR-07':'#14b8a6',
+  'NR-09':'#a855f7','NR-10':'#ef4444','NR-11':'#f97316','NR-12':'#eab308',
+  'NR-17':'#06b6d4','NR-20':'#ec4899','NR-23':'#84cc16','NR-33':'#8b5cf6',
+  'NR-35':'#f43f5e','Curso Profissional':'#64748b','Outro':'#475569'
+};
+
+function getApiUrl(){ return localStorage.getItem(API_KEY)||''; }
+function saveApiUrl(){ 
+  const v=document.getElementById('apiUrlInput').value.trim();
+  if(!v){showToast('Insira uma URL válida','error');return;}
+  localStorage.setItem(API_KEY,v);
+  showToast('URL salva com sucesso ✓','success');
+  loadTrainings();
+}
+function clearApiUrl(){
+  localStorage.removeItem(API_KEY);
+  document.getElementById('apiUrlInput').value='';
+  setConnStatus(false);
+  showToast('URL removida','info');
+}
+
+// ============================================================
+// API
+// ============================================================
+async function apiCall(params){
+  const url=getApiUrl();
+  if(!url) return null;
+  try{
+    const qs=new URLSearchParams(params).toString();
+    const res=await fetch(url+'?'+qs,{redirect:'follow'});
+    return await res.json();
+  }catch(e){
+    console.error('API error',e);
+    return null;
+  }
+}
+
+async function loadTrainings(){
+  const url=getApiUrl();
+  const overlay=document.getElementById('loadingOverlay');
+  overlay.classList.remove('hidden');
+  if(!url){
+    overlay.classList.add('hidden');
+    renderAll();
+    return;
+  }
+  const data=await apiCall({action:'list'});
+  if(data&&data.trainings){
+    trainings=data.trainings;
+    historyLog=data.history||[];
+    setConnStatus(true);
+    showToast(`${trainings.length} treinamento(s) carregado(s)  ✓`,'success');
+  } else {
+    setConnStatus(false);
+  }
+  overlay.classList.add('hidden');
+  renderAll();
+}
+
+function setConnStatus(ok){
+  document.getElementById('connDot').className='conn-dot'+(ok?'':' offline');
+  document.getElementById('connLabel').textContent=ok?'Conectado':'Sem conexão';
+}
+
+async function testConnection(){
+  showToast('Testando conexão...','info');
+  const data=await apiCall({action:'list'});
+  if(data&&!data.error) showToast('Conexão OK ✓','success');
+  else showToast('Falha na conexão. Verifique a URL.','error');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function todayStr(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function nowStr(){
+  const d=new Date();
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function fmtDate(v){
+  if(!v) return '—';
+  const [y,m,d]=v.split('-');
+  return d?`${d}/${m}/${y}`:v;
+}
+function addHistory(id,user,desc){
+  historyLog.unshift({actId:id,user,desc,datetime:nowStr()});
+}
+function deadlineInfo(validade){
+  if(!validade) return null;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const val=new Date(validade+'T00:00:00');
+  const diff=Math.ceil((val-today)/(1000*60*60*24));
+  if(diff<0) return {label:`Vencido há ${Math.abs(diff)}d`,cls:'deadline-over',days:diff};
+  if(diff===0) return {label:'Vence hoje!',cls:'deadline-over',days:diff};
+  if(diff<=30) return {label:`Vence em ${diff}d`,cls:'deadline-warn',days:diff};
+  return {label:`${diff}d restantes`,cls:'deadline-ok',days:diff};
+}
+function statusBadge(s){
+  const map={
+    'Agendado':'badge-agendado','Em Andamento':'badge-andamento',
+    'Realizado':'badge-realizado','Cancelado':'badge-cancelado'
+  };
+  return `<span class="badge ${map[s]||'badge-agendado'}">${s}</span>`;
+}
+function normBadge(n){
+  const c=NR_COLORS[n]||'#94a3b8';
+  return `<span class="norm-badge" style="background:${c}22;color:${c};border-color:${c}44">${n||'—'}</span>`;
+}
+
+// ============================================================
+// RENDER ALL
+// ============================================================
+function renderAll(){
+  renderAlerts();
+  renderCards();
+  renderNormGrid();
+  renderCharts();
+  renderUpcoming();
+  renderList();
+  renderKanban();
+  renderCalendar();
+}
+
+// ============================================================
+// ALERTS
+// ============================================================
+function renderAlerts(){
+  const bar=document.getElementById('alertsBar');
+  const chips=[];
+  const today=new Date(); today.setHours(0,0,0,0);
+  const in30=new Date(today); in30.setDate(today.getDate()+30);
+  const vencidos=trainings.filter(t=>t.validade&&new Date(t.validade+'T00:00:00')<today&&t.status!=='Cancelado'&&t.status!=='Realizado');
+  const vencendo=trainings.filter(t=>{
+    if(!t.validade||t.status==='Cancelado'||t.status==='Realizado') return false;
+    const v=new Date(t.validade+'T00:00:00');
+    return v>=today&&v<=in30;
+  });
+  if(vencidos.length) chips.push(`<div class="alert-chip danger">🚨 ${vencidos.length} treinamento(s) vencido(s)</div>`);
+  if(vencendo.length) chips.push(`<div class="alert-chip warn">⚠️ ${vencendo.length} treinamento(s) vencendo em 30 dias</div>`);
+  const agendados=trainings.filter(t=>t.status==='Agendado');
+  if(agendados.length) chips.push(`<div class="alert-chip info">📅 ${agendados.length} agendado(s)</div>`);
+  bar.innerHTML=chips.join('');
+}
+
+// ============================================================
+// CARDS
+// ============================================================
+function renderCards(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const in30=new Date(today); in30.setDate(today.getDate()+30);
+  const total=trainings.length;
+  const andamento=trainings.filter(t=>t.status==='Em Andamento').length;
+  const realizado=trainings.filter(t=>t.status==='Realizado').length;
+  const vencendo=trainings.filter(t=>{
+    if(!t.validade||t.status==='Cancelado'||t.status==='Realizado') return false;
+    const v=new Date(t.validade+'T00:00:00');
+    return v>=today&&v<=in30;
+  }).length;
+  const vencido=trainings.filter(t=>t.validade&&new Date(t.validade+'T00:00:00')<today&&t.status!=='Cancelado'&&t.status!=='Realizado').length;
+  const conf=total>0?Math.round((realizado/total)*100):0;
+  document.getElementById('cardTotal').textContent=total;
+  document.getElementById('cardAndamento').textContent=andamento;
+  document.getElementById('cardRealizado').textContent=realizado;
+  document.getElementById('cardVencendo').textContent=vencendo;
+  document.getElementById('cardVencido').textContent=vencido;
+  document.getElementById('cardConformidade').textContent=conf+'%';
+}
+
+// ============================================================
+// NORM GRID
+// ============================================================
+function renderNormGrid(){
+  const counts={};
+  trainings.forEach(t=>{const n=t.normativo||'Outro'; counts[n]=(counts[n]||0)+1;});
+  const grid=document.getElementById('normGrid');
+  if(!Object.keys(counts).length){grid.innerHTML='<div style="color:var(--text3);font-size:12.5px">Sem dados</div>';return;}
+  grid.innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([n,c])=>{
+    const col=NR_COLORS[n]||'#94a3b8';
+    return `<div class="norm-chip">
+      <div class="norm-dot" style="background:${col}"></div>
+      <div><div class="norm-name">${n}</div><div class="norm-count">${c} treinamento(s)</div></div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// CHARTS
+// ============================================================
+function renderCharts(){
+  // Pie
+  const counts={Agendado:0,'Em Andamento':0,Realizado:0,Cancelado:0};
+  trainings.forEach(t=>{ if(counts[t.status]!==undefined) counts[t.status]++; });
+  const pieCtx=document.getElementById('chartPie').getContext('2d');
+  if(chartPie) chartPie.destroy();
+  chartPie=new Chart(pieCtx,{
+    type:'doughnut',
+    data:{
+      labels:Object.keys(counts),
+      datasets:[{data:Object.values(counts),backgroundColor:['#64748b44','#3b82f644','#22c55e44','#ef444444'],borderColor:['#64748b','#3b82f6','#22c55e','#ef4444'],borderWidth:2}]
+    },
+    options:{plugins:{legend:{labels:{color:'#7d90b0',font:{family:'Syne',size:11}}}},cutout:'65%'}
+  });
+
+  // Bar
+  const norms=[...new Set(trainings.map(t=>t.normativo||'Outro'))].slice(0,8);
+  const realData=norms.map(n=>trainings.filter(t=>(t.normativo||'Outro')===n&&t.status==='Realizado').length);
+  const pendData=norms.map(n=>trainings.filter(t=>(t.normativo||'Outro')===n&&t.status!=='Realizado'&&t.status!=='Cancelado').length);
+  const barCtx=document.getElementById('chartBar').getContext('2d');
+  if(chartBar) chartBar.destroy();
+  chartBar=new Chart(barCtx,{
+    type:'bar',
+    data:{
+      labels:norms,
+      datasets:[
+        {label:'Realizados',data:realData,backgroundColor:'#22c55e44',borderColor:'#22c55e',borderWidth:1.5,borderRadius:4},
+        {label:'Pendentes',data:pendData,backgroundColor:'#f5a62344',borderColor:'#f5a623',borderWidth:1.5,borderRadius:4}
+      ]
+    },
+    options:{
+      plugins:{legend:{labels:{color:'#7d90b0',font:{family:'Syne',size:11}}}},
+      scales:{
+        x:{ticks:{color:'#7d90b0',font:{family:'Syne',size:10}},grid:{color:'#232d4255'}},
+        y:{ticks:{color:'#7d90b0',font:{family:'Syne',size:10}},grid:{color:'#232d4255'}}
+      }
+    }
+  });
+}
+
+// ============================================================
+// UPCOMING TABLE
+// ============================================================
+function renderUpcoming(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const upcoming=trainings
+    .filter(t=>t.validade&&t.status!=='Cancelado'&&t.status!=='Realizado')
+    .sort((a,b)=>new Date(a.validade)-new Date(b.validade))
+    .slice(0,8);
+  const body=document.getElementById('upcomingBody');
+  if(!upcoming.length){
+    body.innerHTML=`<tr><td colspan="5"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Sem vencimentos próximos</div></div></td></tr>`;
+    return;
+  }
+  body.innerHTML=upcoming.map(t=>{
+    const di=deadlineInfo(t.validade);
+    return `<tr>
+      <td><strong>${t.titulo}</strong></td>
+      <td>${normBadge(t.normativo)}</td>
+      <td>${t.responsavel||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11.5px">${fmtDate(t.validade)}</td>
+      <td>${di?`<span class="deadline-chip ${di.cls}">${di.label}</span>`:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// LIST
+// ============================================================
+function renderList(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const normF=document.getElementById('filterNorm').value;
+  const statF=document.getElementById('filterStatus').value;
+  const modF=document.getElementById('filterModal').value;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const in30=new Date(today); in30.setDate(today.getDate()+30);
+
+  let filtered=trainings.filter(t=>{
+    if(q&&!(t.titulo.toLowerCase().includes(q)||(t.normativo||'').toLowerCase().includes(q)||(t.responsavel||'').toLowerCase().includes(q))) return false;
+    if(normF&&t.normativo!==normF) return false;
+    if(statF&&t.status!==statF) return false;
+    if(modF&&t.modalidade!==modF) return false;
+    return true;
+  });
+
+  const body=document.getElementById('listBody');
+  if(!filtered.length){
+    body.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Nenhum treinamento encontrado</div></div></td></tr>`;
+    return;
+  }
+  body.innerHTML=filtered.map(t=>{
+    const di=deadlineInfo(t.validade);
+    let rowCls='';
+    if(di&&di.days<0&&t.status!=='Realizado'&&t.status!=='Cancelado') rowCls='vencido';
+    else if(di&&di.days>=0&&di.days<=30&&t.status!=='Realizado'&&t.status!=='Cancelado') rowCls='vencendo';
+    return `<tr class="${rowCls}">
+      <td><strong>${t.titulo}</strong><br><span style="font-size:11px;color:var(--text3)">${t.modalidade||''}</span></td>
+      <td>${normBadge(t.normativo)}</td>
+      <td>${t.responsavel||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11.5px">${fmtDate(t.dataTreinamento)}</td>
+      <td style="font-size:11.5px">
+        ${fmtDate(t.validade)}
+        ${di?`<br><span class="deadline-chip ${di.cls}">${di.label}</span>`:''}
+      </td>
+      <td style="text-align:center;font-size:12px">${t.cargaHoraria?t.cargaHoraria+'h':'—'}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="icon-btn view" title="Ver detalhes" onclick="openDetail('${t.id}')">👁</button>
+          <button class="icon-btn" title="Editar" onclick="editTraining('${t.id}')">✏️</button>
+          <button class="icon-btn" title="Histórico" onclick="openHistory('${t.id}')">📜</button>
+          <button class="icon-btn del" title="Excluir" onclick="deleteTraining('${t.id}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// KANBAN
+// ============================================================
+function renderKanban(){
+  const cols={
+    'Agendado':   {count:'kc-ag',  cards:'kc-ag-cards'},
+    'Em Andamento':{count:'kc-and', cards:'kc-and-cards'},
+    'Realizado':  {count:'kc-re',  cards:'kc-re-cards'},
+    'Cancelado':  {count:'kc-can', cards:'kc-can-cards'}
+  };
+  Object.entries(cols).forEach(([status,ids])=>{
+    const items=trainings.filter(t=>t.status===status);
+    document.getElementById(ids.count).textContent=items.length;
+    const el=document.getElementById(ids.cards);
+    if(!items.length){
+      el.innerHTML=`<div class="empty" style="padding:20px"><div class="empty-text">Sem itens</div></div>`;
+      return;
+    }
+    el.innerHTML=items.map(t=>{
+      const di=deadlineInfo(t.validade);
+      return `<div class="kanban-card" draggable="true" data-id="${t.id}"
+        ondragstart="draggedId='${t.id}';this.classList.add('dragging')"
+        ondragend="this.classList.remove('dragging')"
+        ondblclick="openDetail('${t.id}')">
+        <div class="kanban-card-title">${t.titulo}</div>
+        <div class="kanban-card-norm">${normBadge(t.normativo)}</div>
+        <div class="kanban-card-meta">
+          <span>${t.responsavel||'—'}</span>
+          ${di?`<span class="deadline-chip ${di.cls}">${di.label}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+async function dropCard(event,col){
+  col.classList.remove('drag-over');
+  if(!draggedId) return;
+  const t=trainings.find(x=>x.id===draggedId);
+  if(!t) return;
+  const oldStatus=t.status;
+  const newStatus=col.dataset.status;
+  if(oldStatus===newStatus) return;
+  t.status=newStatus;
+  t.ultimaAtualizacao=nowStr();
+  addHistory(t.id,t.responsavel,`Status: ${oldStatus} → ${newStatus}`);
+  await apiCall({action:'update',id:t.id,status:newStatus,ultimaAtualizacao:t.ultimaAtualizacao});
+  renderAll();
+  showToast(`Status atualizado: ${newStatus}`,'success');
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+function initCal(){
+  const n=new Date();
+  calYear=n.getFullYear();
+  calMonth=n.getMonth();
+}
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function renderCalendar(){
+  const months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('calTitle').textContent=`${months[calMonth]} ${calYear}`;
+  const grid=document.getElementById('calGrid');
+  const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let html=days.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+  const first=new Date(calYear,calMonth,1).getDay();
+  const total=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<first;i++){
+    const d=new Date(calYear,calMonth,1-first+i);
+    html+=`<div class="cal-cell other-month"><div class="cal-num">${d.getDate()}</div></div>`;
+  }
+  for(let d=1;d<=total;d++){
+    const date=new Date(calYear,calMonth,d);
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=date.getTime()===today.getTime();
+    const tasks=trainings.filter(t=>t.dataTreinamento===ds||t.validade===ds);
+    const tasksHtml=tasks.slice(0,3).map(t=>{
+      const cls=t.status.toLowerCase().replace(' ','');
+      return `<div class="cal-task ${cls==='emandamento'?'andamento':cls==='agendado'?'agendado':cls==='realizado'?'realizado':'cancelado'}" title="${t.titulo}" onclick="openDetail('${t.id}')">${t.titulo}</div>`;
+    }).join('');
+    html+=`<div class="cal-cell${isToday?' today':''}">
+      <div class="cal-num">${d}</div>
+      ${tasksHtml}
+      ${tasks.length>3?`<div style="font-size:9.5px;color:var(--text3)">+${tasks.length-3} mais</div>`:''}
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+// ============================================================
+// DETAIL MODAL
+// ============================================================
+function openDetail(id){
+  const t=trainings.find(x=>x.id===id);
+  if(!t) return;
+  const di=deadlineInfo(t.validade);
+  document.getElementById('detailBody').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-field"><div class="detail-label">Normativo</div><div class="detail-value">${normBadge(t.normativo)}</div></div>
+      <div class="detail-field"><div class="detail-label">Status</div><div class="detail-value">${statusBadge(t.status)}</div></div>
+    </div>
+    <div class="detail-field"><div class="detail-label">Título</div><div class="detail-value" style="font-size:15px;font-weight:700">${t.titulo}</div></div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="detail-label">Responsável</div><div class="detail-value">${t.responsavel||'—'}</div></div>
+      <div class="detail-field"><div class="detail-label">Instrutor / Empresa</div><div class="detail-value">${t.instrutor||'—'}</div></div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="detail-label">Data do Treinamento</div><div class="detail-value">${fmtDate(t.dataTreinamento)}</div></div>
+      <div class="detail-field"><div class="detail-label">Validade</div><div class="detail-value">${fmtDate(t.validade)} ${di?`<span class="deadline-chip ${di.cls}" style="margin-left:5px">${di.label}</span>`:''}</div></div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="detail-label">Carga Horária</div><div class="detail-value">${t.cargaHoraria?t.cargaHoraria+'h':'—'}</div></div>
+      <div class="detail-field"><div class="detail-label">Modalidade / Participantes</div><div class="detail-value">${t.modalidade||'—'} · ${t.numParticipantes?t.numParticipantes+' pessoas':'—'}</div></div>
+    </div>
+    ${t.observacoes?`<div class="detail-field"><div class="detail-label">Observações / Orientações</div><div class="detail-value" style="background:var(--bg3);border-radius:8px;padding:12px;font-size:12.5px;line-height:1.6;white-space:pre-wrap">${t.observacoes}</div></div>`:''}
+    <div class="detail-field"><div class="detail-label">Última Atualização</div><div class="detail-value" style="font-size:11.5px;color:var(--text2)">${t.ultimaAtualizacao||'—'}</div></div>
+  `;
+  document.getElementById('detailEditBtn').onclick=()=>{closeDetail();editTraining(id);};
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail(){ document.getElementById('detailOverlay').classList.remove('open'); }
+
+// ============================================================
+// CRUD
+// ============================================================
+function openModal(id=null){
+  editingId=id;
+  document.getElementById('modalTitle').textContent=id?'✏️ Editar Treinamento':'📋 Novo Treinamento';
+  const t=id?trainings.find(x=>x.id===id):null;
+  document.getElementById('fTitle').value=t?t.titulo:'';
+  document.getElementById('fNorm').value=t?t.normativo:'';
+  document.getElementById('fModal').value=t?t.modalidade:'Presencial';
+  document.getElementById('fInstrutor').value=t?t.instrutor:'';
+  document.getElementById('fResp').value=t?t.responsavel:'';
+  document.getElementById('fData').value=t?t.dataTreinamento:'';
+  document.getElementById('fValidade').value=t?t.validade:'';
+  document.getElementById('fCargaH').value=t?t.cargaHoraria:'';
+  document.getElementById('fParticipantes').value=t?t.numParticipantes:'';
+  document.getElementById('fStatus').value=t?t.status:'Agendado';
+  document.getElementById('fObs').value=t?t.observacoes:'';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); editingId=null; }
+
+function editTraining(id){ showPage('list',document.querySelectorAll('.nav-item')[1]); openModal(id); }
+
+async function saveTraining(){
+  const titulo=document.getElementById('fTitle').value.trim();
+  const resp=document.getElementById('fResp').value.trim();
+  const norm=document.getElementById('fNorm').value;
+  if(!titulo||!resp){showToast('Título e responsável são obrigatórios','error');return;}
+  if(!norm){showToast('Selecione um normativo','error');return;}
+  const data={
+    titulo, normativo:norm,
+    modalidade:document.getElementById('fModal').value,
+    instrutor:document.getElementById('fInstrutor').value.trim(),
+    responsavel:resp,
+    dataTreinamento:document.getElementById('fData').value,
+    validade:document.getElementById('fValidade').value,
+    cargaHoraria:document.getElementById('fCargaH').value,
+    numParticipantes:document.getElementById('fParticipantes').value,
+    status:document.getElementById('fStatus').value,
+    observacoes:document.getElementById('fObs').value.trim(),
+    ultimaAtualizacao:nowStr()
+  };
+  if(editingId){
+    const t=trainings.find(x=>x.id===editingId);
+    const oldStatus=t.status;
+    Object.assign(t,data);
+    if(oldStatus!==data.status) addHistory(editingId,resp,`Status: ${oldStatus} → ${data.status}`);
+    else addHistory(editingId,resp,'Treinamento editado');
+    await apiCall({action:'update',id:editingId,...data});
+    showToast('Treinamento atualizado ✓','success');
+  } else {
+    const newId=String(Date.now());
+    const newT={id:newId,dataCriacao:todayStr(),...data};
+    trainings.push(newT);
+    addHistory(newId,resp,'Treinamento criado');
+    await apiCall({action:'create',id:newId,dataCriacao:newT.dataCriacao,...data});
+    showToast('Treinamento criado ✓','success');
+  }
+  closeModal();
+  renderAll();
+}
+
+async function deleteTraining(id){
+  if(!confirm('Tem certeza que deseja excluir este treinamento?')) return;
+  trainings=trainings.filter(t=>t.id!==id);
+  await apiCall({action:'delete',id});
+  showToast('Treinamento excluído','info');
+  renderAll();
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function openHistory(id){
+  const items=historyLog.filter(h=>h.actId===id);
+  const list=document.getElementById('historyList');
+  list.innerHTML=items.length
+    ? items.map(h=>`<div class="history-item">
+        <div class="history-item-header"><span class="history-user">${h.user}</span><span class="history-time">${h.datetime}</span></div>
+        <div class="history-desc">${h.desc}</div>
+      </div>`).join('')
+    : '<div class="empty-text" style="padding:20px;text-align:center">Sem histórico</div>';
+  document.getElementById('historyOverlay').classList.add('open');
+}
+function closeHistory(){ document.getElementById('historyOverlay').classList.remove('open'); }
+
+// ============================================================
+// EXPORT
+// ============================================================
+function exportPDF(){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape'});
+  doc.setFontSize(14); doc.text('TrainTrack SST — Treinamentos',14,14);
+  doc.setFontSize(8); doc.setTextColor(120); doc.text(`Gerado em: ${nowStr()}`,14,20);
+  let y=28;
+  doc.setFontSize(7); doc.setTextColor(60);
+  ['Título','Normativo','Responsável','Data','Validade','Status'].forEach((h,i)=>doc.text(h,[14,70,110,150,170,200][i],y));
+  y+=3; doc.line(14,y,285,y); y+=5;
+  trainings.forEach(t=>{
+    if(y>190){doc.addPage();y=14;}
+    doc.text((t.titulo||'').substring(0,35),14,y);
+    doc.text(t.normativo||'',70,y);
+    doc.text((t.responsavel||'').substring(0,20),110,y);
+    doc.text(fmtDate(t.dataTreinamento),150,y);
+    doc.text(fmtDate(t.validade),170,y);
+    doc.text(t.status,200,y);
+    y+=6;
+  });
+  doc.save('traintrack-sst.pdf');
+  showToast('PDF exportado ✓','success');
+}
+function exportExcel(){
+  const ws=XLSX.utils.json_to_sheet(trainings.map(t=>({
+    Título:t.titulo, Normativo:t.normativo, Instrutor:t.instrutor,
+    Responsável:t.responsavel, 'Data do Treinamento':fmtDate(t.dataTreinamento),
+    Validade:fmtDate(t.validade), 'Carga Horária':t.cargaHoraria,
+    Modalidade:t.modalidade, Participantes:t.numParticipantes,
+    Status:t.status, Observações:t.observacoes
+  })));
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Treinamentos');
+  XLSX.writeFile(wb,'traintrack-sst.xlsx');
+  showToast('Excel exportado ✓','success');
+}
+
+// ============================================================
+// UI
+// ============================================================
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  const titles={dashboard:'Dashboard',list:'Lista',kanban:'Kanban',calendar:'Calendário',config:'Configurações'};
+  document.getElementById('topbarSub').textContent=titles[name]||'';
+  if(name==='kanban') renderKanban();
+  if(name==='calendar') renderCalendar();
+  if(name==='config'){const u=getApiUrl();document.getElementById('apiUrlInput').value=u;}
+  if(window.innerWidth<=920) document.getElementById('sidebar').classList.remove('open');
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
+function showToast(msg,type='info'){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  const icons={success:'✓',error:'✕',info:'ℹ'};
+  t.innerHTML=`<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// Garante que a URL da planilha esteja sempre salva
+if (!localStorage.getItem(API_KEY)) {
+  localStorage.setItem(API_KEY, FIXED_API_URL);
+}
+initCal();
+loadTrainings();
+</script>
+</body>
+</html>
