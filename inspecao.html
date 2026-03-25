@@ -492,6 +492,30 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { color: var(--text2); font-size: 13px; }
+
+  /* ── WIZARD ── */
+  .wizard-step {
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
+    padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    color: var(--text3); background: var(--surface2); border: 1px solid var(--border);
+    transition: all .15s;
+  }
+  .wizard-step.active { color: var(--accent); border-color: var(--accent); background: rgba(0,212,170,.08); }
+  .wizard-step.done { color: var(--success); border-color: var(--success); background: rgba(34,197,94,.08); }
+  .wstep-num {
+    width: 18px; height: 18px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+    font-size: 10px; font-weight: 700; background: var(--border); color: var(--text2);
+  }
+  .wizard-step.active .wstep-num { background: var(--accent); color: #000; }
+  .wizard-step.done .wstep-num { background: var(--success); color: #000; }
+  .wizard-sep { color: var(--text3); font-size: 16px; line-height: 1; align-self: center; }
+  .nc-card, .pa-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 10px 12px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  }
+  .nc-card-info, .pa-card-info { flex: 1; min-width: 0; }
+  .nc-card-title, .pa-card-title { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nc-card-sub, .pa-card-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -503,14 +527,31 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- MODAL INSPEÇÃO -->
+<!-- MODAL WIZARD: INSPEÇÃO + NC + PLANO DE AÇÃO -->
 <div class="modal-backdrop" id="modalInspecao">
-  <div class="modal">
+  <div class="modal" style="max-width:680px;width:95vw">
     <div class="modal-head">
-      <div class="modal-title" id="modalInspecaoTitle">Nova Inspeção</div>
+      <div>
+        <div class="modal-title" id="modalInspecaoTitle">Nova Inspeção</div>
+        <div style="display:flex;gap:8px;margin-top:10px" id="wizardSteps">
+          <div class="wizard-step active" id="wstep1" onclick="wizardGoto(1)">
+            <span class="wstep-num">1</span><span class="wstep-label">Inspeção</span>
+          </div>
+          <div class="wizard-sep">›</div>
+          <div class="wizard-step" id="wstep2" onclick="wizardGoto(2)">
+            <span class="wstep-num">2</span><span class="wstep-label">Não Conformidades</span>
+          </div>
+          <div class="wizard-sep">›</div>
+          <div class="wizard-step" id="wstep3" onclick="wizardGoto(3)">
+            <span class="wstep-num">3</span><span class="wstep-label">Plano de Ação</span>
+          </div>
+        </div>
+      </div>
       <button class="modal-close" onclick="closeModal('modalInspecao')">×</button>
     </div>
-    <div class="modal-body">
+
+    <!-- STEP 1: INSPEÇÃO -->
+    <div class="modal-body wizard-pane" id="wpane1">
       <div class="field-row">
         <div class="field">
           <label>Nº da Inspeção</label>
@@ -526,15 +567,9 @@
           <label>Setor *</label>
           <select id="ins_setor">
             <option value="">Selecione...</option>
-            <option>Produção</option>
-            <option>Almoxarifado</option>
-            <option>Manutenção</option>
-            <option>Administrativo</option>
-            <option>Logística</option>
-            <option>Laboratório</option>
-            <option>Elétrica</option>
-            <option>Construção Civil</option>
-            <option>Vestiários</option>
+            <option>Produção</option><option>Almoxarifado</option><option>Manutenção</option>
+            <option>Administrativo</option><option>Logística</option><option>Laboratório</option>
+            <option>Elétrica</option><option>Construção Civil</option><option>Vestiários</option>
             <option>Refeitório</option>
           </select>
         </div>
@@ -542,9 +577,7 @@
           <label>Tipo de Inspeção *</label>
           <select id="ins_tipo">
             <option value="">Selecione...</option>
-            <option>Rotina</option>
-            <option>Auditoria</option>
-            <option>Emergencial</option>
+            <option>Rotina</option><option>Auditoria</option><option>Emergencial</option>
           </select>
         </div>
       </div>
@@ -557,60 +590,163 @@
         <textarea id="ins_obs" placeholder="Anotações gerais sobre a inspeção..."></textarea>
       </div>
     </div>
-    <div class="modal-foot">
+
+    <!-- STEP 2: NÃO CONFORMIDADES -->
+    <div class="modal-body wizard-pane" id="wpane2" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--text2)">Inspeção: <strong id="nc_ins_label" style="color:var(--accent)"></strong></div>
+        <button class="btn btn-primary btn-sm" onclick="wizardAddNC()">+ Adicionar NC</button>
+      </div>
+
+      <!-- Formulário inline de NC -->
+      <div id="ncForm" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none">
+        <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Nova Não Conformidade</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Item Avaliado *</label>
+            <input type="text" id="nc_item" placeholder="Ex: EPI, Sinalização...">
+          </div>
+          <div class="field">
+            <label>Risco *</label>
+            <select id="nc_risco">
+              <option value="">Selecione...</option>
+              <option>Baixo</option><option>Médio</option><option>Alto</option><option>Crítico</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Descrição do Problema *</label>
+          <textarea id="nc_descricao" placeholder="Descreva o problema identificado..." style="min-height:64px"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Prioridade *</label>
+            <select id="nc_prioridade">
+              <option value="">Selecione...</option>
+              <option>Baixa</option><option>Média</option><option>Alta</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Norma/Referência</label>
+            <input type="text" id="nc_norma" placeholder="Ex: NR-12, NR-35...">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-secondary btn-sm" onclick="wizardCancelNC()">Cancelar</button>
+          <button class="btn btn-primary btn-sm" onclick="wizardConfirmNC()">✔ Confirmar NC</button>
+        </div>
+      </div>
+
+      <!-- Lista de NCs adicionadas -->
+      <div id="ncList" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto">
+        <div style="color:var(--text3);text-align:center;padding:20px 0;font-size:13px" id="ncEmpty">Nenhuma não conformidade adicionada.</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: PLANO DE AÇÃO -->
+    <div class="modal-body wizard-pane" id="wpane3" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--text2)">Inspeção: <strong id="pa_ins_label" style="color:var(--accent)"></strong></div>
+        <button class="btn btn-primary btn-sm" onclick="wizardAddPA()">+ Adicionar Ação</button>
+      </div>
+
+      <!-- Formulário inline de PA -->
+      <div id="paForm" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none">
+        <div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Nova Ação Corretiva</div>
+        <div class="field">
+          <label>Ação Corretiva *</label>
+          <textarea id="pa_acao" placeholder="Descreva a ação a ser executada..." style="min-height:64px"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Responsável *</label>
+            <input type="text" id="pa_responsavel" placeholder="Nome do responsável">
+          </div>
+          <div class="field">
+            <label>Status *</label>
+            <select id="pa_status">
+              <option value="">Selecione...</option>
+              <option>Pendente</option><option>Em andamento</option><option>Concluído</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Data de Início *</label>
+            <input type="date" id="pa_inicio">
+          </div>
+          <div class="field">
+            <label>Prazo Final *</label>
+            <input type="date" id="pa_prazo">
+          </div>
+        </div>
+        <div class="field">
+          <label>Data de Conclusão</label>
+          <input type="date" id="pa_conclusao">
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-secondary btn-sm" onclick="wizardCancelPA()">Cancelar</button>
+          <button class="btn btn-primary btn-sm" onclick="wizardConfirmPA()">✔ Confirmar Ação</button>
+        </div>
+      </div>
+
+      <!-- Lista de ações adicionadas -->
+      <div id="paList" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto">
+        <div style="color:var(--text3);text-align:center;padding:20px 0;font-size:13px" id="paEmpty">Nenhuma ação adicionada.</div>
+      </div>
+    </div>
+
+    <div class="modal-foot" id="wizardFoot">
       <button class="btn btn-secondary" onclick="closeModal('modalInspecao')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveInspecao()">💾 Salvar</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" id="btnWizardBack" onclick="wizardBack()" style="display:none">← Voltar</button>
+        <button class="btn btn-primary" id="btnWizardNext" onclick="wizardNext()">Próximo →</button>
+        <button class="btn btn-primary" id="btnWizardSave" onclick="wizardSaveAll()" style="display:none">💾 Salvar Tudo</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL NÃO CONFORMIDADE -->
+<!-- MODAL NÃO CONFORMIDADE (edição standalone) -->
 <div class="modal-backdrop" id="modalNC">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title">Nova Não Conformidade</div>
+      <div class="modal-title">Editar Não Conformidade</div>
       <button class="modal-close" onclick="closeModal('modalNC')">×</button>
     </div>
     <div class="modal-body">
       <div class="field-row">
         <div class="field">
           <label>Nº da Inspeção *</label>
-          <select id="nc_ins">
-            <option value="">Selecione...</option>
-          </select>
+          <select id="nc_ins_edit"><option value="">Selecione...</option></select>
         </div>
         <div class="field">
-          <label>Classificação do Risco *</label>
-          <select id="nc_risco">
+          <label>Risco *</label>
+          <select id="nc_risco_edit">
             <option value="">Selecione...</option>
-            <option>Baixo</option>
-            <option>Médio</option>
-            <option>Alto</option>
-            <option>Crítico</option>
+            <option>Baixo</option><option>Médio</option><option>Alto</option><option>Crítico</option>
           </select>
         </div>
       </div>
       <div class="field">
         <label>Item Avaliado *</label>
-        <input type="text" id="nc_item" placeholder="Ex: EPI, Sinalização, Equipamentos...">
+        <input type="text" id="nc_item_edit" placeholder="Ex: EPI, Sinalização, Equipamentos...">
       </div>
       <div class="field">
         <label>Descrição do Problema *</label>
-        <textarea id="nc_descricao" placeholder="Descreva o problema identificado..."></textarea>
+        <textarea id="nc_descricao_edit" placeholder="Descreva o problema..."></textarea>
       </div>
       <div class="field-row">
         <div class="field">
           <label>Prioridade *</label>
-          <select id="nc_prioridade">
+          <select id="nc_prioridade_edit">
             <option value="">Selecione...</option>
-            <option>Baixa</option>
-            <option>Média</option>
-            <option>Alta</option>
+            <option>Baixa</option><option>Média</option><option>Alta</option>
           </select>
         </div>
         <div class="field">
           <label>Norma/Referência</label>
-          <input type="text" id="nc_norma" placeholder="Ex: NR-12, NR-35...">
+          <input type="text" id="nc_norma_edit" placeholder="Ex: NR-12, NR-35...">
         </div>
       </div>
     </div>
@@ -621,52 +757,48 @@
   </div>
 </div>
 
-<!-- MODAL PLANO DE AÇÃO -->
+<!-- MODAL PLANO DE AÇÃO (edição standalone) -->
 <div class="modal-backdrop" id="modalPA">
   <div class="modal">
     <div class="modal-head">
-      <div class="modal-title">Novo Plano de Ação</div>
+      <div class="modal-title">Editar Plano de Ação</div>
       <button class="modal-close" onclick="closeModal('modalPA')">×</button>
     </div>
     <div class="modal-body">
       <div class="field-row">
         <div class="field">
           <label>Nº da Inspeção *</label>
-          <select id="pa_ins">
-            <option value="">Selecione...</option>
-          </select>
+          <select id="pa_ins_edit"><option value="">Selecione...</option></select>
         </div>
         <div class="field">
           <label>Status *</label>
-          <select id="pa_status">
+          <select id="pa_status_edit">
             <option value="">Selecione...</option>
-            <option>Pendente</option>
-            <option>Em andamento</option>
-            <option>Concluído</option>
+            <option>Pendente</option><option>Em andamento</option><option>Concluído</option>
           </select>
         </div>
       </div>
       <div class="field">
         <label>Ação Corretiva *</label>
-        <textarea id="pa_acao" placeholder="Descreva a ação corretiva a ser executada..."></textarea>
+        <textarea id="pa_acao_edit" placeholder="Descreva a ação corretiva..."></textarea>
       </div>
       <div class="field">
-        <label>Responsável pela Ação *</label>
-        <input type="text" id="pa_responsavel" placeholder="Nome do responsável">
+        <label>Responsável *</label>
+        <input type="text" id="pa_responsavel_edit" placeholder="Nome do responsável">
       </div>
       <div class="field-row">
         <div class="field">
           <label>Data de Início *</label>
-          <input type="date" id="pa_inicio">
+          <input type="date" id="pa_inicio_edit">
         </div>
         <div class="field">
           <label>Prazo Final *</label>
-          <input type="date" id="pa_prazo">
+          <input type="date" id="pa_prazo_edit">
         </div>
       </div>
       <div class="field">
         <label>Data de Conclusão</label>
-        <input type="date" id="pa_conclusao">
+        <input type="date" id="pa_conclusao_edit">
       </div>
     </div>
     <div class="modal-foot">
@@ -1073,11 +1205,20 @@ function switchTab(tab) {
 }
 
 // ─── MODALS ───────────────────────────────────────────────────────────────────
+// ─── MODALS ───────────────────────────────────────────────────────────────────
+let wizardStep = 1;
+let wizardNCs = [];   // NCs pendentes (não salvas ainda)
+let wizardPAs = [];   // PAs pendentes (não salvas ainda)
+let wizardInsNum = '';
+
 function openModal(id, mode, data = null) {
   document.getElementById(id).classList.add('open');
   populateDropdowns();
 
   if (id === 'modalInspecao') {
+    wizardStep = 1;
+    wizardNCs = [];
+    wizardPAs = [];
     editingId.inspecoes = data ? data.num : null;
     document.getElementById('modalInspecaoTitle').textContent = data ? 'Editar Inspeção' : 'Nova Inspeção';
     document.getElementById('ins_num').value = data ? data.num : nextNum();
@@ -1086,25 +1227,32 @@ function openModal(id, mode, data = null) {
     document.getElementById('ins_tipo').value = data ? data.tipo : '';
     document.getElementById('ins_responsavel').value = data ? data.responsavel : '';
     document.getElementById('ins_obs').value = data ? data.obs : '';
+    wizardInsNum = document.getElementById('ins_num').value;
+    // Se editando, carrega NCs e PAs existentes para exibição
+    if (data) {
+      wizardNCs = DB.nc.filter(r => r.ins_num === data.num).map(r => ({...r}));
+      wizardPAs = DB.pa.filter(r => r.ins_num === data.num).map(r => ({...r}));
+    }
+    wizardGoto(1);
   }
   if (id === 'modalNC') {
     editingId.nc = data ? data._idx : null;
-    document.getElementById('nc_ins').value = data ? data.ins_num : '';
-    document.getElementById('nc_item').value = data ? data.item : '';
-    document.getElementById('nc_descricao').value = data ? data.descricao : '';
-    document.getElementById('nc_risco').value = data ? data.risco : '';
-    document.getElementById('nc_prioridade').value = data ? data.prioridade : '';
-    document.getElementById('nc_norma').value = data ? data.norma : '';
+    document.getElementById('nc_ins_edit').value = data ? data.ins_num : '';
+    document.getElementById('nc_item_edit').value = data ? data.item : '';
+    document.getElementById('nc_descricao_edit').value = data ? data.descricao : '';
+    document.getElementById('nc_risco_edit').value = data ? data.risco : '';
+    document.getElementById('nc_prioridade_edit').value = data ? data.prioridade : '';
+    document.getElementById('nc_norma_edit').value = data ? data.norma : '';
   }
   if (id === 'modalPA') {
     editingId.pa = data ? data._idx : null;
-    document.getElementById('pa_ins').value = data ? data.ins_num : '';
-    document.getElementById('pa_acao').value = data ? data.acao : '';
-    document.getElementById('pa_responsavel').value = data ? data.responsavel : '';
-    document.getElementById('pa_inicio').value = data ? data.inicio : '';
-    document.getElementById('pa_prazo').value = data ? data.prazo : '';
-    document.getElementById('pa_status').value = data ? data.status : '';
-    document.getElementById('pa_conclusao').value = data ? data.conclusao : '';
+    document.getElementById('pa_ins_edit').value = data ? data.ins_num : '';
+    document.getElementById('pa_acao_edit').value = data ? data.acao : '';
+    document.getElementById('pa_responsavel_edit').value = data ? data.responsavel : '';
+    document.getElementById('pa_inicio_edit').value = data ? data.inicio : '';
+    document.getElementById('pa_prazo_edit').value = data ? data.prazo : '';
+    document.getElementById('pa_status_edit').value = data ? data.status : '';
+    document.getElementById('pa_conclusao_edit').value = data ? data.conclusao : '';
   }
   if (id === 'modalAC') {
     editingId.ac = data ? data._idx : null;
@@ -1118,10 +1266,146 @@ function openModal(id, mode, data = null) {
 
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
+  if (id === 'modalInspecao') {
+    document.getElementById('ncForm').style.display = 'none';
+    document.getElementById('paForm').style.display = 'none';
+  }
 }
 
-// ─── SAVE ACTIONS ─────────────────────────────────────────────────────────────
-async function saveInspecao() {
+// ─── WIZARD ───────────────────────────────────────────────────────────────────
+function wizardGoto(step) {
+  wizardStep = step;
+  [1,2,3].forEach(s => {
+    document.getElementById('wpane' + s).style.display = s === step ? '' : 'none';
+    const el = document.getElementById('wstep' + s);
+    el.classList.remove('active','done');
+    if (s === step) el.classList.add('active');
+    else if (s < step) el.classList.add('done');
+  });
+  document.getElementById('btnWizardBack').style.display = step > 1 ? '' : 'none';
+  document.getElementById('btnWizardNext').style.display = step < 3 ? '' : 'none';
+  document.getElementById('btnWizardSave').style.display = step === 3 ? '' : 'none';
+
+  if (step === 2) {
+    wizardInsNum = document.getElementById('ins_num').value;
+    document.getElementById('nc_ins_label').textContent = wizardInsNum;
+    renderWizardNCs();
+  }
+  if (step === 3) {
+    wizardInsNum = document.getElementById('ins_num').value;
+    document.getElementById('pa_ins_label').textContent = wizardInsNum;
+    renderWizardPAs();
+  }
+}
+
+function wizardNext() {
+  if (wizardStep === 1) {
+    const data = document.getElementById('ins_data').value;
+    const setor = document.getElementById('ins_setor').value;
+    const tipo = document.getElementById('ins_tipo').value;
+    const responsavel = document.getElementById('ins_responsavel').value.trim();
+    if (!data || !setor || !tipo || !responsavel) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+    wizardInsNum = document.getElementById('ins_num').value;
+  }
+  wizardGoto(wizardStep + 1);
+}
+
+function wizardBack() {
+  wizardGoto(wizardStep - 1);
+}
+
+// NC dentro do wizard
+function wizardAddNC() {
+  document.getElementById('nc_item').value = '';
+  document.getElementById('nc_risco').value = '';
+  document.getElementById('nc_descricao').value = '';
+  document.getElementById('nc_prioridade').value = '';
+  document.getElementById('nc_norma').value = '';
+  document.getElementById('ncForm').style.display = '';
+}
+function wizardCancelNC() { document.getElementById('ncForm').style.display = 'none'; }
+function wizardConfirmNC() {
+  const item = document.getElementById('nc_item').value.trim();
+  const risco = document.getElementById('nc_risco').value;
+  const descricao = document.getElementById('nc_descricao').value.trim();
+  const prioridade = document.getElementById('nc_prioridade').value;
+  const norma = document.getElementById('nc_norma').value.trim();
+  if (!item || !risco || !descricao || !prioridade) { toast('Preencha os campos obrigatórios da NC', 'error'); return; }
+  wizardNCs.push({ ins_num: wizardInsNum, item, risco, descricao, prioridade, norma });
+  document.getElementById('ncForm').style.display = 'none';
+  renderWizardNCs();
+}
+function wizardRemoveNC(i) {
+  wizardNCs.splice(i, 1);
+  renderWizardNCs();
+}
+function renderWizardNCs() {
+  const list = document.getElementById('ncList');
+  const empty = document.getElementById('ncEmpty');
+  if (!wizardNCs.length) { empty.style.display = ''; list.querySelectorAll('.nc-card').forEach(e=>e.remove()); return; }
+  empty.style.display = 'none';
+  list.querySelectorAll('.nc-card').forEach(e=>e.remove());
+  wizardNCs.forEach((nc, i) => {
+    const d = document.createElement('div');
+    d.className = 'nc-card';
+    d.innerHTML = `
+      <div class="nc-card-info">
+        <div class="nc-card-title">${esc(nc.item)}</div>
+        <div class="nc-card-sub"><span class="badge ${riscoBadge(nc.risco)}">${esc(nc.risco)}</span> · <span class="badge ${prioridadeBadge(nc.prioridade)}">${esc(nc.prioridade)}</span>${nc.norma?' · '+esc(nc.norma):''}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nc.descricao)}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="wizardRemoveNC(${i})">🗑</button>`;
+    list.appendChild(d);
+  });
+}
+
+// PA dentro do wizard
+function wizardAddPA() {
+  document.getElementById('pa_acao').value = '';
+  document.getElementById('pa_responsavel').value = '';
+  document.getElementById('pa_status').value = '';
+  document.getElementById('pa_inicio').value = '';
+  document.getElementById('pa_prazo').value = '';
+  document.getElementById('pa_conclusao').value = '';
+  document.getElementById('paForm').style.display = '';
+}
+function wizardCancelPA() { document.getElementById('paForm').style.display = 'none'; }
+function wizardConfirmPA() {
+  const acao = document.getElementById('pa_acao').value.trim();
+  const responsavel = document.getElementById('pa_responsavel').value.trim();
+  const status = document.getElementById('pa_status').value;
+  const inicio = document.getElementById('pa_inicio').value;
+  const prazo = document.getElementById('pa_prazo').value;
+  const conclusao = document.getElementById('pa_conclusao').value;
+  if (!acao || !responsavel || !status || !inicio || !prazo) { toast('Preencha os campos obrigatórios da ação', 'error'); return; }
+  wizardPAs.push({ ins_num: wizardInsNum, acao, responsavel, status, inicio, prazo, conclusao });
+  document.getElementById('paForm').style.display = 'none';
+  renderWizardPAs();
+}
+function wizardRemovePA(i) {
+  wizardPAs.splice(i, 1);
+  renderWizardPAs();
+}
+function renderWizardPAs() {
+  const list = document.getElementById('paList');
+  const empty = document.getElementById('paEmpty');
+  if (!wizardPAs.length) { empty.style.display = ''; list.querySelectorAll('.pa-card').forEach(e=>e.remove()); return; }
+  empty.style.display = 'none';
+  list.querySelectorAll('.pa-card').forEach(e=>e.remove());
+  wizardPAs.forEach((pa, i) => {
+    const d = document.createElement('div');
+    d.className = 'pa-card';
+    d.innerHTML = `
+      <div class="pa-card-info">
+        <div class="pa-card-title">${esc(pa.acao)}</div>
+        <div class="pa-card-sub"><span class="badge ${statusBadge(pa.status)}">${esc(pa.status)}</span> · ${esc(pa.responsavel)} · Prazo: ${fmtDate(pa.prazo)}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="wizardRemovePA(${i})">🗑</button>`;
+    list.appendChild(d);
+  });
+}
+
+async function wizardSaveAll() {
   const num = document.getElementById('ins_num').value;
   const data = document.getElementById('ins_data').value;
   const setor = document.getElementById('ins_setor').value;
@@ -1129,35 +1413,51 @@ async function saveInspecao() {
   const responsavel = document.getElementById('ins_responsavel').value.trim();
   const obs = document.getElementById('ins_obs').value.trim();
 
-  if (!data || !setor || !tipo || !responsavel) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+  setLoading(true);
 
-  const row = { num, data, setor, responsavel, tipo, obs };
-
+  // Salva inspeção
+  const insRow = { num, data, setor, responsavel, tipo, obs };
   if (editingId.inspecoes) {
     const idx = DB.inspecoes.findIndex(r => r.num === editingId.inspecoes);
-    if (idx > -1) { DB.inspecoes[idx] = row; await updateRow('inspecoes', editingId.inspecoes, row); }
+    if (idx > -1) { DB.inspecoes[idx] = insRow; await updateRow('inspecoes', editingId.inspecoes, insRow); }
+    // Remove NCs e PAs antigas desta inspeção para reinserir
+    DB.nc = DB.nc.filter(r => r.ins_num !== num);
+    DB.pa = DB.pa.filter(r => r.ins_num !== num);
   } else {
-    DB.inspecoes.push(row);
-    await pushRow('inspecoes', row);
+    DB.inspecoes.push(insRow);
+    await pushRow('inspecoes', insRow);
   }
 
+  // Salva NCs
+  for (const nc of wizardNCs) {
+    nc.ins_num = num;
+    DB.nc.push(nc);
+    await pushRow('nc', nc);
+  }
+
+  // Salva PAs
+  for (const pa of wizardPAs) {
+    pa.ins_num = num;
+    DB.pa.push(pa);
+    await pushRow('pa', pa);
+  }
+
+  setLoading(false);
   closeModal('modalInspecao');
   renderAll();
-  toast('Inspeção salva com sucesso!', 'success');
+  toast(`Inspeção ${num} salva! (${wizardNCs.length} NCs, ${wizardPAs.length} ações)`, 'success');
 }
 
+// ─── SAVE STANDALONE (edição das tabelas) ─────────────────────────────────────
 async function saveNC() {
-  const ins_num = document.getElementById('nc_ins').value;
-  const item = document.getElementById('nc_item').value.trim();
-  const descricao = document.getElementById('nc_descricao').value.trim();
-  const risco = document.getElementById('nc_risco').value;
-  const prioridade = document.getElementById('nc_prioridade').value;
-  const norma = document.getElementById('nc_norma').value.trim();
-
+  const ins_num = document.getElementById('nc_ins_edit').value;
+  const item = document.getElementById('nc_item_edit').value.trim();
+  const descricao = document.getElementById('nc_descricao_edit').value.trim();
+  const risco = document.getElementById('nc_risco_edit').value;
+  const prioridade = document.getElementById('nc_prioridade_edit').value;
+  const norma = document.getElementById('nc_norma_edit').value.trim();
   if (!ins_num || !item || !descricao || !risco || !prioridade) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
-
   const row = { ins_num, item, descricao, risco, prioridade, norma };
-
   if (editingId.nc !== null) {
     DB.nc[editingId.nc] = row;
     await updateRow('nc', ins_num + '_' + editingId.nc, row);
@@ -1165,25 +1465,21 @@ async function saveNC() {
     DB.nc.push(row);
     await pushRow('nc', row);
   }
-
   closeModal('modalNC');
   renderAll();
   toast('Não conformidade salva!', 'success');
 }
 
 async function savePA() {
-  const ins_num = document.getElementById('pa_ins').value;
-  const acao = document.getElementById('pa_acao').value.trim();
-  const responsavel = document.getElementById('pa_responsavel').value.trim();
-  const inicio = document.getElementById('pa_inicio').value;
-  const prazo = document.getElementById('pa_prazo').value;
-  const status = document.getElementById('pa_status').value;
-  const conclusao = document.getElementById('pa_conclusao').value;
-
+  const ins_num = document.getElementById('pa_ins_edit').value;
+  const acao = document.getElementById('pa_acao_edit').value.trim();
+  const responsavel = document.getElementById('pa_responsavel_edit').value.trim();
+  const inicio = document.getElementById('pa_inicio_edit').value;
+  const prazo = document.getElementById('pa_prazo_edit').value;
+  const status = document.getElementById('pa_status_edit').value;
+  const conclusao = document.getElementById('pa_conclusao_edit').value;
   if (!ins_num || !acao || !responsavel || !inicio || !prazo || !status) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
-
   const row = { ins_num, acao, responsavel, inicio, prazo, status, conclusao };
-
   if (editingId.pa !== null) {
     DB.pa[editingId.pa] = row;
     await updateRow('pa', ins_num + '_' + editingId.pa, row);
@@ -1191,7 +1487,6 @@ async function savePA() {
     DB.pa.push(row);
     await pushRow('pa', row);
   }
-
   closeModal('modalPA');
   renderAll();
   toast('Ação salva com sucesso!', 'success');
@@ -1427,7 +1722,7 @@ function renderDashboard() {
 // ─── POPULATE DROPDOWNS ───────────────────────────────────────────────────────
 function populateDropdowns() {
   const insNums = DB.inspecoes.map(r => r.num);
-  ['nc_ins','pa_ins','ac_ins'].forEach(id => {
+  ['nc_ins_edit','pa_ins_edit','ac_ins'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
     const curr = sel.value;
