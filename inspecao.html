@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Inspeção de Segurança do Trabalho</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4aa;
+    --accent2: #3b82f6;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --warning: #f97316;
+    --success: #22c55e;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo .brand {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .sidebar-logo .sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all .15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(0,212,170,.1); color: var(--accent); }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .gas-url-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .gas-url-box label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+  .gas-url-box input {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 11px;
+    width: 100%;
+    outline: none;
+    font-family: monospace;
+    word-break: break-all;
+  }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .topbar-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+  .topbar-actions { display: flex; gap: 10px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+    font-family: var(--font-body);
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #00bfa0; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: rgba(239,68,68,.15); color: var(--danger); border: 1px solid rgba(239,68,68,.3); }
+  .btn-danger:hover { background: rgba(239,68,68,.25); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+  /* ── TABS ── */
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .kpi-card:hover { border-color: var(--accent); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .kpi-card.teal::before { background: var(--accent); }
+  .kpi-card.blue::before { background: var(--accent2); }
+  .kpi-card.yellow::before { background: var(--accent3); }
+  .kpi-card.red::before { background: var(--danger); }
+  .kpi-card.green::before { background: var(--success); }
+  .kpi-card.orange::before { background: var(--warning); }
+  .kpi-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  .kpi-value { font-family: var(--font-head); font-size: 36px; font-weight: 800; line-height: 1; }
+  .kpi-value.teal { color: var(--accent); }
+  .kpi-value.blue { color: var(--accent2); }
+  .kpi-value.yellow { color: var(--accent3); }
+  .kpi-value.red { color: var(--danger); }
+  .kpi-value.green { color: var(--success); }
+  .kpi-value.orange { color: var(--warning); }
+  .kpi-sub { font-size: 11px; color: var(--text2); margin-top: 6px; }
+
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .chart-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 16px; }
+  .chart-body { min-height: 160px; display: flex; align-items: flex-end; gap: 12px; }
+
+  /* Bar charts */
+  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+  .bar-wrap { width: 100%; background: var(--surface2); border-radius: 4px 4px 0 0; position: relative; overflow: hidden; height: 120px; display: flex; align-items: flex-end; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; transition: height .5s cubic-bezier(.4,0,.2,1); }
+  .bar-label { font-size: 11px; color: var(--text2); text-align: center; }
+  .bar-val { font-size: 12px; font-weight: 700; color: var(--text); text-align: center; }
+
+  /* Donut chart */
+  .donut-wrap { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+  .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .donut-center-val { font-family: var(--font-head); font-size: 24px; font-weight: 800; }
+  .donut-center-label { font-size: 10px; color: var(--text2); }
+  .donut-legend { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding-left: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Progress bars */
+  .progress-list { display: flex; flex-direction: column; gap: 12px; }
+  .progress-item { display: flex; flex-direction: column; gap: 4px; }
+  .progress-header { display: flex; justify-content: space-between; font-size: 12px; }
+  .progress-label { color: var(--text2); }
+  .progress-val { font-weight: 600; }
+  .progress-track { height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+  /* Dashboard filters */
+  .dash-filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+  .filter-select, .filter-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 7px 12px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    outline: none;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .filter-select:hover, .filter-input:hover { border-color: var(--accent); }
+  .filter-select:focus, .filter-input:focus { border-color: var(--accent); }
+
+  /* ── TABLES ── */
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    outline: none;
+    width: 240px;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); }
+  th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .empty-row td { text-align: center; color: var(--text3); padding: 32px; }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .03em;
+  }
+  .badge-green { background: rgba(34,197,94,.15); color: var(--success); }
+  .badge-yellow { background: rgba(245,158,11,.15); color: var(--accent3); }
+  .badge-red { background: rgba(239,68,68,.15); color: var(--danger); }
+  .badge-orange { background: rgba(249,115,22,.15); color: var(--warning); }
+  .badge-blue { background: rgba(59,130,246,.15); color: var(--accent2); }
+  .badge-gray { background: rgba(148,163,184,.1); color: var(--text2); }
+  .badge-teal { background: rgba(0,212,170,.15); color: var(--accent); }
+
+  /* ── MODAL ── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 580px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    transform: translateY(20px);
+    transition: transform .2s;
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+  .modal-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color .15s;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .modal-foot {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* Form fields */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field label { font-size: 12px; color: var(--text2); font-weight: 500; }
+  .field input, .field select, .field textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .field input[readonly] { opacity: .6; cursor: not-allowed; }
+
+  /* ── TOAST ── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow);
+    animation: slideIn .3s ease;
+    min-width: 240px;
+  }
+  .toast.success { border-left: 3px solid var(--success); }
+  .toast.error { border-left: 3px solid var(--danger); }
+  .toast.warning { border-left: 3px solid var(--accent3); }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* Config panel */
+  .config-panel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .config-icon { font-size: 20px; }
+  .config-text { flex: 1; font-size: 13px; color: var(--text2); }
+  .config-text strong { color: var(--text); }
+  .config-input {
+    flex: 2;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: monospace;
+    outline: none;
+  }
+  .config-input:focus { border-color: var(--accent); }
+
+  /* Atraso indicator */
+  .atraso-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(239,68,68,.15);
+    color: var(--danger);
+    margin-left: 6px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
+  
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(11,15,26,.9);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; flex-direction: column; gap: 12px;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--text2); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Carregando sistema...</div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MODAL INSPEÇÃO -->
+<div class="modal-backdrop" id="modalInspecao">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalInspecaoTitle">Nova Inspeção</div>
+      <button class="modal-close" onclick="closeModal('modalInspecao')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Nº da Inspeção</label>
+          <input type="text" id="ins_num" readonly placeholder="Auto-gerado">
+        </div>
+        <div class="field">
+          <label>Data da Inspeção *</label>
+          <input type="date" id="ins_data">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Setor *</label>
+          <select id="ins_setor">
+            <option value="">Selecione...</option>
+            <option>Produção</option>
+            <option>Almoxarifado</option>
+            <option>Manutenção</option>
+            <option>Administrativo</option>
+            <option>Logística</option>
+            <option>Laboratório</option>
+            <option>Elétrica</option>
+            <option>Construção Civil</option>
+            <option>Vestiários</option>
+            <option>Refeitório</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tipo de Inspeção *</label>
+          <select id="ins_tipo">
+            <option value="">Selecione...</option>
+            <option>Rotina</option>
+            <option>Auditoria</option>
+            <option>Emergencial</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Responsável pela Inspeção *</label>
+        <input type="text" id="ins_responsavel" placeholder="Nome do responsável">
+      </div>
+      <div class="field">
+        <label>Observações Gerais</label>
+        <textarea id="ins_obs" placeholder="Anotações gerais sobre a inspeção..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modalInspecao')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveInspecao()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NÃO CONFORMIDADE -->
+<div class="modal-backdrop" id="modalNC">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Nova Não Conformidade</div>
+      <button class="modal-close" onclick="closeModal('modalNC')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Nº da Inspeção *</label>
+          <select id="nc_ins">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Classificação do Risco *</label>
+          <select id="nc_risco">
+            <option value="">Selecione...</option>
+            <option>Baixo</option>
+            <option>Médio</option>
+            <option>Alto</option>
+            <option>Crítico</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Item Avaliado *</label>
+        <input type="text" id="nc_item" placeholder="Ex: EPI, Sinalização, Equipamentos...">
+      </div>
+      <div class="field">
+        <label>Descrição do Problema *</label>
+        <textarea id="nc_descricao" placeholder="Descreva o problema identificado..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Prioridade *</label>
+          <select id="nc_prioridade">
+            <option value="">Selecione...</option>
+            <option>Baixa</option>
+            <option>Média</option>
+            <option>Alta</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Norma/Referência</label>
+          <input type="text" id="nc_norma" placeholder="Ex: NR-12, NR-35...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modalNC')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNC()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PLANO DE AÇÃO -->
+<div class="modal-backdrop" id="modalPA">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Novo Plano de Ação</div>
+      <button class="modal-close" onclick="closeModal('modalPA')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Nº da Inspeção *</label>
+          <select id="pa_ins">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Status *</label>
+          <select id="pa_status">
+            <option value="">Selecione...</option>
+            <option>Pendente</option>
+            <option>Em andamento</option>
+            <option>Concluído</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ação Corretiva *</label>
+        <textarea id="pa_acao" placeholder="Descreva a ação corretiva a ser executada..."></textarea>
+      </div>
+      <div class="field">
+        <label>Responsável pela Ação *</label>
+        <input type="text" id="pa_responsavel" placeholder="Nome do responsável">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Data de Início *</label>
+          <input type="date" id="pa_inicio">
+        </div>
+        <div class="field">
+          <label>Prazo Final *</label>
+          <input type="date" id="pa_prazo">
+        </div>
+      </div>
+      <div class="field">
+        <label>Data de Conclusão</label>
+        <input type="date" id="pa_conclusao">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modalPA')">Cancelar</button>
+      <button class="btn btn-primary" onclick="savePA()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACOMPANHAMENTO -->
+<div class="modal-backdrop" id="modalAC">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Nova Verificação de Acompanhamento</div>
+      <button class="modal-close" onclick="closeModal('modalAC')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Nº da Inspeção *</label>
+          <select id="ac_ins">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Data da Verificação *</label>
+          <input type="date" id="ac_data">
+        </div>
+      </div>
+      <div class="field">
+        <label>Resultado *</label>
+        <select id="ac_resultado">
+          <option value="">Selecione...</option>
+          <option>Resolvido</option>
+          <option>Não resolvido</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Observações</label>
+        <textarea id="ac_obs" placeholder="Observações sobre a verificação..."></textarea>
+      </div>
+      <div class="field">
+        <label>Evidência (Link ou Descrição)</label>
+        <input type="text" id="ac_evidencia" placeholder="Link de foto, documento, ou descrição da evidência">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modalAC')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAC()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">🦺 SST Control</div>
+      <div class="sub">Segurança do Trabalho</div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" onclick="switchTab('dashboard')">
+        <span class="icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="switchTab('inspecoes')">
+        <span class="icon">🔍</span> Inspeções
+      </button>
+      <button class="nav-item" onclick="switchTab('nao_conformidades')">
+        <span class="icon">⚠️</span> Não Conformidades
+      </button>
+      <button class="nav-item" onclick="switchTab('plano_acao')">
+        <span class="icon">📋</span> Plano de Ação
+      </button>
+      <button class="nav-item" onclick="switchTab('acompanhamento')">
+        <span class="icon">✅</span> Acompanhamento
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="gas-url-box">
+        <label>🔗 URL do Google Apps Script</label>
+        <input type="text" id="gasUrlInput" placeholder="Cole a URL do GAS aqui..." onchange="setGasUrl(this.value)">
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">📊 Dashboard</div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="refreshAll()">🔄 Atualizar</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="tab-pane active" id="tab-dashboard">
+        <div class="dash-filters">
+          <div class="filter-group">
+            <div class="filter-label">Filtrar por Setor</div>
+            <select class="filter-select" id="dashSetor" onchange="renderDashboard()">
+              <option value="">Todos os Setores</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">Data Início</div>
+            <input type="date" class="filter-input" id="dashDataInicio" onchange="renderDashboard()">
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">Data Fim</div>
+            <input type="date" class="filter-input" id="dashDataFim" onchange="renderDashboard()">
+          </div>
+          <div class="filter-group" style="align-self:flex-end">
+            <button class="btn btn-secondary" onclick="clearDashFilters()">✕ Limpar</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card teal">
+            <div class="kpi-label">Total de Inspeções</div>
+            <div class="kpi-value teal" id="kpiTotal">0</div>
+            <div class="kpi-sub" id="kpiTotalSub">registradas</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-label">Não Conformidades</div>
+            <div class="kpi-value blue" id="kpiNC">0</div>
+            <div class="kpi-sub" id="kpiNCSub">identificadas</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label">Ações Concluídas</div>
+            <div class="kpi-value green" id="kpiConcluidas">0%</div>
+            <div class="kpi-sub" id="kpiConcluidasSub">do total de ações</div>
+          </div>
+          <div class="kpi-card red">
+            <div class="kpi-label">Ações em Atraso</div>
+            <div class="kpi-value red" id="kpiAtraso">0</div>
+            <div class="kpi-sub" id="kpiAtrasoSub">prazo vencido</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Não Conformidades por Nível de Risco</div>
+            <div class="chart-body" id="chartRisco"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Status das Ações</div>
+            <div style="display:flex; align-items:center; min-height:160px;" id="chartStatus"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Inspeções por Setor</div>
+            <div class="chart-body" id="chartSetor"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Progresso das Ações</div>
+            <div class="progress-list" id="chartProgress" style="padding: 8px 0;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSPEÇÕES -->
+      <div class="tab-pane" id="tab-inspecoes">
+        <div class="table-header">
+          <input class="search-input" type="text" placeholder="🔍 Buscar inspeção..." oninput="filterTable('inspecoes', this.value)">
+          <button class="btn btn-primary" onclick="openModal('modalInspecao', 'nova')">+ Nova Inspeção</button>
+        </div>
+        <div class="table-wrap">
+          <table id="tableInspecoes">
+            <thead>
+              <tr>
+                <th>Nº Inspeção</th>
+                <th>Data</th>
+                <th>Setor</th>
+                <th>Responsável</th>
+                <th>Tipo</th>
+                <th>Observações</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyInspecoes">
+              <tr class="empty-row"><td colspan="7">Nenhuma inspeção registrada</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NÃO CONFORMIDADES -->
+      <div class="tab-pane" id="tab-nao_conformidades">
+        <div class="table-header">
+          <input class="search-input" type="text" placeholder="🔍 Buscar não conformidade..." oninput="filterTable('nc', this.value)">
+          <button class="btn btn-primary" onclick="openModal('modalNC', 'nova')">+ Nova Não Conformidade</button>
+        </div>
+        <div class="table-wrap">
+          <table id="tableNC">
+            <thead>
+              <tr>
+                <th>Nº Inspeção</th>
+                <th>Item Avaliado</th>
+                <th>Descrição</th>
+                <th>Risco</th>
+                <th>Prioridade</th>
+                <th>Norma</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyNC">
+              <tr class="empty-row"><td colspan="7">Nenhuma não conformidade registrada</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PLANO DE AÇÃO -->
+      <div class="tab-pane" id="tab-plano_acao">
+        <div class="table-header">
+          <input class="search-input" type="text" placeholder="🔍 Buscar ação..." oninput="filterTable('pa', this.value)">
+          <button class="btn btn-primary" onclick="openModal('modalPA', 'nova')">+ Nova Ação</button>
+        </div>
+        <div class="table-wrap">
+          <table id="tablePA">
+            <thead>
+              <tr>
+                <th>Nº Inspeção</th>
+                <th>Ação Corretiva</th>
+                <th>Responsável</th>
+                <th>Início</th>
+                <th>Prazo</th>
+                <th>Status</th>
+                <th>Conclusão</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPA">
+              <tr class="empty-row"><td colspan="8">Nenhuma ação registrada</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACOMPANHAMENTO -->
+      <div class="tab-pane" id="tab-acompanhamento">
+        <div class="table-header">
+          <input class="search-input" type="text" placeholder="🔍 Buscar acompanhamento..." oninput="filterTable('ac', this.value)">
+          <button class="btn btn-primary" onclick="openModal('modalAC', 'nova')">+ Nova Verificação</button>
+        </div>
+        <div class="table-wrap">
+          <table id="tableAC">
+            <thead>
+              <tr>
+                <th>Nº Inspeção</th>
+                <th>Data Verificação</th>
+                <th>Resultado</th>
+                <th>Observações</th>
+                <th>Evidência</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAC">
+              <tr class="empty-row"><td colspan="6">Nenhum acompanhamento registrado</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+let GAS_URL = 'https://script.google.com/macros/s/AKfycbwpUZrQbB3mkdUsZP8U_JuVimD_YJQ2lGdwd8bDnOfNtBdEELnvnBrmkNgGOcgvPWH5/exec';
+const SHEETS = { inspecoes: 'inspecoes', nc: 'nao_conformidades', pa: 'plano_acao', ac: 'acompanhamento' };
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let DB = { inspecoes: [], nc: [], pa: [], ac: [] };
+let editingId = { inspecoes: null, nc: null, pa: null, ac: null };
+let currentTab = 'dashboard';
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const gasInput = document.getElementById('gasUrlInput');
+  if (gasInput) gasInput.value = GAS_URL;
+  document.getElementById('ins_data').valueAsDate = new Date();
+  document.getElementById('ac_data').valueAsDate = new Date();
+  await refreshAll();
+  document.getElementById('loadingOverlay').style.display = 'none';
+});
+
+function setGasUrl(url) {
+  GAS_URL = url.trim();
+  toast('URL do Google Apps Script salva!', 'success');
+}
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function gasRequest(sheet, action, params = {}) {
+  if (!GAS_URL) return null;
+  const url = new URL(GAS_URL);
+  url.searchParams.set('sheet', sheet);
+  url.searchParams.set('action', action);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  const cb = 'cb_' + Date.now();
+  url.searchParams.set('callback', cb);
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    window[cb] = (data) => { delete window[cb]; document.body.removeChild(s); res(data); };
+    s.onerror = () => { delete window[cb]; document.body.removeChild(s); rej(new Error('Script load error')); };
+    s.src = url.toString();
+    document.body.appendChild(s);
+    setTimeout(() => { delete window[cb]; if (s.parentNode) document.body.removeChild(s); rej(new Error('Timeout')); }, 30000);
+  });
+}
+
+async function fetchSheet(sheetKey) {
+  const sheetName = SHEETS[sheetKey];
+  try {
+    const r = await gasRequest(sheetName, 'getAll');
+    if (r && r.ok && r.data && r.data.length > 1) {
+      const [headers, ...rows] = r.data;
+      DB[sheetKey] = rows.map(row => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = row[i] !== undefined ? row[i] : '');
+        return obj;
+      });
+    }
+  } catch(e) {
+    console.warn('GAS fetch failed:', e);
+  }
+}
+
+function saveLocal(sheetKey) {
+  // localStorage removido — dados salvos apenas no Google Sheets
+}
+
+async function pushRow(sheetKey, row) {
+  saveLocal(sheetKey);
+  if (!GAS_URL) return;
+  const sheetName = SHEETS[sheetKey];
+  try {
+    await gasRequest(sheetName, 'add', { row: JSON.stringify(row) });
+  } catch(e) { console.warn('GAS push failed:', e); }
+}
+
+async function updateRow(sheetKey, id, row) {
+  saveLocal(sheetKey);
+  if (!GAS_URL) return;
+  const sheetName = SHEETS[sheetKey];
+  try {
+    await gasRequest(sheetName, 'update', { id, row: JSON.stringify(row) });
+  } catch(e) { console.warn('GAS update failed:', e); }
+}
+
+async function deleteRow(sheetKey, id) {
+  saveLocal(sheetKey);
+  if (!GAS_URL) return;
+  const sheetName = SHEETS[sheetKey];
+  try {
+    await gasRequest(sheetName, 'delete', { id });
+  } catch(e) { console.warn('GAS delete failed:', e); }
+}
+
+function getHeaders(sheetKey) {
+  const h = {
+    inspecoes: ['num','data','setor','responsavel','tipo','obs'],
+    nc: ['ins_num','item','descricao','risco','prioridade','norma'],
+    pa: ['ins_num','acao','responsavel','inicio','prazo','status','conclusao'],
+    ac: ['ins_num','data_ver','resultado','obs','evidencia']
+  };
+  return h[sheetKey];
+}
+
+async function refreshAll() {
+  showLoading(true);
+  await Promise.all(['inspecoes','nc','pa','ac'].map(k => fetchSheet(k)));
+  renderAll();
+  showLoading(false);
+}
+
+function showLoading(show) {
+  document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────────────────────────
+function renderAll() {
+  renderInspecoes();
+  renderNC();
+  renderPA();
+  renderAC();
+  renderDashboard();
+  populateDropdowns();
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.nav-item')[['dashboard','inspecoes','nao_conformidades','plano_acao','acompanhamento'].indexOf(tab)].classList.add('active');
+  const titles = { dashboard:'📊 Dashboard', inspecoes:'🔍 Inspeções', nao_conformidades:'⚠️ Não Conformidades', plano_acao:'📋 Plano de Ação', acompanhamento:'✅ Acompanhamento' };
+  document.getElementById('topbarTitle').textContent = titles[tab];
+  if (tab === 'dashboard') renderDashboard();
+}
+
+// ─── MODALS ───────────────────────────────────────────────────────────────────
+function openModal(id, mode, data = null) {
+  document.getElementById(id).classList.add('open');
+  populateDropdowns();
+
+  if (id === 'modalInspecao') {
+    editingId.inspecoes = data ? data.num : null;
+    document.getElementById('modalInspecaoTitle').textContent = data ? 'Editar Inspeção' : 'Nova Inspeção';
+    document.getElementById('ins_num').value = data ? data.num : nextNum();
+    document.getElementById('ins_data').value = data ? data.data : fmtDateInput(new Date());
+    document.getElementById('ins_setor').value = data ? data.setor : '';
+    document.getElementById('ins_tipo').value = data ? data.tipo : '';
+    document.getElementById('ins_responsavel').value = data ? data.responsavel : '';
+    document.getElementById('ins_obs').value = data ? data.obs : '';
+  }
+  if (id === 'modalNC') {
+    editingId.nc = data ? data._idx : null;
+    document.getElementById('nc_ins').value = data ? data.ins_num : '';
+    document.getElementById('nc_item').value = data ? data.item : '';
+    document.getElementById('nc_descricao').value = data ? data.descricao : '';
+    document.getElementById('nc_risco').value = data ? data.risco : '';
+    document.getElementById('nc_prioridade').value = data ? data.prioridade : '';
+    document.getElementById('nc_norma').value = data ? data.norma : '';
+  }
+  if (id === 'modalPA') {
+    editingId.pa = data ? data._idx : null;
+    document.getElementById('pa_ins').value = data ? data.ins_num : '';
+    document.getElementById('pa_acao').value = data ? data.acao : '';
+    document.getElementById('pa_responsavel').value = data ? data.responsavel : '';
+    document.getElementById('pa_inicio').value = data ? data.inicio : '';
+    document.getElementById('pa_prazo').value = data ? data.prazo : '';
+    document.getElementById('pa_status').value = data ? data.status : '';
+    document.getElementById('pa_conclusao').value = data ? data.conclusao : '';
+  }
+  if (id === 'modalAC') {
+    editingId.ac = data ? data._idx : null;
+    document.getElementById('ac_ins').value = data ? data.ins_num : '';
+    document.getElementById('ac_data').value = data ? data.data_ver : fmtDateInput(new Date());
+    document.getElementById('ac_resultado').value = data ? data.resultado : '';
+    document.getElementById('ac_obs').value = data ? data.obs : '';
+    document.getElementById('ac_evidencia').value = data ? data.evidencia : '';
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ─── SAVE ACTIONS ─────────────────────────────────────────────────────────────
+async function saveInspecao() {
+  const num = document.getElementById('ins_num').value;
+  const data = document.getElementById('ins_data').value;
+  const setor = document.getElementById('ins_setor').value;
+  const tipo = document.getElementById('ins_tipo').value;
+  const responsavel = document.getElementById('ins_responsavel').value.trim();
+  const obs = document.getElementById('ins_obs').value.trim();
+
+  if (!data || !setor || !tipo || !responsavel) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+
+  const row = { num, data, setor, responsavel, tipo, obs };
+
+  if (editingId.inspecoes) {
+    const idx = DB.inspecoes.findIndex(r => r.num === editingId.inspecoes);
+    if (idx > -1) { DB.inspecoes[idx] = row; await updateRow('inspecoes', editingId.inspecoes, row); }
+  } else {
+    DB.inspecoes.push(row);
+    await pushRow('inspecoes', row);
+  }
+
+  closeModal('modalInspecao');
+  renderAll();
+  toast('Inspeção salva com sucesso!', 'success');
+}
+
+async function saveNC() {
+  const ins_num = document.getElementById('nc_ins').value;
+  const item = document.getElementById('nc_item').value.trim();
+  const descricao = document.getElementById('nc_descricao').value.trim();
+  const risco = document.getElementById('nc_risco').value;
+  const prioridade = document.getElementById('nc_prioridade').value;
+  const norma = document.getElementById('nc_norma').value.trim();
+
+  if (!ins_num || !item || !descricao || !risco || !prioridade) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+
+  const row = { ins_num, item, descricao, risco, prioridade, norma };
+
+  if (editingId.nc !== null) {
+    DB.nc[editingId.nc] = row;
+    await updateRow('nc', ins_num + '_' + editingId.nc, row);
+  } else {
+    DB.nc.push(row);
+    await pushRow('nc', row);
+  }
+
+  closeModal('modalNC');
+  renderAll();
+  toast('Não conformidade salva!', 'success');
+}
+
+async function savePA() {
+  const ins_num = document.getElementById('pa_ins').value;
+  const acao = document.getElementById('pa_acao').value.trim();
+  const responsavel = document.getElementById('pa_responsavel').value.trim();
+  const inicio = document.getElementById('pa_inicio').value;
+  const prazo = document.getElementById('pa_prazo').value;
+  const status = document.getElementById('pa_status').value;
+  const conclusao = document.getElementById('pa_conclusao').value;
+
+  if (!ins_num || !acao || !responsavel || !inicio || !prazo || !status) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+
+  const row = { ins_num, acao, responsavel, inicio, prazo, status, conclusao };
+
+  if (editingId.pa !== null) {
+    DB.pa[editingId.pa] = row;
+    await updateRow('pa', ins_num + '_' + editingId.pa, row);
+  } else {
+    DB.pa.push(row);
+    await pushRow('pa', row);
+  }
+
+  closeModal('modalPA');
+  renderAll();
+  toast('Ação salva com sucesso!', 'success');
+}
+
+async function saveAC() {
+  const ins_num = document.getElementById('ac_ins').value;
+  const data_ver = document.getElementById('ac_data').value;
+  const resultado = document.getElementById('ac_resultado').value;
+  const obs = document.getElementById('ac_obs').value.trim();
+  const evidencia = document.getElementById('ac_evidencia').value.trim();
+
+  if (!ins_num || !data_ver || !resultado) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+
+  const row = { ins_num, data_ver, resultado, obs, evidencia };
+
+  if (editingId.ac !== null) {
+    DB.ac[editingId.ac] = row;
+    await updateRow('ac', ins_num + '_' + editingId.ac, row);
+  } else {
+    DB.ac.push(row);
+    await pushRow('ac', row);
+  }
+
+  closeModal('modalAC');
+  renderAll();
+  toast('Acompanhamento salvo!', 'success');
+}
+
+async function deleteRecord(sheetKey, idx) {
+  if (!confirm('Tem certeza que deseja excluir este registro?')) return;
+  const row = DB[sheetKey][idx];
+  if (!row) { toast('Registro não encontrado.', 'warning'); return; }
+  const id = row.num || (row.ins_num ? row.ins_num + '_' + idx : String(idx));
+  DB[sheetKey].splice(idx, 1);
+  await deleteRow(sheetKey, id);
+  renderAll();
+  toast('Registro excluído.', 'warning');
+}
+
+// ─── RENDER TABLES ────────────────────────────────────────────────────────────
+function renderInspecoes() {
+  const tbody = document.getElementById('tbodyInspecoes');
+  if (!DB.inspecoes.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhuma inspeção registrada</td></tr>'; return; }
+  tbody.innerHTML = DB.inspecoes.map((r, i) => `
+    <tr>
+      <td><span class="badge badge-teal">${esc(r.num)}</span></td>
+      <td>${fmtDate(r.data)}</td>
+      <td>${esc(r.setor)}</td>
+      <td>${esc(r.responsavel)}</td>
+      <td><span class="badge ${tipoBadge(r.tipo)}">${esc(r.tipo)}</span></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.obs)}">${esc(r.obs)||'—'}</td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick='openModal("modalInspecao","edit",${JSON.stringify({...r,_idx:i})})'>✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteRecord('inspecoes',${i})">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderNC() {
+  const tbody = document.getElementById('tbodyNC');
+  if (!DB.nc.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhuma não conformidade registrada</td></tr>'; return; }
+  tbody.innerHTML = DB.nc.map((r, i) => `
+    <tr>
+      <td><span class="badge badge-teal">${esc(r.ins_num)}</span></td>
+      <td>${esc(r.item)}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.descricao)}">${esc(r.descricao)}</td>
+      <td><span class="badge ${riscoBadge(r.risco)}">${esc(r.risco)}</span></td>
+      <td><span class="badge ${prioridadeBadge(r.prioridade)}">${esc(r.prioridade)}</span></td>
+      <td>${esc(r.norma)||'—'}</td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick='openModal("modalNC","edit",${JSON.stringify({...r,_idx:i})})'>✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteRecord('nc',${i})">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderPA() {
+  const today = fmtDateInput(new Date());
+  const tbody = document.getElementById('tbodyPA');
+  if (!DB.pa.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Nenhuma ação registrada</td></tr>'; return; }
+  tbody.innerHTML = DB.pa.map((r, i) => {
+    const atrasado = r.status !== 'Concluído' && r.prazo && r.prazo < today;
+    return `<tr>
+      <td><span class="badge badge-teal">${esc(r.ins_num)}</span></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.acao)}">${esc(r.acao)}</td>
+      <td>${esc(r.responsavel)}</td>
+      <td>${fmtDate(r.inicio)}</td>
+      <td>${fmtDate(r.prazo)}${atrasado?'<span class="atraso-pill">⚠ Atrasado</span>':''}</td>
+      <td><span class="badge ${statusBadge(r.status)}">${esc(r.status)}</span></td>
+      <td>${fmtDate(r.conclusao)||'—'}</td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick='openModal("modalPA","edit",${JSON.stringify({...r,_idx:i})})'>✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteRecord('pa',${i})">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAC() {
+  const tbody = document.getElementById('tbodyAC');
+  if (!DB.ac.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Nenhum acompanhamento registrado</td></tr>'; return; }
+  tbody.innerHTML = DB.ac.map((r, i) => `
+    <tr>
+      <td><span class="badge badge-teal">${esc(r.ins_num)}</span></td>
+      <td>${fmtDate(r.data_ver)}</td>
+      <td><span class="badge ${r.resultado==='Resolvido'?'badge-green':'badge-red'}">${esc(r.resultado)}</span></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.obs)}">${esc(r.obs)||'—'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.evidencia)}">${esc(r.evidencia)||'—'}</td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick='openModal("modalAC","edit",${JSON.stringify({...r,_idx:i})})'>✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteRecord('ac',${i})">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const setor = document.getElementById('dashSetor').value;
+  const dInicio = document.getElementById('dashDataInicio').value;
+  const dFim = document.getElementById('dashDataFim').value;
+  const today = fmtDateInput(new Date());
+
+  // filter inspecoes
+  let ins = DB.inspecoes.filter(r => {
+    if (setor && r.setor !== setor) return false;
+    if (dInicio && r.data < dInicio) return false;
+    if (dFim && r.data > dFim) return false;
+    return true;
+  });
+  const insNums = new Set(ins.map(r => r.num));
+
+  // filter related records
+  const nc = DB.nc.filter(r => !insNums.size || insNums.has(r.ins_num));
+  const pa = DB.pa.filter(r => !insNums.size || insNums.has(r.ins_num));
+
+  // KPIs
+  document.getElementById('kpiTotal').textContent = ins.length;
+  document.getElementById('kpiNC').textContent = nc.length;
+
+  const concluidas = pa.filter(r => r.status === 'Concluído').length;
+  const pct = pa.length ? Math.round(concluidas / pa.length * 100) : 0;
+  document.getElementById('kpiConcluidas').textContent = pct + '%';
+  document.getElementById('kpiConcluidasSub').textContent = `${concluidas} de ${pa.length} ações`;
+
+  const atrasadas = pa.filter(r => r.status !== 'Concluído' && r.prazo && r.prazo < today).length;
+  document.getElementById('kpiAtraso').textContent = atrasadas;
+
+  // Chart: Risco
+  const riscos = { 'Crítico': 0, 'Alto': 0, 'Médio': 0, 'Baixo': 0 };
+  nc.forEach(r => { if (riscos[r.risco] !== undefined) riscos[r.risco]++; });
+  const maxR = Math.max(...Object.values(riscos), 1);
+  const riscoCols = { 'Crítico': '#ef4444', 'Alto': '#f97316', 'Médio': '#f59e0b', 'Baixo': '#22c55e' };
+  document.getElementById('chartRisco').innerHTML = Object.entries(riscos).map(([k, v]) => `
+    <div class="bar-group">
+      <div class="bar-val">${v}</div>
+      <div class="bar-wrap">
+        <div class="bar" style="height:${v/maxR*100}%; background:${riscoCols[k]};"></div>
+      </div>
+      <div class="bar-label">${k}</div>
+    </div>`).join('');
+
+  // Chart: Status
+  const statuses = { 'Pendente': 0, 'Em andamento': 0, 'Concluído': 0 };
+  pa.forEach(r => { if (statuses[r.status] !== undefined) statuses[r.status]++; });
+  const totalPA = pa.length || 1;
+  const statusColors = { 'Pendente': '#ef4444', 'Em andamento': '#f59e0b', 'Concluído': '#22c55e' };
+  const segments = Object.entries(statuses).map(([k, v]) => ({ label: k, val: v, color: statusColors[k], pct: v/totalPA }));
+
+  // Build SVG donut
+  let cumPct = 0;
+  const r = 54, cx = 70, cy = 70, stroke = 18;
+  const circumference = 2 * Math.PI * r;
+  const paths = segments.map(seg => {
+    const offset = circumference * (1 - seg.pct);
+    const rotate = cumPct * 360 - 90;
+    cumPct += seg.pct;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="${stroke}" stroke-dasharray="${circumference * seg.pct} ${circumference * (1 - seg.pct)}" stroke-dashoffset="${circumference * (1 - seg.pct)}" transform="rotate(${rotate - 90} ${cx} ${cy})" style="transition: stroke-dasharray 0.5s;"/>`;
+  });
+
+  document.getElementById('chartStatus').innerHTML = `
+    <div class="donut-wrap">
+      <svg viewBox="0 0 140 140" style="width:140px;height:140px;">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="${stroke}"/>
+        ${paths.join('')}
+      </svg>
+      <div class="donut-center">
+        <div class="donut-center-val" style="color:var(--accent)">${pa.length}</div>
+        <div class="donut-center-label">Ações</div>
+      </div>
+    </div>
+    <div class="donut-legend">
+      ${segments.map(s => `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div><span style="color:var(--text2)">${s.label}</span><span style="font-weight:600;margin-left:auto">${s.val}</span></div>`).join('')}
+    </div>`;
+
+  // Chart: Setor
+  const setores = {};
+  ins.forEach(r => { setores[r.setor] = (setores[r.setor] || 0) + 1; });
+  const sEntries = Object.entries(setores).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const maxS = Math.max(...sEntries.map(e => e[1]), 1);
+  document.getElementById('chartSetor').innerHTML = sEntries.length
+    ? sEntries.map(([k, v]) => `
+      <div class="bar-group">
+        <div class="bar-val">${v}</div>
+        <div class="bar-wrap">
+          <div class="bar" style="height:${v/maxS*100}%; background:var(--accent2);"></div>
+        </div>
+        <div class="bar-label" style="font-size:10px">${k.substring(0,8)}</div>
+      </div>`).join('')
+    : '<div style="color:var(--text3);text-align:center;width:100%">Sem dados</div>';
+
+  // Chart: Progress
+  const progressItems = [
+    { label: 'Concluídas', val: concluidas, total: pa.length, color: 'var(--success)' },
+    { label: 'Em andamento', val: statuses['Em andamento'], total: pa.length, color: 'var(--accent3)' },
+    { label: 'Pendentes', val: statuses['Pendente'], total: pa.length, color: 'var(--danger)' },
+    { label: 'Atrasadas', val: atrasadas, total: pa.length, color: 'var(--warning)' },
+  ];
+  document.getElementById('chartProgress').innerHTML = progressItems.map(p => {
+    const pct = p.total ? Math.round(p.val / p.total * 100) : 0;
+    return `<div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-label">${p.label}</span>
+        <span class="progress-val" style="color:${p.color}">${p.val} (${pct}%)</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${pct}%;background:${p.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── POPULATE DROPDOWNS ───────────────────────────────────────────────────────
+function populateDropdowns() {
+  const insNums = DB.inspecoes.map(r => r.num);
+  ['nc_ins','pa_ins','ac_ins'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const curr = sel.value;
+    sel.innerHTML = '<option value="">Selecione...</option>' + insNums.map(n => `<option value="${n}">${n}</option>`).join('');
+    if (curr) sel.value = curr;
+  });
+
+  // Dashboard setor filter
+  const setores = [...new Set(DB.inspecoes.map(r => r.setor).filter(Boolean))].sort();
+  const dashSetor = document.getElementById('dashSetor');
+  const currS = dashSetor.value;
+  dashSetor.innerHTML = '<option value="">Todos os Setores</option>' + setores.map(s => `<option value="${s}">${s}</option>`).join('');
+  if (currS) dashSetor.value = currS;
+}
+
+// ─── SEARCH/FILTER ────────────────────────────────────────────────────────────
+function filterTable(tableKey, query) {
+  query = query.toLowerCase();
+  const tables = { inspecoes: 'tableInspecoes', nc: 'tableNC', pa: 'tablePA', ac: 'tableAC' };
+  const table = document.getElementById(tables[tableKey]);
+  if (!table) return;
+  table.querySelectorAll('tbody tr:not(.empty-row)').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+  });
+}
+
+function clearDashFilters() {
+  document.getElementById('dashSetor').value = '';
+  document.getElementById('dashDataInicio').value = '';
+  document.getElementById('dashDataFim').value = '';
+  renderDashboard();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function nextNum() {
+  const nums = DB.inspecoes.map(r => parseInt(r.num?.replace('INS-', '') || 0)).filter(n => !isNaN(n));
+  const next = nums.length ? Math.max(...nums) + 1 : 1;
+  return 'INS-' + String(next).padStart(3, '0');
+}
+
+function fmtDate(str) {
+  if (!str) return '—';
+  const d = new Date(str + 'T00:00:00');
+  if (isNaN(d)) return str;
+  return d.toLocaleDateString('pt-BR');
+}
+
+function fmtDateInput(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function riscoBadge(r) {
+  return { 'Baixo':'badge-green', 'Médio':'badge-yellow', 'Alto':'badge-orange', 'Crítico':'badge-red' }[r] || 'badge-gray';
+}
+function statusBadge(s) {
+  return { 'Pendente':'badge-red', 'Em andamento':'badge-yellow', 'Concluído':'badge-green' }[s] || 'badge-gray';
+}
+function prioridadeBadge(p) {
+  return { 'Baixa':'badge-green', 'Média':'badge-yellow', 'Alta':'badge-orange' }[p] || 'badge-gray';
+}
+function tipoBadge(t) {
+  return { 'Rotina':'badge-blue', 'Auditoria':'badge-teal', 'Emergencial':'badge-orange' }[t] || 'badge-gray';
+}
+
+function toast(msg, type = 'success') {
+  const icons = { success:'✅', error:'❌', warning:'⚠️' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-backdrop').forEach(b => {
+  b.addEventListener('click', e => { if (e.target === b) b.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
