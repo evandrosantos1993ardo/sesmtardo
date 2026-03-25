@@ -1109,7 +1109,7 @@ async function gasRequest(sheet, action, params = {}) {
     s.onerror = () => { delete window[cb]; document.body.removeChild(s); rej(new Error('Script load error')); };
     s.src = url.toString();
     document.body.appendChild(s);
-    setTimeout(() => { delete window[cb]; if (s.parentNode) document.body.removeChild(s); rej(new Error('Timeout')); }, 30000);
+    setTimeout(() => { delete window[cb]; if (s.parentNode) document.body.removeChild(s); rej(new Error('Timeout')); }, 60000);
   });
 }
 
@@ -1413,7 +1413,7 @@ async function wizardSaveAll() {
   const responsavel = document.getElementById('ins_responsavel').value.trim();
   const obs = document.getElementById('ins_obs').value.trim();
 
-  setLoading(true);
+  showLoading(true);
 
   // Salva inspeção
   const insRow = { num, data, setor, responsavel, tipo, obs };
@@ -1442,7 +1442,7 @@ async function wizardSaveAll() {
     await pushRow('pa', pa);
   }
 
-  setLoading(false);
+  showLoading(false);
   closeModal('modalInspecao');
   renderAll();
   toast(`Inspeção ${num} salva! (${wizardNCs.length} NCs, ${wizardPAs.length} ações)`, 'success');
