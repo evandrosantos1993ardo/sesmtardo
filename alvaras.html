@@ -319,14 +319,10 @@
       </button>
     </nav>
     <div class="sidebar-bottom">
-  <label>URL do Apps Script</label>
-  <input 
-    type="url" 
-    class="gas-url-field" 
-    id="gasUrl"
-    value="https://script.google.com/macros/s/AKfycbyMXiu3xCLlF0RJAKc7jnAat0GZAtp0kNdoneGYzCa43TU7BbE3aCHaqhO0zzm7QKczig/exec"
-  />
-</div>
+      <label>URL do Apps Script</label>
+      <input type="url" class="gas-url-field" id="gasUrl" placeholder="https://script.google.com/..." 
+             oninput="saveGasUrl()" />
+    </div>
   </aside>
 
   <!-- ── MAIN ── -->
@@ -501,7 +497,7 @@
 // ──────────────────────────────────────────────────────────
 let records    = [];
 let editingId  = null;
-let GAS_URL    = localStorage.getItem('gasUrl') || '';
+let GAS_URL = 'https://script.google.com/macros/s/AKfycbyMXiu3xCLlF0RJAKc7jnAat0GZAtp0kNdoneGYzCa43TU7BbE3aCHaqhO0zzm7QKczig/exec';
 
 // ──────────────────────────────────────────────────────────
 // INIT
@@ -513,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveGasUrl() {
   GAS_URL = document.getElementById('gasUrl').value.trim();
-  localStorage.setItem('gasUrl', GAS_URL);
 }
 
 // ──────────────────────────────────────────────────────────
@@ -593,8 +588,8 @@ function jsonp(params) {
 // ──────────────────────────────────────────────────────────
 async function loadData() {
   if (!GAS_URL) {
-    toast('Configure a URL do Apps Script na barra lateral', 'warn');
     loadDemoData();
+    renderDashboard(); renderTable(); populateFilters();
     return;
   }
   try {
