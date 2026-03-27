@@ -189,9 +189,59 @@ tr:hover td { background:rgba(255,255,255,.015); }
   background:var(--surface); border:1px solid var(--border); border-radius:12px;
   padding:28px; width:520px; max-width:95vw; max-height:90vh; overflow-y:auto;
 }
+.modal.modal-lg { width:760px; }
 .modal-title { font-family:var(--display); font-size:1.4rem; margin-bottom:20px; }
 .modal-title.yellow { color:var(--accent); }
 .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+
+/* ── SEÇÕES DA REUNIÃO ── */
+.section-block {
+  border:1px solid var(--border); border-radius:8px; margin-bottom:16px; overflow:hidden;
+}
+.section-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px; background:var(--surface2); cursor:pointer; user-select:none;
+  font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em;
+}
+.section-header .sec-title { display:flex; align-items:center; gap:8px; color:var(--accent); font-weight:600; }
+.section-header .sec-toggle { color:var(--muted); font-size:.9rem; transition:.2s; }
+.section-body { padding:14px; display:none; }
+.section-body.open { display:block; }
+.item-row {
+  display:grid; grid-template-columns:1fr auto; gap:8px; align-items:start;
+  padding:8px 0; border-bottom:1px solid rgba(31,35,48,.5);
+}
+.item-row:last-child { border-bottom:none; }
+.item-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; flex:1; }
+.item-fields.three { grid-template-columns:1fr 1fr 1fr; }
+.item-fields.full { grid-template-columns:1fr; }
+.btn-remove-item {
+  width:28px; height:28px; border-radius:5px; background:rgba(231,76,60,.12);
+  border:1px solid rgba(231,76,60,.3); color:var(--red); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:.9rem;
+  flex-shrink:0; margin-top:22px;
+}
+.btn-remove-item:hover { background:var(--red); color:#fff; }
+.btn-add-item {
+  width:100%; padding:7px; background:transparent;
+  border:1px dashed var(--border); border-radius:6px;
+  color:var(--muted); font-family:var(--mono); font-size:.72rem;
+  cursor:pointer; margin-top:8px; transition:.2s;
+}
+.btn-add-item:hover { border-color:var(--accent); color:var(--accent); }
+.btn-pdf {
+  background:rgba(59,130,246,.15); border:1px solid rgba(59,130,246,.4); color:var(--blue);
+  padding:9px 18px; border-radius:7px; font-family:var(--sans); font-size:.82rem; font-weight:500;
+  cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.2s;
+}
+.btn-pdf:hover { background:var(--blue); color:#fff; }
+
+/* ── PDF PRINT ── */
+@media print {
+  body > *:not(#pdf-preview-area) { display:none !important; }
+  #pdf-preview-area { display:block !important; }
+}
+#pdf-preview-area { display:none; }
 
 /* ── TOAST ── */
 #toast {
@@ -495,20 +545,21 @@ tr:hover td { background:rgba(255,255,255,.015); }
   </div>
 </div>
 
-<!-- Modal Reunião -->
+<!-- Modal Reunião EXPANDIDO -->
 <div class="modal-bg" id="modal-reuniao">
-  <div class="modal">
+  <div class="modal modal-lg">
     <div class="modal-title yellow" id="modal-reuniao-title">NOVA REUNIÃO</div>
     <input type="hidden" id="r-id">
-    <div class="form-grid">
+
+    <!-- Dados Gerais -->
+    <div class="form-grid" style="margin-bottom:16px">
       <div class="field"><label>Data *</label><input type="date" id="r-data"></div>
       <div class="field">
         <label>Tipo</label>
         <select id="r-tipo"><option>Ordinária</option><option>Extraordinária</option></select>
       </div>
       <div class="field form-full"><label>Pauta *</label><input id="r-pauta" placeholder="Assuntos da reunião"></div>
-      <div class="field form-full"><label>Participantes</label><input id="r-participantes" placeholder="Nomes dos participantes"></div>
-      <div class="field form-full"><label>Decisões / Encaminhamentos</label><textarea id="r-decisoes" placeholder="Decisões tomadas..."></textarea></div>
+      <div class="field form-full"><label>Participantes</label><input id="r-participantes" placeholder="Nomes dos participantes separados por vírgula"></div>
       <div class="field"><label>Responsável</label><input id="r-resp" placeholder="Responsável"></div>
       <div class="field"><label>Prazo</label><input type="date" id="r-prazo"></div>
       <div class="field">
@@ -517,12 +568,65 @@ tr:hover td { background:rgba(255,255,255,.015); }
       </div>
       <div class="field"><label>Nº da Ata</label><input id="r-ata" placeholder="Ata nº"></div>
     </div>
+
+    <!-- Seção: Plano de Ação -->
+    <div class="section-block">
+      <div class="section-header" onclick="toggleSection('sec-plano')">
+        <span class="sec-title">📌 Plano de Ação</span>
+        <span class="sec-toggle" id="tog-sec-plano">▼</span>
+      </div>
+      <div class="section-body" id="sec-plano">
+        <div id="plano-items"></div>
+        <button class="btn-add-item" onclick="addItem('plano')">+ Adicionar item ao Plano de Ação</button>
+      </div>
+    </div>
+
+    <!-- Seção: Acidentes -->
+    <div class="section-block">
+      <div class="section-header" onclick="toggleSection('sec-acidentes')">
+        <span class="sec-title">⚠ Acidentes</span>
+        <span class="sec-toggle" id="tog-sec-acidentes">▼</span>
+      </div>
+      <div class="section-body" id="sec-acidentes">
+        <div id="acidentes-items"></div>
+        <button class="btn-add-item" onclick="addItem('acidentes')">+ Adicionar registro de acidente</button>
+      </div>
+    </div>
+
+    <!-- Seção: Campanhas e Treinamentos -->
+    <div class="section-block">
+      <div class="section-header" onclick="toggleSection('sec-campanhas')">
+        <span class="sec-title">🎓 Campanhas e Treinamentos</span>
+        <span class="sec-toggle" id="tog-sec-campanhas">▼</span>
+      </div>
+      <div class="section-body" id="sec-campanhas">
+        <div id="campanhas-items"></div>
+        <button class="btn-add-item" onclick="addItem('campanhas')">+ Adicionar campanha / treinamento</button>
+      </div>
+    </div>
+
+    <!-- Seção: Observações -->
+    <div class="section-block">
+      <div class="section-header" onclick="toggleSection('sec-obs')">
+        <span class="sec-title">📝 Observações</span>
+        <span class="sec-toggle" id="tog-sec-obs">▼</span>
+      </div>
+      <div class="section-body" id="sec-obs">
+        <div id="obs-items"></div>
+        <button class="btn-add-item" onclick="addItem('obs')">+ Adicionar observação</button>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="fecharModal('modal-reuniao')">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarReuniao()">Salvar</button>
+      <button class="btn-pdf" onclick="gerarPDFReuniao()">🖨 Salvar e Gerar PDF</button>
+      <button class="btn btn-primary" onclick="salvarReuniao()">💾 Salvar</button>
     </div>
   </div>
 </div>
+
+<!-- Área de impressão PDF -->
+<div id="pdf-preview-area"></div>
 
 <!-- Modal Inspeção -->
 <div class="modal-bg" id="modal-inspecao">
@@ -883,6 +987,7 @@ function renderReunioes() {
     <td>${badgeStatus(r.status)}</td>
     <td><div class="actions">
       <button class="btn btn-ghost btn-sm" onclick="editarReuniao('${r.id}')">✎</button>
+      <button class="btn btn-ghost btn-sm" title="Gerar PDF" onclick="gerarPDFReuniaoById('${r.id}')">🖨</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('reunioes','${r.id}',renderReunioes)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -891,38 +996,318 @@ function renderReunioes() {
 function abrirModalReuniao(id) {
   const r = id ? DB.reunioes.find(x => x.id === id) : null;
   document.getElementById('modal-reuniao-title').textContent = r ? 'EDITAR REUNIÃO' : 'NOVA REUNIÃO';
-  document.getElementById('r-id').value           = r?.id || '';
-  document.getElementById('r-data').value         = r?.data || '';
-  document.getElementById('r-tipo').value         = r?.tipo || 'Ordinária';
-  document.getElementById('r-pauta').value        = r?.pauta || '';
-  document.getElementById('r-participantes').value= r?.participantes || '';
-  document.getElementById('r-decisoes').value     = r?.decisoes || '';
-  document.getElementById('r-resp').value         = r?.responsavel || '';
-  document.getElementById('r-prazo').value        = r?.prazo || '';
-  document.getElementById('r-status').value       = r?.status || 'Pendente';
-  document.getElementById('r-ata').value          = r?.ata || '';
+  document.getElementById('r-id').value            = r?.id || '';
+  document.getElementById('r-data').value          = r?.data || '';
+  document.getElementById('r-tipo').value          = r?.tipo || 'Ordinária';
+  document.getElementById('r-pauta').value         = r?.pauta || '';
+  document.getElementById('r-participantes').value = r?.participantes || '';
+  document.getElementById('r-resp').value          = r?.responsavel || '';
+  document.getElementById('r-prazo').value         = r?.prazo || '';
+  document.getElementById('r-status').value        = r?.status || 'Pendente';
+  document.getElementById('r-ata').value           = r?.ata || '';
+
+  renderItemSection('plano',     r?.planoAcao   ? tryParse(r.planoAcao)   : []);
+  renderItemSection('acidentes', r?.acidentes   ? tryParse(r.acidentes)   : []);
+  renderItemSection('campanhas', r?.campanhas   ? tryParse(r.campanhas)   : []);
+  renderItemSection('obs',       r?.observacoes ? tryParse(r.observacoes) : []);
   abrirModal('modal-reuniao');
 }
 function editarReuniao(id) { abrirModalReuniao(id); }
+function tryParse(s) { try { return JSON.parse(s); } catch(e) { return []; } }
+
+// ── TOGGLE SEÇÕES ─────────────────────────────────────
+function toggleSection(id) {
+  const body = document.getElementById(id);
+  const tog  = document.getElementById('tog-' + id);
+  const open = body.classList.toggle('open');
+  if (tog) tog.textContent = open ? '▲' : '▼';
+}
+
+// ── TEMPLATES DOS ITENS ───────────────────────────────
+const ITEM_TEMPLATES = {
+  plano: () => `<div class="item-row" data-sec="plano">
+    <div class="item-fields three">
+      <div class="field"><label>O Quê (problema)</label><input class="f-oque" placeholder="Descreva o problema"></div>
+      <div class="field"><label>Como (ação)</label><input class="f-como" placeholder="Ação a ser tomada"></div>
+      <div class="field"><label>Responsável</label><input class="f-resp" placeholder="Quem?"></div>
+      <div class="field"><label>Prazo</label><input type="date" class="f-prazo"></div>
+      <div class="field"><label>Status</label>
+        <select class="f-status"><option>Aberta</option><option>Em andamento</option><option>Concluída</option></select>
+      </div>
+    </div>
+    <button class="btn-remove-item" onclick="removeItem(this)">✕</button>
+  </div>`,
+  acidentes: () => `<div class="item-row" data-sec="acidentes">
+    <div class="item-fields">
+      <div class="field"><label>Data do Acidente</label><input type="date" class="f-data"></div>
+      <div class="field"><label>Tipo</label>
+        <select class="f-tipo"><option>Típico</option><option>Trajeto</option><option>Quase-acidente</option><option>Incidente</option></select>
+      </div>
+      <div class="field"><label>Descrição *</label><input class="f-desc" placeholder="Descreva o acidente"></div>
+      <div class="field"><label>Local / Setor</label><input class="f-local" placeholder="Onde ocorreu?"></div>
+      <div class="field"><label>Afastamento</label>
+        <select class="f-afas"><option>Não</option><option>Sim</option></select>
+      </div>
+      <div class="field"><label>Medida Corretiva</label><input class="f-medida" placeholder="Ação tomada"></div>
+    </div>
+    <button class="btn-remove-item" onclick="removeItem(this)">✕</button>
+  </div>`,
+  campanhas: () => `<div class="item-row" data-sec="campanhas">
+    <div class="item-fields">
+      <div class="field"><label>Nome *</label><input class="f-nome" placeholder="Nome da campanha ou treinamento"></div>
+      <div class="field"><label>Tipo</label>
+        <select class="f-tipo"><option>Campanha</option><option>Treinamento</option><option>Palestra</option><option>DDS</option></select>
+      </div>
+      <div class="field"><label>Data</label><input type="date" class="f-data"></div>
+      <div class="field"><label>Participantes</label><input type="number" class="f-part" placeholder="0" min="0"></div>
+      <div class="field"><label>Responsável</label><input class="f-resp" placeholder="Quem conduziu?"></div>
+      <div class="field"><label>Observação</label><input class="f-obs" placeholder="Observação adicional"></div>
+    </div>
+    <button class="btn-remove-item" onclick="removeItem(this)">✕</button>
+  </div>`,
+  obs: () => `<div class="item-row" data-sec="obs">
+    <div class="item-fields full">
+      <div class="field"><label>Observação</label><textarea class="f-obs" rows="2" placeholder="Descreva a observação, encaminhamento ou pendência..."></textarea></div>
+    </div>
+    <button class="btn-remove-item" onclick="removeItem(this)" style="margin-top:22px">✕</button>
+  </div>`,
+};
+
+function addItem(sec) {
+  const container = document.getElementById(sec + '-items');
+  const div = document.createElement('div');
+  div.innerHTML = ITEM_TEMPLATES[sec]();
+  container.appendChild(div.firstElementChild);
+}
+function removeItem(btn) { btn.closest('.item-row').remove(); }
+
+function renderItemSection(sec, data) {
+  const container = document.getElementById(sec + '-items');
+  container.innerHTML = '';
+  if (!data || !data.length) return;
+  data.forEach(item => {
+    const div = document.createElement('div');
+    div.innerHTML = ITEM_TEMPLATES[sec]();
+    const row = div.firstElementChild;
+    Object.entries(item).forEach(([k, v]) => {
+      const el = row.querySelector('.f-' + k);
+      if (el) el.value = v;
+    });
+    container.appendChild(row);
+  });
+}
+
+function collectItems(sec) {
+  const rows = document.querySelectorAll(`#${sec}-items .item-row`);
+  const result = [];
+  rows.forEach(row => {
+    const obj = {};
+    row.querySelectorAll('[class]').forEach(el => {
+      const key = [...el.classList].find(c => c.startsWith('f-'))?.replace('f-','');
+      if (key) obj[key] = el.value;
+    });
+    if (Object.values(obj).some(v => v)) result.push(obj);
+  });
+  return result;
+}
 
 async function salvarReuniao() {
   const pauta = document.getElementById('r-pauta').value.trim();
   if (!pauta) { toast('Pauta é obrigatória', 'err'); return; }
-  const id = document.getElementById('r-id').value || uid();
+  const idExist = document.getElementById('r-id').value;
+  const id = idExist || uid();
   const obj = {
     id,
     data:          document.getElementById('r-data').value,
     tipo:          document.getElementById('r-tipo').value,
     pauta,
     participantes: document.getElementById('r-participantes').value,
-    decisoes:      document.getElementById('r-decisoes').value,
+    decisoes:      '',
     responsavel:   document.getElementById('r-resp').value,
     prazo:         document.getElementById('r-prazo').value,
     ata:           document.getElementById('r-ata').value,
     status:        document.getElementById('r-status').value,
+    planoAcao:     JSON.stringify(collectItems('plano')),
+    acidentes:     JSON.stringify(collectItems('acidentes')),
+    campanhas:     JSON.stringify(collectItems('campanhas')),
+    observacoes:   JSON.stringify(collectItems('obs')),
   };
-  await salvarNaAba('reunioes', obj, document.getElementById('r-id').value);
+  await salvarNaAba('reunioes', obj, idExist);
   fecharModal('modal-reuniao');
+}
+
+// ── GERAR PDF DA REUNIÃO ──────────────────────────────
+function gerarPDFReuniao() {
+  const dados = {
+    ata:          document.getElementById('r-ata').value || '—',
+    data:         document.getElementById('r-data').value || '',
+    tipo:         document.getElementById('r-tipo').value || '',
+    pauta:        document.getElementById('r-pauta').value || '',
+    participantes:document.getElementById('r-participantes').value || '',
+    responsavel:  document.getElementById('r-resp').value || '',
+    prazo:        document.getElementById('r-prazo').value || '',
+    status:       document.getElementById('r-status').value || '',
+    plano:        collectItems('plano'),
+    acidentes:    collectItems('acidentes'),
+    campanhas:    collectItems('campanhas'),
+    obs:          collectItems('obs'),
+  };
+  abrirJanelaPDF(dados);
+}
+
+function gerarPDFReuniaoById(id) {
+  const r = DB.reunioes.find(x => x.id === id);
+  if (!r) return;
+  abrirJanelaPDF({
+    ata:          r.ata || '—',
+    data:         r.data || '',
+    tipo:         r.tipo || '',
+    pauta:        r.pauta || '',
+    participantes:r.participantes || '',
+    responsavel:  r.responsavel || '',
+    prazo:        r.prazo || '',
+    status:       r.status || '',
+    plano:        tryParse(r.planoAcao),
+    acidentes:    tryParse(r.acidentes),
+    campanhas:    tryParse(r.campanhas),
+    obs:          tryParse(r.observacoes),
+  });
+}
+
+function fmtData(d) {
+  if (!d) return '___/___/______';
+  const [y,m,dia] = d.split('-');
+  return `${dia}/${m}/${y}`;
+}
+
+function abrirJanelaPDF(dados) {
+  const partsArr = dados.participantes ? dados.participantes.split(',').map(p=>p.trim()).filter(Boolean) : [];
+
+  const tblPlano = dados.plano && dados.plano.length ? `
+    <table class="sec-table">
+      <thead><tr><th>O Quê / Problema</th><th>Como / Ação</th><th>Responsável</th><th>Prazo</th><th>Status</th></tr></thead>
+      <tbody>${dados.plano.map(p=>`<tr><td>${p.oque||''}</td><td>${p.como||''}</td><td>${p.resp||''}</td><td>${fmtData(p.prazo)}</td><td>${p.status||''}</td></tr>`).join('')}</tbody>
+    </table>` : '<p class="sem-dados">Nenhum item registrado.</p>';
+
+  const tblAcidentes = dados.acidentes && dados.acidentes.length ? `
+    <table class="sec-table">
+      <thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th>Local</th><th>Afastamento</th><th>Medida Corretiva</th></tr></thead>
+      <tbody>${dados.acidentes.map(a=>`<tr><td>${fmtData(a.data)}</td><td>${a.tipo||''}</td><td>${a.desc||''}</td><td>${a.local||''}</td><td>${a.afas||''}</td><td>${a.medida||''}</td></tr>`).join('')}</tbody>
+    </table>` : '<p class="sem-dados">Nenhum acidente registrado neste período.</p>';
+
+  const tblCampanhas = dados.campanhas && dados.campanhas.length ? `
+    <table class="sec-table">
+      <thead><tr><th>Nome</th><th>Tipo</th><th>Data</th><th>Participantes</th><th>Responsável</th><th>Observação</th></tr></thead>
+      <tbody>${dados.campanhas.map(c=>`<tr><td>${c.nome||''}</td><td>${c.tipo||''}</td><td>${fmtData(c.data)}</td><td>${c.part||''}</td><td>${c.resp||''}</td><td>${c.obs||''}</td></tr>`).join('')}</tbody>
+    </table>` : '<p class="sem-dados">Nenhuma campanha ou treinamento registrado.</p>';
+
+  const tblObs = dados.obs && dados.obs.length ? `
+    <ul class="obs-list">${dados.obs.map(o=>`<li>${o.obs||''}</li>`).join('')}</ul>` : '<p class="sem-dados">Nenhuma observação registrada.</p>';
+
+  const numAssin = Math.max(partsArr.length, 6);
+  const assinaturas = Array.from({length: numAssin}, (_, i) => {
+    const nome = partsArr[i] || '';
+    return `<div class="assin-box">
+      <div class="assin-line"></div>
+      <div class="assin-nome">${nome || '&nbsp;'}</div>
+      <div class="assin-cargo">Cargo: _______________________</div>
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Ata de Reunião CIPA — Nº ${dados.ata}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; font-size: 11pt; color: #111; background: #fff; padding: 20mm 20mm 15mm 20mm; }
+  .header { display:flex; align-items:center; justify-content:space-between; border-bottom: 3px solid #F5C400; padding-bottom:12px; margin-bottom:16px; }
+  .header-logo { display:flex; align-items:center; gap:10px; }
+  .logo-box { width:44px; height:44px; background:#F5C400; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:900; }
+  .logo-title { font-size:1.3rem; font-weight:900; letter-spacing:1px; }
+  .logo-sub { font-size:8pt; color:#666; }
+  .header-ata { text-align:right; }
+  .header-ata .ata-num { font-size:1.4rem; font-weight:900; color:#F5C400; }
+  .header-ata .ata-label { font-size:8pt; color:#666; }
+  h1.doc-title { font-size:14pt; font-weight:900; text-align:center; text-transform:uppercase; letter-spacing:2px; margin-bottom:14px; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border:1.5px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:16px; }
+  .info-cell { padding:6px 10px; border-right:1px solid #ccc; }
+  .info-cell:last-child { border-right:none; }
+  .info-cell.full { grid-column:1/-1; border-top:1px solid #ccc; }
+  .info-label { font-size:7.5pt; color:#888; text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
+  .info-value { font-size:10pt; font-weight:600; }
+  .section { margin-bottom:18px; }
+  .section-title { background:#F5C400; color:#000; font-weight:900; font-size:9pt; text-transform:uppercase; letter-spacing:1px; padding:5px 10px; border-radius:3px 3px 0 0; display:flex; align-items:center; gap:6px; }
+  .section-body { border:1px solid #ddd; border-top:none; border-radius:0 0 3px 3px; padding:10px; }
+  .sec-table { width:100%; border-collapse:collapse; font-size:9pt; }
+  .sec-table th { background:#f5f5f5; font-size:8pt; text-transform:uppercase; letter-spacing:.4px; padding:5px 8px; border:1px solid #ccc; text-align:left; color:#444; }
+  .sec-table td { padding:5px 8px; border:1px solid #ddd; vertical-align:top; }
+  .sec-table tr:nth-child(even) td { background:#fafafa; }
+  .sem-dados { color:#999; font-style:italic; font-size:9pt; padding:4px 0; }
+  .obs-list { padding-left:18px; }
+  .obs-list li { margin-bottom:5px; font-size:10pt; }
+  .participantes-section { margin-bottom:16px; }
+  .part-title { font-weight:700; font-size:9pt; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; color:#444; }
+  .part-tags { display:flex; flex-wrap:wrap; gap:5px; }
+  .part-tag { background:#f0f0f0; border:1px solid #ccc; border-radius:3px; padding:2px 8px; font-size:9pt; }
+  .assinaturas { margin-top:28px; page-break-inside:avoid; }
+  .assin-title { font-weight:900; font-size:10pt; text-transform:uppercase; letter-spacing:1px; text-align:center; margin-bottom:20px; border-top:1.5px solid #ccc; padding-top:14px; }
+  .assin-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px 30px; }
+  .assin-box { text-align:center; }
+  .assin-line { border-bottom:1.5px solid #555; margin-bottom:5px; margin-top:32px; }
+  .assin-nome { font-size:9pt; font-weight:700; }
+  .assin-cargo { font-size:8pt; color:#666; margin-top:2px; }
+  .footer { margin-top:22px; border-top:1px solid #ddd; padding-top:8px; display:flex; justify-content:space-between; font-size:8pt; color:#999; }
+  @media print { body { padding: 12mm 16mm 10mm 16mm; } @page { size: A4; margin: 0; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-box">⚠</div>
+    <div>
+      <div class="logo-title">CIPA MANAGER</div>
+      <div class="logo-sub">NR-05 · Comissão Interna de Prevenção de Acidentes</div>
+    </div>
+  </div>
+  <div class="header-ata">
+    <div class="ata-label">ATA DE REUNIÃO</div>
+    <div class="ata-num">Nº ${dados.ata}</div>
+  </div>
+</div>
+<h1 class="doc-title">Ata de Reunião CIPA</h1>
+<div class="info-grid">
+  <div class="info-cell"><div class="info-label">Data</div><div class="info-value">${fmtData(dados.data)}</div></div>
+  <div class="info-cell"><div class="info-label">Tipo de Reunião</div><div class="info-value">${dados.tipo}</div></div>
+  <div class="info-cell"><div class="info-label">Status</div><div class="info-value">${dados.status}</div></div>
+  <div class="info-cell full"><div class="info-label">Pauta</div><div class="info-value">${dados.pauta}</div></div>
+  <div class="info-cell"><div class="info-label">Responsável</div><div class="info-value">${dados.responsavel || '—'}</div></div>
+  <div class="info-cell"><div class="info-label">Prazo</div><div class="info-value">${fmtData(dados.prazo)}</div></div>
+</div>
+${partsArr.length ? `<div class="participantes-section">
+  <div class="part-title">Participantes Presentes</div>
+  <div class="part-tags">${partsArr.map(p=>`<span class="part-tag">${p}</span>`).join('')}</div>
+</div>` : ''}
+<div class="section"><div class="section-title">📌 Plano de Ação</div><div class="section-body">${tblPlano}</div></div>
+<div class="section"><div class="section-title">⚠ Acidentes</div><div class="section-body">${tblAcidentes}</div></div>
+<div class="section"><div class="section-title">🎓 Campanhas e Treinamentos</div><div class="section-body">${tblCampanhas}</div></div>
+<div class="section"><div class="section-title">📝 Observações</div><div class="section-body">${tblObs}</div></div>
+<div class="assinaturas">
+  <div class="assin-title">Assinaturas dos Participantes</div>
+  <div class="assin-grid">${assinaturas}</div>
+</div>
+<div class="footer">
+  <span>CIPA Manager · NR-05 · Documento gerado em ${new Date().toLocaleDateString('pt-BR')}</span>
+  <span>Ata Nº ${dados.ata} · Reunião ${dados.tipo}</span>
+</div>
+<script>window.onload = () => { window.print(); }<\/script>
+</body>
+</html>`;
+
+  const janela = window.open('', '_blank', 'width=900,height=700');
+  janela.document.write(html);
+  janela.document.close();
 }
 
 // ── INSPEÇÕES ─────────────────────────────────────────
