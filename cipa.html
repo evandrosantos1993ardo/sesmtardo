@@ -62,9 +62,7 @@ body { background:var(--bg); color:var(--text); font-family:var(--sans); min-hei
 .sidebar {
   width:210px; background:var(--surface); border-right:1px solid var(--border);
   padding:20px 0; flex-shrink:0; overflow-y:auto;
-  display:flex; flex-direction:column;
 }
-.nav-section { margin-bottom:6px; }
 .nav-label {
   font-family:var(--mono); font-size:.6rem; color:var(--muted);
   letter-spacing:.12em; text-transform:uppercase;
@@ -74,7 +72,7 @@ body { background:var(--bg); color:var(--text); font-family:var(--sans); min-hei
   display:flex; align-items:center; gap:9px;
   padding:9px 16px; cursor:pointer; font-size:.82rem;
   color:var(--muted); border-left:2px solid transparent;
-  transition:.15s; user-select:none; position:relative;
+  transition:.15s; user-select:none;
 }
 .nav-item:hover { background:rgba(245,196,0,.05); color:var(--text); }
 .nav-item.active { background:rgba(245,196,0,.08); color:var(--accent); border-left-color:var(--accent); }
@@ -84,7 +82,6 @@ body { background:var(--bg); color:var(--text); font-family:var(--sans); min-hei
   background:var(--red); color:#fff; border-radius:9px;
   font-family:var(--mono); font-size:.6rem; display:flex; align-items:center; justify-content:center;
 }
-.nav-sep { border:none; border-top:1px solid var(--border); margin:10px 16px; }
 
 /* ── CONTENT ── */
 .content { flex:1; overflow-y:auto; padding:28px 32px; }
@@ -94,7 +91,7 @@ body { background:var(--bg); color:var(--text); font-family:var(--sans); min-hei
 .page-title { font-family:var(--display); font-size:2rem; letter-spacing:.04em; }
 .page-title span { color:var(--accent); }
 .page-sub { color:var(--muted); font-size:.8rem; font-family:var(--mono); margin-top:2px; }
-.page-actions { display:flex; gap:8px; align-items:center; }
+.page-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
 
 /* ── BUTTONS ── */
 .btn {
@@ -108,6 +105,12 @@ body { background:var(--bg); color:var(--text); font-family:var(--sans); min-hei
 .btn-danger { background:rgba(231,76,60,.15); border:1px solid rgba(231,76,60,.3); color:var(--red); }
 .btn-danger:hover { background:var(--red); color:#fff; border-color:var(--red); }
 .btn-sm { padding:5px 11px; font-size:.74rem; border-radius:5px; }
+.btn-pdf {
+  background:rgba(59,130,246,.15); border:1px solid rgba(59,130,246,.4); color:var(--blue);
+  padding:9px 18px; border-radius:7px; font-family:var(--sans); font-size:.82rem; font-weight:500;
+  cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.2s;
+}
+.btn-pdf:hover { background:var(--blue); color:#fff; }
 
 /* ── KPI CARDS ── */
 .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
@@ -177,7 +180,6 @@ tr:hover td { background:rgba(255,255,255,.015); }
 .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--accent); }
 .field select option { background:var(--surface); }
 .field textarea { resize:vertical; min-height:80px; }
-.form-actions { display:flex; gap:10px; justify-content:flex-end; padding-top:8px; }
 
 /* ── MODAL ── */
 .modal-bg {
@@ -189,7 +191,7 @@ tr:hover td { background:rgba(255,255,255,.015); }
   background:var(--surface); border:1px solid var(--border); border-radius:12px;
   padding:28px; width:520px; max-width:95vw; max-height:90vh; overflow-y:auto;
 }
-.modal.modal-lg { width:760px; }
+.modal.modal-lg { width:800px; }
 .modal-title { font-family:var(--display); font-size:1.4rem; margin-bottom:20px; }
 .modal-title.yellow { color:var(--accent); }
 .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
@@ -212,7 +214,7 @@ tr:hover td { background:rgba(255,255,255,.015); }
   padding:8px 0; border-bottom:1px solid rgba(31,35,48,.5);
 }
 .item-row:last-child { border-bottom:none; }
-.item-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; flex:1; }
+.item-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .item-fields.three { grid-template-columns:1fr 1fr 1fr; }
 .item-fields.full { grid-template-columns:1fr; }
 .btn-remove-item {
@@ -229,19 +231,14 @@ tr:hover td { background:rgba(255,255,255,.015); }
   cursor:pointer; margin-top:8px; transition:.2s;
 }
 .btn-add-item:hover { border-color:var(--accent); color:var(--accent); }
-.btn-pdf {
-  background:rgba(59,130,246,.15); border:1px solid rgba(59,130,246,.4); color:var(--blue);
-  padding:9px 18px; border-radius:7px; font-family:var(--sans); font-size:.82rem; font-weight:500;
-  cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.2s;
-}
-.btn-pdf:hover { background:var(--blue); color:#fff; }
 
-/* ── PDF PRINT ── */
-@media print {
-  body > *:not(#pdf-preview-area) { display:none !important; }
-  #pdf-preview-area { display:block !important; }
+/* ── FILTER SELECT ── */
+.filter-select {
+  background:var(--bg); border:1px solid var(--border); border-radius:6px;
+  padding:7px 10px; color:var(--text); font-family:var(--mono); font-size:.75rem;
+  outline:none; cursor:pointer;
 }
-#pdf-preview-area { display:none; }
+.filter-select:focus { border-color:var(--accent); }
 
 /* ── TOAST ── */
 #toast {
@@ -256,20 +253,19 @@ tr:hover td { background:rgba(255,255,255,.015); }
 #toast.info { background:var(--blue);  color:#fff; }
 
 /* ── LOADING BAR ── */
-#loadbar { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:9999; width:0; transition:width .3s; }
+#loadbar { position:fixed; top:0; left:0; height:2px; background:var(--accent); z-index:9999; width:0; transition:width .4s; }
+
+/* ── PDF PRINT ── */
+@media print {
+  body > *:not(#pdf-preview-area) { display:none !important; }
+  #pdf-preview-area { display:block !important; }
+}
+#pdf-preview-area { display:none; }
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:var(--bg); }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-
-/* ── SELECT FILTER ── */
-.filter-select {
-  background:var(--bg); border:1px solid var(--border); border-radius:6px;
-  padding:7px 10px; color:var(--text); font-family:var(--mono); font-size:.75rem;
-  outline:none; cursor:pointer;
-}
-.filter-select:focus { border-color:var(--accent); }
 
 @media(max-width:700px) {
   .sidebar { display:none; }
@@ -307,26 +303,21 @@ tr:hover td { background:rgba(255,255,255,.015); }
 
   <!-- SIDEBAR -->
   <nav class="sidebar">
-    <div class="nav-section">
-      <div class="nav-label">Principal</div>
-      <div class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">◈</span> Dashboard</div>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">CIPA</div>
-      <div class="nav-item" onclick="nav('membros')"><span class="nav-icon">👥</span> Membros <span class="nav-badge" id="badge-membros" style="display:none">0</span></div>
-      <div class="nav-item" onclick="nav('reunioes')"><span class="nav-icon">📋</span> Reuniões <span class="nav-badge" id="badge-reunioes" style="display:none">0</span></div>
-      <div class="nav-item" onclick="nav('sipat')"><span class="nav-icon">🏆</span> SIPAT</div>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Segurança</div>
-      <div class="nav-item" onclick="nav('inspecoes')"><span class="nav-icon">🔍</span> Inspeções <span class="nav-badge" id="badge-inspecoes" style="display:none">0</span></div>
-      <div class="nav-item" onclick="nav('matriz')"><span class="nav-icon">⚡</span> Matriz de Risco</div>
-      <div class="nav-item" onclick="nav('plano')"><span class="nav-icon">📌</span> Plano de Ação <span class="nav-badge" id="badge-plano" style="display:none">0</span></div>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Capacitação</div>
-      <div class="nav-item" onclick="nav('treinamentos')"><span class="nav-icon">🎓</span> Treinamentos</div>
-    </div>
+    <div class="nav-label">Principal</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-icon">◈</span> Dashboard</div>
+
+    <div class="nav-label">CIPA</div>
+    <div class="nav-item" onclick="nav('membros',this)"><span class="nav-icon">👥</span> Membros <span class="nav-badge" id="badge-membros" style="display:none">0</span></div>
+    <div class="nav-item" onclick="nav('reunioes',this)"><span class="nav-icon">📋</span> Reuniões <span class="nav-badge" id="badge-reunioes" style="display:none">0</span></div>
+    <div class="nav-item" onclick="nav('sipat',this)"><span class="nav-icon">🏆</span> SIPAT</div>
+
+    <div class="nav-label">Segurança</div>
+    <div class="nav-item" onclick="nav('inspecoes',this)"><span class="nav-icon">🔍</span> Inspeções <span class="nav-badge" id="badge-inspecoes" style="display:none">0</span></div>
+    <div class="nav-item" onclick="nav('matriz',this)"><span class="nav-icon">⚡</span> Matriz de Risco</div>
+    <div class="nav-item" onclick="nav('plano',this)"><span class="nav-icon">📌</span> Plano de Ação <span class="nav-badge" id="badge-plano" style="display:none">0</span></div>
+
+    <div class="nav-label">Capacitação</div>
+    <div class="nav-item" onclick="nav('treinamentos',this)"><span class="nav-icon">🎓</span> Treinamentos</div>
   </nav>
 
   <!-- CONTENT -->
@@ -372,7 +363,6 @@ tr:hover td { background:rgba(255,255,255,.015); }
           <div class="kpi-desc">na matriz</div>
         </div>
       </div>
-      <!-- Tabela alertas -->
       <div class="table-card">
         <div class="table-toolbar">
           <div class="table-toolbar-title">⚠ Ações vencidas / críticas</div>
@@ -415,6 +405,21 @@ tr:hover td { background:rgba(255,255,255,.015); }
       </div>
     </div>
 
+    <!-- ══ SIPAT ══ -->
+    <div class="page" id="page-sipat">
+      <div class="page-header">
+        <div><div class="page-title">SI<span>PAT</span></div><div class="page-sub">Semana Interna de Prevenção de Acidentes</div></div>
+        <div class="page-actions">
+          <input class="search-box" id="busca-sipat" placeholder="Buscar..." oninput="renderSipat()">
+          <button class="btn btn-primary" onclick="abrirModalSipat()">+ Novo Evento</button>
+        </div>
+      </div>
+      <div class="table-card">
+        <table><thead><tr><th>Evento</th><th>Tema</th><th>Palestrante</th><th>Data</th><th>Participantes</th><th>Avaliação</th><th>Ações</th></tr></thead>
+        <tbody id="tb-sipat"></tbody></table>
+      </div>
+    </div>
+
     <!-- ══ INSPEÇÕES ══ -->
     <div class="page" id="page-inspecoes">
       <div class="page-header">
@@ -423,9 +428,7 @@ tr:hover td { background:rgba(255,255,255,.015); }
           <input class="search-box" id="busca-inspecoes" placeholder="Buscar..." oninput="renderInspecoes()">
           <select class="filter-select" id="filtro-status-insp" onchange="renderInspecoes()">
             <option value="">Todos os status</option>
-            <option value="Aberta">Aberta</option>
-            <option value="Em andamento">Em andamento</option>
-            <option value="Concluída">Concluída</option>
+            <option>Aberta</option><option>Em andamento</option><option>Concluída</option>
           </select>
           <button class="btn btn-primary" onclick="abrirModalInspecao()">+ Nova Inspeção</button>
         </div>
@@ -459,10 +462,7 @@ tr:hover td { background:rgba(255,255,255,.015); }
           <input class="search-box" id="busca-plano" placeholder="Buscar..." oninput="renderPlano()">
           <select class="filter-select" id="filtro-status-plano" onchange="renderPlano()">
             <option value="">Todos</option>
-            <option value="Aberta">Aberta</option>
-            <option value="Em andamento">Em andamento</option>
-            <option value="Concluída">Concluída</option>
-            <option value="Vencida">Vencida</option>
+            <option>Aberta</option><option>Em andamento</option><option>Concluída</option><option>Vencida</option>
           </select>
           <button class="btn btn-primary" onclick="abrirModalPlano()">+ Nova Ação</button>
         </div>
@@ -488,21 +488,6 @@ tr:hover td { background:rgba(255,255,255,.015); }
       </div>
     </div>
 
-    <!-- ══ SIPAT ══ -->
-    <div class="page" id="page-sipat">
-      <div class="page-header">
-        <div><div class="page-title">SI<span>PAT</span></div><div class="page-sub">Semana Interna de Prevenção de Acidentes</div></div>
-        <div class="page-actions">
-          <input class="search-box" id="busca-sipat" placeholder="Buscar..." oninput="renderSipat()">
-          <button class="btn btn-primary" onclick="abrirModalSipat()">+ Novo Evento</button>
-        </div>
-      </div>
-      <div class="table-card">
-        <table><thead><tr><th>Evento</th><th>Tema</th><th>Palestrante</th><th>Data</th><th>Participantes</th><th>Avaliação</th><th>Ações</th></tr></thead>
-        <tbody id="tb-sipat"></tbody></table>
-      </div>
-    </div>
-
   </main>
 </div>
 
@@ -519,20 +504,16 @@ tr:hover td { background:rgba(255,255,255,.015); }
       <div class="field"><label>Setor *</label><input id="m-setor" placeholder="Setor"></div>
       <div class="field"><label>Telefone</label><input id="m-tel" placeholder="(00) 00000-0000"></div>
       <div class="field"><label>E-mail</label><input id="m-email" placeholder="email@empresa.com"></div>
-    </div>
-    <div class="form-grid">
       <div class="field">
-        <label>Tipo *</label>
+        <label>Tipo</label>
         <select id="m-tipo"><option>Titular</option><option>Suplente</option></select>
       </div>
       <div class="field">
-        <label>Representação *</label>
+        <label>Representação</label>
         <select id="m-rep"><option>Empregado</option><option>Empregador</option></select>
       </div>
       <div class="field"><label>Início do Mandato</label><input type="date" id="m-inicio"></div>
       <div class="field"><label>Fim do Mandato</label><input type="date" id="m-fim"></div>
-    </div>
-    <div class="form-grid">
       <div class="field">
         <label>Status</label>
         <select id="m-status"><option>Ativo</option><option>Inativo</option></select>
@@ -545,27 +526,25 @@ tr:hover td { background:rgba(255,255,255,.015); }
   </div>
 </div>
 
-<!-- Modal Reunião EXPANDIDO -->
+<!-- Modal Reunião -->
 <div class="modal-bg" id="modal-reuniao">
   <div class="modal modal-lg">
     <div class="modal-title yellow" id="modal-reuniao-title">NOVA REUNIÃO</div>
     <input type="hidden" id="r-id">
-
-    <!-- Dados Gerais -->
-    <div class="form-grid" style="margin-bottom:16px">
+    <div class="form-grid three">
       <div class="field"><label>Data *</label><input type="date" id="r-data"></div>
       <div class="field">
         <label>Tipo</label>
         <select id="r-tipo"><option>Ordinária</option><option>Extraordinária</option></select>
       </div>
-      <div class="field form-full"><label>Pauta *</label><input id="r-pauta" placeholder="Assuntos da reunião"></div>
-      <div class="field form-full"><label>Participantes</label><input id="r-participantes" placeholder="Nomes dos participantes separados por vírgula"></div>
-      <div class="field"><label>Responsável</label><input id="r-resp" placeholder="Responsável"></div>
-      <div class="field"><label>Prazo</label><input type="date" id="r-prazo"></div>
       <div class="field">
         <label>Status</label>
         <select id="r-status"><option>Pendente</option><option>Realizada</option><option>Cancelada</option></select>
       </div>
+      <div class="field form-full"><label>Pauta *</label><input id="r-pauta" placeholder="Assuntos da reunião"></div>
+      <div class="field form-full"><label>Participantes</label><input id="r-participantes" placeholder="Nomes separados por vírgula"></div>
+      <div class="field"><label>Responsável</label><input id="r-resp" placeholder="Responsável"></div>
+      <div class="field"><label>Prazo</label><input type="date" id="r-prazo"></div>
       <div class="field"><label>Nº da Ata</label><input id="r-ata" placeholder="Ata nº"></div>
     </div>
 
@@ -619,7 +598,7 @@ tr:hover td { background:rgba(255,255,255,.015); }
 
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="fecharModal('modal-reuniao')">Cancelar</button>
-      <button class="btn-pdf" onclick="gerarPDFReuniao()">🖨 Salvar e Gerar PDF</button>
+      <button class="btn-pdf" onclick="gerarPDFReuniao()">🖨 Gerar PDF</button>
       <button class="btn btn-primary" onclick="salvarReuniao()">💾 Salvar</button>
     </div>
   </div>
@@ -640,9 +619,7 @@ tr:hover td { background:rgba(255,255,255,.015); }
       <div class="field"><label>Risco Identificado *</label><input id="i-risco" placeholder="Descreva o risco"></div>
       <div class="field">
         <label>Classificação</label>
-        <select id="i-class">
-          <option>Baixo</option><option>Médio</option><option>Alto</option><option>Crítico</option>
-        </select>
+        <select id="i-class"><option>Baixo</option><option>Médio</option><option>Alto</option><option>Crítico</option></select>
       </div>
       <div class="field">
         <label>Status</label>
@@ -720,8 +697,8 @@ tr:hover td { background:rgba(255,255,255,.015); }
     <input type="hidden" id="tr-id">
     <div class="form-grid">
       <div class="field form-full"><label>Nome do Treinamento *</label><input id="tr-nome" placeholder="Ex: NR-35 Trabalho em Altura"></div>
-      <div class="field"><label>Instrutor *</label><input id="tr-instrutor" placeholder="Nome do instrutor"></div>
-      <div class="field"><label>Data *</label><input type="date" id="tr-data"></div>
+      <div class="field"><label>Instrutor</label><input id="tr-instrutor" placeholder="Nome do instrutor"></div>
+      <div class="field"><label>Data</label><input type="date" id="tr-data"></div>
       <div class="field"><label>Carga Horária</label><input id="tr-carga" placeholder="Ex: 8h"></div>
       <div class="field"><label>Nº de Participantes</label><input type="number" id="tr-part" min="0" placeholder="0"></div>
       <div class="field">
@@ -760,67 +737,67 @@ tr:hover td { background:rgba(255,255,255,.015); }
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 // CIPA MANAGER — Script Principal
-// Padrão 100% GET (igual ao Controle EPI)
-// Fonte de verdade: Google Sheets. Sem localStorage.
-// ══════════════════════════════════════════════════════
+// CORREÇÃO: reuniões agora enviam planoAcao, acidentes,
+//           campanhas e observacoes como colunas extras.
+//           O Apps Script foi atualizado para suportar isso.
+// ══════════════════════════════════════════════════════════════
 
-// ── URL FIXA — altere aqui se precisar ───────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbz34PxunlUNZQxez2UoRlPh0Mdsv9eDd5JX4tQOQq2Vh885qGXJyljl1p_pLVjuiJKDSA/exec';
+// ── ALTERE AQUI COM A URL DO SEU APPS SCRIPT ─────────────────
+const API_URL = 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT';
 
-// ── BANCO DE DADOS EM MEMÓRIA ─────────────────────────
+// ── BANCO EM MEMÓRIA ──────────────────────────────────────────
 const DB = {
-  membros: [],
-  reunioes: [],
-  inspecoes: [],
-  matriz: [],
-  plano: [],
-  treinamentos: [],
-  sipat: []
+  membros:[], reunioes:[], inspecoes:[], matriz:[], plano:[], treinamentos:[], sipat:[]
 };
 
-// ── API GET (mesma lógica do Controle EPI) ────────────
+// ── API (padrão GET, sem CORS) ────────────────────────────────
 async function api(params) {
   const p = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => p.append(k, v));
+  Object.entries(params).forEach(([k,v]) => p.append(k, String(v)));
   const res = await fetch(API_URL + '?' + p.toString());
   const text = await res.text();
-  try { return JSON.parse(text); } catch(e) { return { ok: false }; }
+  try { return JSON.parse(text); } catch(e) { return { ok:false, erro:'Resposta inválida' }; }
 }
 
-// ── SYNC: carrega ABA do Sheets → DB ─────────────────
-async function loadSheet(sheet, dbKey, headers) {
+// ── CABEÇALHOS DE CADA ABA ────────────────────────────────────
+// IMPORTANTE: devem ser idênticos às colunas do Apps Script
+const HEADERS = {
+  membros:      ['id','nome','cargo','setor','telefone','email','tipo','representacao','inicio','fim','status'],
+  reunioes:     ['id','data','tipo','pauta','participantes','decisoes','responsavel','prazo','ata','status','planoAcao','acidentes','campanhas','observacoes'],
+  inspecoes:    ['id','data','setor','responsavel','risco','classificacao','status','corretiva','acaoResp','prazo'],
+  matriz:       ['id','atividade','perigo','probabilidade','severidade','controles','risco'],
+  plano:        ['id','problema','acao','responsavel','setor','abertura','prazo','status','evidencia'],
+  treinamentos: ['id','nome','instrutor','data','carga','participantes','certificado'],
+  sipat:        ['id','evento','tema','palestrante','data','participantes','avaliacao']
+};
+
+// ── SYNC: carrega aba do Sheets → DB ─────────────────────────
+async function loadSheet(sheet) {
   try {
-    const r = await api({ action: 'getAll', sheet });
-    if (!r.ok || !r.data || r.data.length < 2) { DB[dbKey] = []; return; }
-    DB[dbKey] = r.data.slice(1).map(row => {
+    const r = await api({ action:'getAll', sheet });
+    if (!r.ok || !r.data || r.data.length < 2) { DB[sheet] = []; return; }
+    const headers = HEADERS[sheet];
+    DB[sheet] = r.data.slice(1).map(row => {
       const obj = {};
-      headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? row[i] : ''; });
+      headers.forEach((h,i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
       return obj;
     });
-  } catch(e) { DB[dbKey] = []; }
+  } catch(e) { DB[sheet] = []; }
 }
 
-// ── SYNC COMPLETO ─────────────────────────────────────
+// ── SYNC COMPLETO ─────────────────────────────────────────────
 async function syncAll() {
   setDot('loading');
   document.getElementById('syncText').textContent = 'Carregando...';
   setBar(true);
   try {
-    await Promise.all([
-      loadSheet('membros',      'membros',      ['id','nome','cargo','setor','telefone','email','tipo','representacao','inicio','fim','status']),
-      loadSheet('reunioes',     'reunioes',     ['id','data','tipo','pauta','participantes','decisoes','responsavel','prazo','ata','status']),
-      loadSheet('inspecoes',    'inspecoes',    ['id','data','setor','responsavel','risco','classificacao','status','corretiva','acaoResp','prazo']),
-      loadSheet('matriz',       'matriz',       ['id','atividade','perigo','probabilidade','severidade','controles','risco']),
-      loadSheet('plano',        'plano',        ['id','problema','acao','responsavel','setor','abertura','prazo','status','evidencia']),
-      loadSheet('treinamentos', 'treinamentos', ['id','nome','instrutor','data','carga','participantes','certificado']),
-      loadSheet('sipat',        'sipat',        ['id','evento','tema','palestrante','data','participantes','avaliacao']),
-    ]);
+    await Promise.all(Object.keys(HEADERS).map(s => loadSheet(s)));
     renderAll();
     setDot('ok');
     document.getElementById('syncText').textContent = 'Conectado ✓';
-    toast('Dados carregados do Google Sheets ✓', 'ok');
+    toast('Dados carregados ✓', 'ok');
   } catch(e) {
     setDot('err');
     document.getElementById('syncText').textContent = 'Erro na conexão';
@@ -829,67 +806,94 @@ async function syncAll() {
   setBar(false);
 }
 
-// ── GERA ID ÚNICO ─────────────────────────────────────
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+// ── SALVAR NA ABA ─────────────────────────────────────────────
+async function salvarNaAba(sheet, obj, isUpdate) {
+  setBar(true);
+  try {
+    const action = isUpdate ? 'update' : 'add';
+    const params = { action, sheet };
+    // Envia cada campo como param individual — padrão 100% GET
+    const headers = HEADERS[sheet];
+    headers.forEach(h => { params[h] = obj[h] !== undefined ? obj[h] : ''; });
+    const r = await api(params);
+    if (!r.ok) throw new Error(r.erro || 'Erro desconhecido');
 
-// ── NAVEGAÇÃO ─────────────────────────────────────────
-function nav(page) {
+    // Atualiza DB local
+    if (isUpdate) {
+      const idx = DB[sheet].findIndex(x => x.id === obj.id);
+      if (idx >= 0) DB[sheet][idx] = obj; else DB[sheet].push(obj);
+    } else {
+      DB[sheet].push(obj);
+    }
+    renderAll();
+    toast('Salvo no Google Sheets ✓', 'ok');
+  } catch(e) {
+    toast('Erro ao salvar: ' + e.message, 'err');
+  }
+  setBar(false);
+}
+
+// ── DELETAR ───────────────────────────────────────────────────
+async function deletar(sheet, id, renderFn) {
+  if (!confirm('Remover este registro? Não pode ser desfeito.')) return;
+  setBar(true);
+  try {
+    const r = await api({ action:'delete', sheet, id });
+    if (!r.ok) throw new Error(r.erro || 'Erro ao deletar');
+    DB[sheet] = DB[sheet].filter(x => x.id !== id);
+    renderFn();
+    updateBadges();
+    renderDashboard();
+    toast('Registro removido ✓', 'ok');
+  } catch(e) {
+    toast('Erro ao remover: ' + e.message, 'err');
+  }
+  setBar(false);
+}
+
+// ── UTILITÁRIOS ───────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+function tryParse(s) { try { return JSON.parse(s); } catch(e) { return []; } }
+
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────
+function nav(page, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  event.currentTarget.classList.add('active');
+  if (el) el.classList.add('active');
 }
 
-// ── RENDER ALL ────────────────────────────────────────
+// ── RENDER ALL ────────────────────────────────────────────────
 function renderAll() {
-  renderDashboard();
-  renderMembros();
-  renderReunioes();
-  renderInspecoes();
-  renderMatriz();
-  renderPlano();
-  renderTreinamentos();
-  renderSipat();
-  updateBadges();
+  renderDashboard(); renderMembros(); renderReunioes(); renderInspecoes();
+  renderMatriz(); renderPlano(); renderTreinamentos(); renderSipat(); updateBadges();
 }
 
-// ── DASHBOARD ─────────────────────────────────────────
+// ── DASHBOARD ─────────────────────────────────────────────────
 function renderDashboard() {
-  const membrosAtivos = DB.membros.filter(m => m.status === 'Ativo').length;
-  const inspAbertas   = DB.inspecoes.filter(i => i.status !== 'Concluída').length;
-  const planoAberto   = DB.plano.filter(p => p.status !== 'Concluída').length;
-  document.getElementById('kpi-membros').textContent   = membrosAtivos;
-  document.getElementById('kpi-inspecoes').textContent = inspAbertas;
-  document.getElementById('kpi-plano').textContent     = planoAberto;
+  document.getElementById('kpi-membros').textContent   = DB.membros.filter(m => m.status === 'Ativo').length;
+  document.getElementById('kpi-inspecoes').textContent = DB.inspecoes.filter(i => i.status !== 'Concluída').length;
+  document.getElementById('kpi-plano').textContent     = DB.plano.filter(p => p.status !== 'Concluída').length;
   document.getElementById('kpi-trein').textContent     = DB.treinamentos.length;
   document.getElementById('kpi-reunioes').textContent  = DB.reunioes.length;
   document.getElementById('kpi-matriz').textContent    = DB.matriz.length;
 
-  // Alertas: ações vencidas + inspeções críticas
   const hoje = new Date().toISOString().split('T')[0];
   const alertas = [
-    ...DB.plano.filter(p => p.prazo && p.prazo < hoje && p.status !== 'Concluída').map(p => ({
-      tipo: 'Plano', desc: p.problema, prazo: p.prazo, status: p.status
-    })),
-    ...DB.inspecoes.filter(i => i.classificacao === 'Crítico' && i.status !== 'Concluída').map(i => ({
-      tipo: 'Inspeção', desc: i.risco, prazo: i.prazo, status: i.status
-    }))
+    ...DB.plano.filter(p => p.prazo && p.prazo < hoje && p.status !== 'Concluída').map(p => ({ tipo:'Plano', desc:p.problema, prazo:p.prazo, status:p.status })),
+    ...DB.inspecoes.filter(i => i.classificacao === 'Crítico' && i.status !== 'Concluída').map(i => ({ tipo:'Inspeção', desc:i.risco, prazo:i.prazo, status:i.status }))
   ];
   const tb = document.getElementById('tb-alertas');
-  if (!alertas.length) {
-    tb.innerHTML = `<tr class="empty-row"><td colspan="4">✓ Nenhum alerta crítico</td></tr>`;
-    return;
-  }
+  if (!alertas.length) { tb.innerHTML = `<tr class="empty-row"><td colspan="4">✓ Nenhum alerta crítico</td></tr>`; return; }
   tb.innerHTML = alertas.map(a => `<tr>
     <td><span class="badge badge-red">${a.tipo}</span></td>
-    <td>${a.desc}</td>
-    <td class="mono">${a.prazo || '—'}</td>
+    <td>${a.desc||'—'}</td>
+    <td class="mono">${a.prazo||'—'}</td>
     <td>${badgeStatus(a.status)}</td>
   </tr>`).join('');
 }
 
 function updateBadges() {
-  const today = new Date().toISOString().split('T')[0];
   setBadge('membros',   DB.membros.filter(m => m.status === 'Ativo').length);
   setBadge('reunioes',  DB.reunioes.filter(r => r.status === 'Pendente').length);
   setBadge('inspecoes', DB.inspecoes.filter(i => i.status !== 'Concluída').length);
@@ -898,19 +902,17 @@ function updateBadges() {
 function setBadge(key, n) {
   const el = document.getElementById('badge-' + key);
   if (!el) return;
-  el.textContent = n;
-  el.style.display = n > 0 ? 'flex' : 'none';
+  el.textContent = n; el.style.display = n > 0 ? 'flex' : 'none';
 }
 
-// ── MEMBROS ───────────────────────────────────────────
+// ── MEMBROS ───────────────────────────────────────────────────
 function renderMembros() {
-  const q = (document.getElementById('busca-membros')?.value || '').toLowerCase();
+  const q  = (document.getElementById('busca-membros')?.value || '').toLowerCase();
   const fs = document.getElementById('filtro-setor-membros')?.value || '';
-  let list = DB.membros.filter(m =>
+  const list = DB.membros.filter(m =>
     (m.nome?.toLowerCase().includes(q) || m.cargo?.toLowerCase().includes(q) || m.setor?.toLowerCase().includes(q)) &&
     (!fs || m.setor === fs)
   );
-  // Atualiza opções do filtro setor
   const setores = [...new Set(DB.membros.map(m => m.setor).filter(Boolean))];
   const sel = document.getElementById('filtro-setor-membros');
   if (sel) {
@@ -928,7 +930,7 @@ function renderMembros() {
     <td class="mono" style="font-size:.74rem">${m.inicio||'—'} — ${m.fim||'—'}</td>
     <td>${badgeStatus(m.status)}</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick="editarMembro('${m.id}')">✎</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalMembro('${m.id}')">✎</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('membros','${m.id}',renderMembros)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -950,32 +952,34 @@ function abrirModalMembro(id) {
   document.getElementById('m-status').value= m?.status || 'Ativo';
   abrirModal('modal-membro');
 }
-function editarMembro(id) { abrirModalMembro(id); }
 
 async function salvarMembro() {
   const nome = document.getElementById('m-nome').value.trim();
   if (!nome) { toast('Nome é obrigatório', 'err'); return; }
-  const id = document.getElementById('m-id').value || uid();
+  const idExist = document.getElementById('m-id').value;
+  const id = idExist || uid();
   const obj = {
     id, nome,
-    cargo:          document.getElementById('m-cargo').value,
-    setor:          document.getElementById('m-setor').value,
-    telefone:       document.getElementById('m-tel').value,
-    email:          document.getElementById('m-email').value,
-    tipo:           document.getElementById('m-tipo').value,
-    representacao:  document.getElementById('m-rep').value,
-    inicio:         document.getElementById('m-inicio').value,
-    fim:            document.getElementById('m-fim').value,
-    status:         document.getElementById('m-status').value,
+    cargo:         document.getElementById('m-cargo').value,
+    setor:         document.getElementById('m-setor').value,
+    telefone:      document.getElementById('m-tel').value,
+    email:         document.getElementById('m-email').value,
+    tipo:          document.getElementById('m-tipo').value,
+    representacao: document.getElementById('m-rep').value,
+    inicio:        document.getElementById('m-inicio').value,
+    fim:           document.getElementById('m-fim').value,
+    status:        document.getElementById('m-status').value,
   };
-  await salvarNaAba('membros', obj, id === document.getElementById('m-id').value && document.getElementById('m-id').value);
+  await salvarNaAba('membros', obj, !!idExist);
   fecharModal('modal-membro');
 }
 
-// ── REUNIÕES ──────────────────────────────────────────
+// ── REUNIÕES ──────────────────────────────────────────────────
 function renderReunioes() {
   const q = (document.getElementById('busca-reunioes')?.value || '').toLowerCase();
-  const list = DB.reunioes.filter(r => r.pauta?.toLowerCase().includes(q) || r.tipo?.toLowerCase().includes(q) || r.responsavel?.toLowerCase().includes(q));
+  const list = DB.reunioes.filter(r =>
+    r.pauta?.toLowerCase().includes(q) || r.tipo?.toLowerCase().includes(q) || r.responsavel?.toLowerCase().includes(q)
+  );
   const tb = document.getElementById('tb-reunioes');
   if (!list.length) { tb.innerHTML = `<tr class="empty-row"><td colspan="7">Nenhuma reunião registrada</td></tr>`; return; }
   tb.innerHTML = list.map(r => `<tr>
@@ -986,8 +990,8 @@ function renderReunioes() {
     <td class="mono">${r.prazo||'—'}</td>
     <td>${badgeStatus(r.status)}</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick="editarReuniao('${r.id}')">✎</button>
-      <button class="btn btn-ghost btn-sm" title="Gerar PDF" onclick="gerarPDFReuniaoById('${r.id}')">🖨</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalReuniao('${r.id}')">✎</button>
+      <button class="btn-pdf btn-sm" style="padding:5px 10px" title="Gerar PDF" onclick="gerarPDFReuniaoById('${r.id}')">🖨</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('reunioes','${r.id}',renderReunioes)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -1012,10 +1016,34 @@ function abrirModalReuniao(id) {
   renderItemSection('obs',       r?.observacoes ? tryParse(r.observacoes) : []);
   abrirModal('modal-reuniao');
 }
-function editarReuniao(id) { abrirModalReuniao(id); }
-function tryParse(s) { try { return JSON.parse(s); } catch(e) { return []; } }
 
-// ── TOGGLE SEÇÕES ─────────────────────────────────────
+async function salvarReuniao() {
+  const pauta = document.getElementById('r-pauta').value.trim();
+  if (!pauta) { toast('Pauta é obrigatória', 'err'); return; }
+  const idExist = document.getElementById('r-id').value;
+  const id = idExist || uid();
+  const obj = {
+    id,
+    data:          document.getElementById('r-data').value,
+    tipo:          document.getElementById('r-tipo').value,
+    pauta,
+    participantes: document.getElementById('r-participantes').value,
+    decisoes:      '',
+    responsavel:   document.getElementById('r-resp').value,
+    prazo:         document.getElementById('r-prazo').value,
+    ata:           document.getElementById('r-ata').value,
+    status:        document.getElementById('r-status').value,
+    // ✅ CORREÇÃO: estas 4 colunas agora existem no Apps Script
+    planoAcao:     JSON.stringify(collectItems('plano')),
+    acidentes:     JSON.stringify(collectItems('acidentes')),
+    campanhas:     JSON.stringify(collectItems('campanhas')),
+    observacoes:   JSON.stringify(collectItems('obs')),
+  };
+  await salvarNaAba('reunioes', obj, !!idExist);
+  fecharModal('modal-reuniao');
+}
+
+// ── SEÇÕES DINÂMICAS DAS REUNIÕES ─────────────────────────────
 function toggleSection(id) {
   const body = document.getElementById(id);
   const tog  = document.getElementById('tog-' + id);
@@ -1023,7 +1051,6 @@ function toggleSection(id) {
   if (tog) tog.textContent = open ? '▲' : '▼';
 }
 
-// ── TEMPLATES DOS ITENS ───────────────────────────────
 const ITEM_TEMPLATES = {
   plano: () => `<div class="item-row" data-sec="plano">
     <div class="item-fields three">
@@ -1089,7 +1116,7 @@ function renderItemSection(sec, data) {
     const div = document.createElement('div');
     div.innerHTML = ITEM_TEMPLATES[sec]();
     const row = div.firstElementChild;
-    Object.entries(item).forEach(([k, v]) => {
+    Object.entries(item).forEach(([k,v]) => {
       const el = row.querySelector('.f-' + k);
       if (el) el.value = v;
     });
@@ -1111,32 +1138,7 @@ function collectItems(sec) {
   return result;
 }
 
-async function salvarReuniao() {
-  const pauta = document.getElementById('r-pauta').value.trim();
-  if (!pauta) { toast('Pauta é obrigatória', 'err'); return; }
-  const idExist = document.getElementById('r-id').value;
-  const id = idExist || uid();
-  const obj = {
-    id,
-    data:          document.getElementById('r-data').value,
-    tipo:          document.getElementById('r-tipo').value,
-    pauta,
-    participantes: document.getElementById('r-participantes').value,
-    decisoes:      '',
-    responsavel:   document.getElementById('r-resp').value,
-    prazo:         document.getElementById('r-prazo').value,
-    ata:           document.getElementById('r-ata').value,
-    status:        document.getElementById('r-status').value,
-    planoAcao:     JSON.stringify(collectItems('plano')),
-    acidentes:     JSON.stringify(collectItems('acidentes')),
-    campanhas:     JSON.stringify(collectItems('campanhas')),
-    observacoes:   JSON.stringify(collectItems('obs')),
-  };
-  await salvarNaAba('reunioes', obj, idExist);
-  fecharModal('modal-reuniao');
-}
-
-// ── GERAR PDF DA REUNIÃO ──────────────────────────────
+// ── PDF DA REUNIÃO ─────────────────────────────────────────────
 function gerarPDFReuniao() {
   const dados = {
     ata:          document.getElementById('r-ata').value || '—',
@@ -1183,29 +1185,30 @@ function fmtData(d) {
 function abrirJanelaPDF(dados) {
   const partsArr = dados.participantes ? dados.participantes.split(',').map(p=>p.trim()).filter(Boolean) : [];
 
-  const tblPlano = dados.plano && dados.plano.length ? `
+  const tblPlano = dados.plano?.length ? `
     <table class="sec-table">
       <thead><tr><th>O Quê / Problema</th><th>Como / Ação</th><th>Responsável</th><th>Prazo</th><th>Status</th></tr></thead>
       <tbody>${dados.plano.map(p=>`<tr><td>${p.oque||''}</td><td>${p.como||''}</td><td>${p.resp||''}</td><td>${fmtData(p.prazo)}</td><td>${p.status||''}</td></tr>`).join('')}</tbody>
     </table>` : '<p class="sem-dados">Nenhum item registrado.</p>';
 
-  const tblAcidentes = dados.acidentes && dados.acidentes.length ? `
+  const tblAcidentes = dados.acidentes?.length ? `
     <table class="sec-table">
       <thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th>Local</th><th>Afastamento</th><th>Medida Corretiva</th></tr></thead>
       <tbody>${dados.acidentes.map(a=>`<tr><td>${fmtData(a.data)}</td><td>${a.tipo||''}</td><td>${a.desc||''}</td><td>${a.local||''}</td><td>${a.afas||''}</td><td>${a.medida||''}</td></tr>`).join('')}</tbody>
     </table>` : '<p class="sem-dados">Nenhum acidente registrado neste período.</p>';
 
-  const tblCampanhas = dados.campanhas && dados.campanhas.length ? `
+  const tblCampanhas = dados.campanhas?.length ? `
     <table class="sec-table">
       <thead><tr><th>Nome</th><th>Tipo</th><th>Data</th><th>Participantes</th><th>Responsável</th><th>Observação</th></tr></thead>
       <tbody>${dados.campanhas.map(c=>`<tr><td>${c.nome||''}</td><td>${c.tipo||''}</td><td>${fmtData(c.data)}</td><td>${c.part||''}</td><td>${c.resp||''}</td><td>${c.obs||''}</td></tr>`).join('')}</tbody>
     </table>` : '<p class="sem-dados">Nenhuma campanha ou treinamento registrado.</p>';
 
-  const tblObs = dados.obs && dados.obs.length ? `
-    <ul class="obs-list">${dados.obs.map(o=>`<li>${o.obs||''}</li>`).join('')}</ul>` : '<p class="sem-dados">Nenhuma observação registrada.</p>';
+  const tblObs = dados.obs?.length
+    ? `<ul class="obs-list">${dados.obs.map(o=>`<li>${o.obs||''}</li>`).join('')}</ul>`
+    : '<p class="sem-dados">Nenhuma observação registrada.</p>';
 
   const numAssin = Math.max(partsArr.length, 6);
-  const assinaturas = Array.from({length: numAssin}, (_, i) => {
+  const assinaturas = Array.from({length:numAssin}, (_,i) => {
     const nome = partsArr[i] || '';
     return `<div class="assin-box">
       <div class="assin-line"></div>
@@ -1215,102 +1218,89 @@ function abrirJanelaPDF(dados) {
   }).join('');
 
   const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
+<html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Ata de Reunião CIPA — Nº ${dados.ata}</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: Arial, sans-serif; font-size: 11pt; color: #111; background: #fff; padding: 20mm 20mm 15mm 20mm; }
+  body { font-family: Arial, sans-serif; font-size: 11pt; color: #111; padding: 20mm 20mm 15mm 20mm; }
   .header { display:flex; align-items:center; justify-content:space-between; border-bottom: 3px solid #F5C400; padding-bottom:12px; margin-bottom:16px; }
-  .header-logo { display:flex; align-items:center; gap:10px; }
   .logo-box { width:44px; height:44px; background:#F5C400; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:900; }
   .logo-title { font-size:1.3rem; font-weight:900; letter-spacing:1px; }
   .logo-sub { font-size:8pt; color:#666; }
-  .header-ata { text-align:right; }
-  .header-ata .ata-num { font-size:1.4rem; font-weight:900; color:#F5C400; }
-  .header-ata .ata-label { font-size:8pt; color:#666; }
+  .ata-num { font-size:1.4rem; font-weight:900; color:#F5C400; }
   h1.doc-title { font-size:14pt; font-weight:900; text-align:center; text-transform:uppercase; letter-spacing:2px; margin-bottom:14px; }
-  .info-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border:1.5px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:16px; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr 1fr; border:1.5px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:16px; }
   .info-cell { padding:6px 10px; border-right:1px solid #ccc; }
   .info-cell:last-child { border-right:none; }
   .info-cell.full { grid-column:1/-1; border-top:1px solid #ccc; }
   .info-label { font-size:7.5pt; color:#888; text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
   .info-value { font-size:10pt; font-weight:600; }
   .section { margin-bottom:18px; }
-  .section-title { background:#F5C400; color:#000; font-weight:900; font-size:9pt; text-transform:uppercase; letter-spacing:1px; padding:5px 10px; border-radius:3px 3px 0 0; display:flex; align-items:center; gap:6px; }
+  .section-title { background:#F5C400; color:#000; font-weight:900; font-size:9pt; text-transform:uppercase; letter-spacing:1px; padding:5px 10px; border-radius:3px 3px 0 0; }
   .section-body { border:1px solid #ddd; border-top:none; border-radius:0 0 3px 3px; padding:10px; }
   .sec-table { width:100%; border-collapse:collapse; font-size:9pt; }
-  .sec-table th { background:#f5f5f5; font-size:8pt; text-transform:uppercase; letter-spacing:.4px; padding:5px 8px; border:1px solid #ccc; text-align:left; color:#444; }
+  .sec-table th { background:#f5f5f5; font-size:8pt; text-transform:uppercase; padding:5px 8px; border:1px solid #ccc; text-align:left; }
   .sec-table td { padding:5px 8px; border:1px solid #ddd; vertical-align:top; }
-  .sec-table tr:nth-child(even) td { background:#fafafa; }
-  .sem-dados { color:#999; font-style:italic; font-size:9pt; padding:4px 0; }
+  .sem-dados { color:#999; font-style:italic; font-size:9pt; }
   .obs-list { padding-left:18px; }
-  .obs-list li { margin-bottom:5px; font-size:10pt; }
-  .participantes-section { margin-bottom:16px; }
-  .part-title { font-weight:700; font-size:9pt; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; color:#444; }
-  .part-tags { display:flex; flex-wrap:wrap; gap:5px; }
-  .part-tag { background:#f0f0f0; border:1px solid #ccc; border-radius:3px; padding:2px 8px; font-size:9pt; }
-  .assinaturas { margin-top:28px; page-break-inside:avoid; }
-  .assin-title { font-weight:900; font-size:10pt; text-transform:uppercase; letter-spacing:1px; text-align:center; margin-bottom:20px; border-top:1.5px solid #ccc; padding-top:14px; }
-  .assin-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px 30px; }
+  .obs-list li { margin-bottom:5px; }
+  .participantes-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .part-tag { background:#f5f5f5; border:1px solid #ddd; border-radius:4px; padding:3px 10px; font-size:9pt; }
+  .assin-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:10px; }
   .assin-box { text-align:center; }
-  .assin-line { border-bottom:1.5px solid #555; margin-bottom:5px; margin-top:32px; }
-  .assin-nome { font-size:9pt; font-weight:700; }
-  .assin-cargo { font-size:8pt; color:#666; margin-top:2px; }
-  .footer { margin-top:22px; border-top:1px solid #ddd; padding-top:8px; display:flex; justify-content:space-between; font-size:8pt; color:#999; }
-  @media print { body { padding: 12mm 16mm 10mm 16mm; } @page { size: A4; margin: 0; } }
+  .assin-line { border-bottom:1px solid #333; margin-bottom:6px; height:40px; }
+  .assin-nome { font-size:8pt; font-weight:600; }
+  .assin-cargo { font-size:7.5pt; color:#666; }
+  @media print { body { padding:0; } }
 </style>
-</head>
-<body>
+</head><body>
 <div class="header">
-  <div class="header-logo">
+  <div style="display:flex;align-items:center;gap:10px">
     <div class="logo-box">⚠</div>
     <div>
       <div class="logo-title">CIPA MANAGER</div>
-      <div class="logo-sub">NR-05 · Comissão Interna de Prevenção de Acidentes</div>
+      <div class="logo-sub">NR-05 · SISTEMA DE GESTÃO</div>
     </div>
   </div>
-  <div class="header-ata">
-    <div class="ata-label">ATA DE REUNIÃO</div>
-    <div class="ata-num">Nº ${dados.ata}</div>
+  <div style="text-align:right">
+    <div class="ata-num">ATA Nº ${dados.ata}</div>
+    <div style="font-size:8pt;color:#666">Reunião CIPA</div>
   </div>
 </div>
-<h1 class="doc-title">Ata de Reunião CIPA</h1>
+<h1 class="doc-title">Ata de Reunião da CIPA</h1>
 <div class="info-grid">
   <div class="info-cell"><div class="info-label">Data</div><div class="info-value">${fmtData(dados.data)}</div></div>
-  <div class="info-cell"><div class="info-label">Tipo de Reunião</div><div class="info-value">${dados.tipo}</div></div>
+  <div class="info-cell"><div class="info-label">Tipo</div><div class="info-value">${dados.tipo}</div></div>
   <div class="info-cell"><div class="info-label">Status</div><div class="info-value">${dados.status}</div></div>
   <div class="info-cell full"><div class="info-label">Pauta</div><div class="info-value">${dados.pauta}</div></div>
-  <div class="info-cell"><div class="info-label">Responsável</div><div class="info-value">${dados.responsavel || '—'}</div></div>
+  <div class="info-cell"><div class="info-label">Responsável</div><div class="info-value">${dados.responsavel||'—'}</div></div>
   <div class="info-cell"><div class="info-label">Prazo</div><div class="info-value">${fmtData(dados.prazo)}</div></div>
 </div>
-${partsArr.length ? `<div class="participantes-section">
-  <div class="part-title">Participantes Presentes</div>
-  <div class="part-tags">${partsArr.map(p=>`<span class="part-tag">${p}</span>`).join('')}</div>
-</div>` : ''}
+<div class="section">
+  <div class="section-title">👥 Participantes</div>
+  <div class="section-body">
+    <div class="participantes-list">
+      ${partsArr.length ? partsArr.map(p=>`<span class="part-tag">${p}</span>`).join('') : '<span style="color:#999">Não informados</span>'}
+    </div>
+  </div>
+</div>
 <div class="section"><div class="section-title">📌 Plano de Ação</div><div class="section-body">${tblPlano}</div></div>
-<div class="section"><div class="section-title">⚠ Acidentes</div><div class="section-body">${tblAcidentes}</div></div>
+<div class="section"><div class="section-title">⚠ Acidentes Registrados</div><div class="section-body">${tblAcidentes}</div></div>
 <div class="section"><div class="section-title">🎓 Campanhas e Treinamentos</div><div class="section-body">${tblCampanhas}</div></div>
-<div class="section"><div class="section-title">📝 Observações</div><div class="section-body">${tblObs}</div></div>
-<div class="assinaturas">
-  <div class="assin-title">Assinaturas dos Participantes</div>
-  <div class="assin-grid">${assinaturas}</div>
+<div class="section"><div class="section-title">📝 Observações e Encaminhamentos</div><div class="section-body">${tblObs}</div></div>
+<div class="section">
+  <div class="section-title">✍ Assinaturas dos Participantes</div>
+  <div class="section-body"><div class="assin-grid">${assinaturas}</div></div>
 </div>
-<div class="footer">
-  <span>CIPA Manager · NR-05 · Documento gerado em ${new Date().toLocaleDateString('pt-BR')}</span>
-  <span>Ata Nº ${dados.ata} · Reunião ${dados.tipo}</span>
-</div>
-<script>window.onload = () => { window.print(); }<\/script>
-</body>
-</html>`;
+<script>window.onload=()=>{ window.print(); }<\/script>
+</body></html>`;
 
-  const janela = window.open('', '_blank', 'width=900,height=700');
-  janela.document.write(html);
-  janela.document.close();
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
 }
 
-// ── INSPEÇÕES ─────────────────────────────────────────
+// ── INSPEÇÕES ─────────────────────────────────────────────────
 function renderInspecoes() {
   const q  = (document.getElementById('busca-inspecoes')?.value || '').toLowerCase();
   const fs = document.getElementById('filtro-status-insp')?.value || '';
@@ -1328,7 +1318,7 @@ function renderInspecoes() {
     <td>${badgeClass(i.classificacao)}</td>
     <td>${badgeStatus(i.status)}</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick="editarInspecao('${i.id}')">✎</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalInspecao('${i.id}')">✎</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('inspecoes','${i.id}',renderInspecoes)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -1337,41 +1327,41 @@ function renderInspecoes() {
 function abrirModalInspecao(id) {
   const i = id ? DB.inspecoes.find(x => x.id === id) : null;
   document.getElementById('modal-inspecao-title').textContent = i ? 'EDITAR INSPEÇÃO' : 'NOVA INSPEÇÃO';
-  document.getElementById('i-id').value        = i?.id || '';
-  document.getElementById('i-data').value      = i?.data || '';
-  document.getElementById('i-setor').value     = i?.setor || '';
-  document.getElementById('i-resp').value      = i?.responsavel || '';
-  document.getElementById('i-risco').value     = i?.risco || '';
-  document.getElementById('i-class').value     = i?.classificacao || 'Baixo';
-  document.getElementById('i-status').value    = i?.status || 'Aberta';
-  document.getElementById('i-corretiva').value = i?.corretiva || '';
-  document.getElementById('i-acao-resp').value = i?.acaoResp || '';
-  document.getElementById('i-prazo').value     = i?.prazo || '';
+  document.getElementById('i-id').value       = i?.id || '';
+  document.getElementById('i-data').value     = i?.data || '';
+  document.getElementById('i-setor').value    = i?.setor || '';
+  document.getElementById('i-resp').value     = i?.responsavel || '';
+  document.getElementById('i-risco').value    = i?.risco || '';
+  document.getElementById('i-class').value    = i?.classificacao || 'Baixo';
+  document.getElementById('i-status').value   = i?.status || 'Aberta';
+  document.getElementById('i-corretiva').value= i?.corretiva || '';
+  document.getElementById('i-acao-resp').value= i?.acaoResp || '';
+  document.getElementById('i-prazo').value    = i?.prazo || '';
   abrirModal('modal-inspecao');
 }
-function editarInspecao(id) { abrirModalInspecao(id); }
 
 async function salvarInspecao() {
   const setor = document.getElementById('i-setor').value.trim();
   if (!setor) { toast('Setor é obrigatório', 'err'); return; }
-  const id = document.getElementById('i-id').value || uid();
+  const idExist = document.getElementById('i-id').value;
+  const id = idExist || uid();
   const obj = {
     id,
-    data:           document.getElementById('i-data').value,
+    data:          document.getElementById('i-data').value,
     setor,
-    responsavel:    document.getElementById('i-resp').value,
-    risco:          document.getElementById('i-risco').value,
-    classificacao:  document.getElementById('i-class').value,
-    status:         document.getElementById('i-status').value,
-    corretiva:      document.getElementById('i-corretiva').value,
-    acaoResp:       document.getElementById('i-acao-resp').value,
-    prazo:          document.getElementById('i-prazo').value,
+    responsavel:   document.getElementById('i-resp').value,
+    risco:         document.getElementById('i-risco').value,
+    classificacao: document.getElementById('i-class').value,
+    status:        document.getElementById('i-status').value,
+    corretiva:     document.getElementById('i-corretiva').value,
+    acaoResp:      document.getElementById('i-acao-resp').value,
+    prazo:         document.getElementById('i-prazo').value,
   };
-  await salvarNaAba('inspecoes', obj, document.getElementById('i-id').value);
+  await salvarNaAba('inspecoes', obj, !!idExist);
   fecharModal('modal-inspecao');
 }
 
-// ── MATRIZ DE RISCO ───────────────────────────────────
+// ── MATRIZ DE RISCO ───────────────────────────────────────────
 function renderMatriz() {
   const q = (document.getElementById('busca-matriz')?.value || '').toLowerCase();
   const list = DB.matriz.filter(m => m.atividade?.toLowerCase().includes(q) || m.perigo?.toLowerCase().includes(q));
@@ -1383,9 +1373,9 @@ function renderMatriz() {
     <td>${badgeNivel(m.probabilidade)}</td>
     <td>${badgeNivel(m.severidade)}</td>
     <td>${badgeClass(m.risco)}</td>
-    <td style="font-size:.78rem;max-width:200px">${m.controles||'—'}</td>
+    <td style="max-width:200px;font-size:.78rem">${m.controles||'—'}</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick="editarMatriz('${m.id}')">✎</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalMatriz('${m.id}')">✎</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('matriz','${m.id}',renderMatriz)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -1394,60 +1384,56 @@ function renderMatriz() {
 function abrirModalMatriz(id) {
   const m = id ? DB.matriz.find(x => x.id === id) : null;
   document.getElementById('modal-matriz-title').textContent = m ? 'EDITAR RISCO' : 'NOVO RISCO';
-  document.getElementById('mx-id').value         = m?.id || '';
-  document.getElementById('mx-atividade').value  = m?.atividade || '';
-  document.getElementById('mx-perigo').value     = m?.perigo || '';
-  document.getElementById('mx-prob').value       = m?.probabilidade || 'Baixa';
-  document.getElementById('mx-sev').value        = m?.severidade || 'Baixa';
-  document.getElementById('mx-controles').value  = m?.controles || '';
-  document.getElementById('mx-risco').value      = m?.risco || 'Baixo';
+  document.getElementById('mx-id').value        = m?.id || '';
+  document.getElementById('mx-atividade').value = m?.atividade || '';
+  document.getElementById('mx-perigo').value    = m?.perigo || '';
+  document.getElementById('mx-prob').value      = m?.probabilidade || 'Baixa';
+  document.getElementById('mx-sev').value       = m?.severidade || 'Baixa';
+  document.getElementById('mx-controles').value = m?.controles || '';
+  document.getElementById('mx-risco').value     = m?.risco || 'Baixo';
   abrirModal('modal-matriz');
 }
-function editarMatriz(id) { abrirModalMatriz(id); }
 
 async function salvarMatriz() {
   const atividade = document.getElementById('mx-atividade').value.trim();
   if (!atividade) { toast('Atividade é obrigatória', 'err'); return; }
-  const id = document.getElementById('mx-id').value || uid();
+  const idExist = document.getElementById('mx-id').value;
+  const id = idExist || uid();
   const obj = {
     id, atividade,
-    perigo:        document.getElementById('mx-perigo').value,
-    probabilidade: document.getElementById('mx-prob').value,
-    severidade:    document.getElementById('mx-sev').value,
-    controles:     document.getElementById('mx-controles').value,
-    risco:         document.getElementById('mx-risco').value,
+    perigo:       document.getElementById('mx-perigo').value,
+    probabilidade:document.getElementById('mx-prob').value,
+    severidade:   document.getElementById('mx-sev').value,
+    controles:    document.getElementById('mx-controles').value,
+    risco:        document.getElementById('mx-risco').value,
   };
-  await salvarNaAba('matriz', obj, document.getElementById('mx-id').value);
+  await salvarNaAba('matriz', obj, !!idExist);
   fecharModal('modal-matriz');
 }
 
-// ── PLANO DE AÇÃO ─────────────────────────────────────
+// ── PLANO DE AÇÃO ─────────────────────────────────────────────
 function renderPlano() {
   const q  = (document.getElementById('busca-plano')?.value || '').toLowerCase();
   const fs = document.getElementById('filtro-status-plano')?.value || '';
-  const hoje = new Date().toISOString().split('T')[0];
   const list = DB.plano.filter(p =>
     (p.problema?.toLowerCase().includes(q) || p.acao?.toLowerCase().includes(q) || p.responsavel?.toLowerCase().includes(q)) &&
-    (!fs || p.status === fs || (fs === 'Vencida' && p.prazo < hoje && p.status !== 'Concluída'))
+    (!fs || p.status === fs)
   );
   const tb = document.getElementById('tb-plano');
   if (!list.length) { tb.innerHTML = `<tr class="empty-row"><td colspan="8">Nenhuma ação registrada</td></tr>`; return; }
-  tb.innerHTML = list.map(p => {
-    const vencida = p.prazo && p.prazo < hoje && p.status !== 'Concluída';
-    return `<tr>
-      <td style="max-width:180px">${p.problema||'—'}</td>
-      <td style="max-width:180px">${p.acao||'—'}</td>
-      <td>${p.responsavel||'—'}</td>
-      <td>${p.setor||'—'}</td>
-      <td class="mono">${p.abertura||'—'}</td>
-      <td class="mono" style="color:${vencida?'var(--red)':'inherit'}">${p.prazo||'—'}</td>
-      <td>${badgeStatus(vencida?'Vencida':p.status)}</td>
-      <td><div class="actions">
-        <button class="btn btn-ghost btn-sm" onclick="editarPlano('${p.id}')">✎</button>
-        <button class="btn btn-danger btn-sm" onclick="deletar('plano','${p.id}',renderPlano)">✕</button>
-      </div></td>
-    </tr>`;
-  }).join('');
+  tb.innerHTML = list.map(p => `<tr>
+    <td>${p.problema||'—'}</td>
+    <td style="max-width:180px;font-size:.78rem">${p.acao||'—'}</td>
+    <td>${p.responsavel||'—'}</td>
+    <td>${p.setor||'—'}</td>
+    <td class="mono">${p.abertura||'—'}</td>
+    <td class="mono">${p.prazo||'—'}</td>
+    <td>${badgeStatus(p.status)}</td>
+    <td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalPlano('${p.id}')">✎</button>
+      <button class="btn btn-danger btn-sm" onclick="deletar('plano','${p.id}',renderPlano)">✕</button>
+    </div></td>
+  </tr>`).join('');
 }
 
 function abrirModalPlano(id) {
@@ -1458,33 +1444,33 @@ function abrirModalPlano(id) {
   document.getElementById('pl-acao').value     = p?.acao || '';
   document.getElementById('pl-resp').value     = p?.responsavel || '';
   document.getElementById('pl-setor').value    = p?.setor || '';
-  document.getElementById('pl-abertura').value = p?.abertura || new Date().toISOString().split('T')[0];
+  document.getElementById('pl-abertura').value = p?.abertura || '';
   document.getElementById('pl-prazo').value    = p?.prazo || '';
   document.getElementById('pl-status').value   = p?.status || 'Aberta';
   document.getElementById('pl-evidencia').value= p?.evidencia || '';
   abrirModal('modal-plano');
 }
-function editarPlano(id) { abrirModalPlano(id); }
 
 async function salvarPlano() {
   const problema = document.getElementById('pl-problema').value.trim();
   if (!problema) { toast('Problema é obrigatório', 'err'); return; }
-  const id = document.getElementById('pl-id').value || uid();
+  const idExist = document.getElementById('pl-id').value;
+  const id = idExist || uid();
   const obj = {
     id, problema,
-    acao:        document.getElementById('pl-acao').value,
-    responsavel: document.getElementById('pl-resp').value,
-    setor:       document.getElementById('pl-setor').value,
-    abertura:    document.getElementById('pl-abertura').value,
-    prazo:       document.getElementById('pl-prazo').value,
-    status:      document.getElementById('pl-status').value,
-    evidencia:   document.getElementById('pl-evidencia').value,
+    acao:       document.getElementById('pl-acao').value,
+    responsavel:document.getElementById('pl-resp').value,
+    setor:      document.getElementById('pl-setor').value,
+    abertura:   document.getElementById('pl-abertura').value,
+    prazo:      document.getElementById('pl-prazo').value,
+    status:     document.getElementById('pl-status').value,
+    evidencia:  document.getElementById('pl-evidencia').value,
   };
-  await salvarNaAba('plano', obj, document.getElementById('pl-id').value);
+  await salvarNaAba('plano', obj, !!idExist);
   fecharModal('modal-plano');
 }
 
-// ── TREINAMENTOS ──────────────────────────────────────
+// ── TREINAMENTOS ──────────────────────────────────────────────
 function renderTreinamentos() {
   const q = (document.getElementById('busca-trein')?.value || '').toLowerCase();
   const list = DB.treinamentos.filter(t => t.nome?.toLowerCase().includes(q) || t.instrutor?.toLowerCase().includes(q));
@@ -1494,11 +1480,11 @@ function renderTreinamentos() {
     <td><strong>${t.nome||'—'}</strong></td>
     <td>${t.instrutor||'—'}</td>
     <td class="mono">${t.data||'—'}</td>
-    <td class="mono">${t.carga||'—'}</td>
-    <td class="mono">${t.participantes||'—'}</td>
-    <td><span class="badge ${t.certificado==='Sim'?'badge-green':'badge-red'}">${t.certificado||'—'}</span></td>
+    <td>${t.carga||'—'}</td>
+    <td>${t.participantes||'—'}</td>
+    <td>${t.certificado==='Sim'?'<span class="badge badge-green">✓ Sim</span>':'<span class="badge badge-red">✕ Não</span>'}</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick="editarTreinamento('${t.id}')">✎</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalTreinamento('${t.id}')">✎</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('treinamentos','${t.id}',renderTreinamentos)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -1516,12 +1502,12 @@ function abrirModalTreinamento(id) {
   document.getElementById('tr-cert').value      = t?.certificado || 'Sim';
   abrirModal('modal-treinamento');
 }
-function editarTreinamento(id) { abrirModalTreinamento(id); }
 
 async function salvarTreinamento() {
   const nome = document.getElementById('tr-nome').value.trim();
   if (!nome) { toast('Nome é obrigatório', 'err'); return; }
-  const id = document.getElementById('tr-id').value || uid();
+  const idExist = document.getElementById('tr-id').value;
+  const id = idExist || uid();
   const obj = {
     id, nome,
     instrutor:    document.getElementById('tr-instrutor').value,
@@ -1530,11 +1516,11 @@ async function salvarTreinamento() {
     participantes:document.getElementById('tr-part').value,
     certificado:  document.getElementById('tr-cert').value,
   };
-  await salvarNaAba('treinamentos', obj, document.getElementById('tr-id').value);
+  await salvarNaAba('treinamentos', obj, !!idExist);
   fecharModal('modal-treinamento');
 }
 
-// ── SIPAT ─────────────────────────────────────────────
+// ── SIPAT ─────────────────────────────────────────────────────
 function renderSipat() {
   const q = (document.getElementById('busca-sipat')?.value || '').toLowerCase();
   const list = DB.sipat.filter(s => s.evento?.toLowerCase().includes(q) || s.tema?.toLowerCase().includes(q));
@@ -1548,7 +1534,7 @@ function renderSipat() {
     <td class="mono">${s.participantes||'—'}</td>
     <td>${badgeAval(s.avaliacao)}</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick="editarSipat('${s.id}')">✎</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalSipat('${s.id}')">✎</button>
       <button class="btn btn-danger btn-sm" onclick="deletar('sipat','${s.id}',renderSipat)">✕</button>
     </div></td>
   </tr>`).join('');
@@ -1566,12 +1552,12 @@ function abrirModalSipat(id) {
   document.getElementById('sp-aval').value       = s?.avaliacao || 'Ótimo';
   abrirModal('modal-sipat');
 }
-function editarSipat(id) { abrirModalSipat(id); }
 
 async function salvarSipat() {
   const evento = document.getElementById('sp-evento').value.trim();
   if (!evento) { toast('Nome do evento é obrigatório', 'err'); return; }
-  const id = document.getElementById('sp-id').value || uid();
+  const idExist = document.getElementById('sp-id').value;
+  const id = idExist || uid();
   const obj = {
     id, evento,
     tema:         document.getElementById('sp-tema').value,
@@ -1580,65 +1566,18 @@ async function salvarSipat() {
     participantes:document.getElementById('sp-part').value,
     avaliacao:    document.getElementById('sp-aval').value,
   };
-  await salvarNaAba('sipat', obj, document.getElementById('sp-id').value);
+  await salvarNaAba('sipat', obj, !!idExist);
   fecharModal('modal-sipat');
 }
 
-// ── SALVAR NA ABA (add ou update) ─────────────────────
-// Espelha o padrão do EPI: cada campo como param individual
-async function salvarNaAba(sheet, obj, idExistente) {
-  setBar(true);
-  try {
-    const action = idExistente ? 'update' : 'add';
-    const params = { action, sheet };
-    Object.entries(obj).forEach(([k, v]) => { params[k] = v; });
-    const r = await api(params);
-    if (!r.ok) throw new Error(r.erro || 'Erro desconhecido');
-
-    // Atualiza DB local (memória) igual ao EPI faz
-    const dbKey = sheet;
-    if (idExistente) {
-      const idx = DB[dbKey].findIndex(x => x.id === obj.id);
-      if (idx >= 0) DB[dbKey][idx] = obj;
-      else DB[dbKey].push(obj);
-    } else {
-      DB[dbKey].push(obj);
-    }
-    renderAll();
-    toast('Salvo no Google Sheets ✓', 'ok');
-  } catch(e) {
-    toast('Erro ao salvar: ' + e.message, 'err');
-  }
-  setBar(false);
-}
-
-// ── DELETAR ───────────────────────────────────────────
-async function deletar(sheet, id, renderFn) {
-  if (!confirm('Remover este registro? Esta ação não pode ser desfeita.')) return;
-  setBar(true);
-  try {
-    const r = await api({ action: 'delete', sheet, id });
-    if (!r.ok) throw new Error(r.erro || 'Erro ao deletar');
-    DB[sheet] = DB[sheet].filter(x => x.id !== id);
-    renderFn();
-    updateBadges();
-    renderDashboard();
-    toast('Registro removido ✓', 'ok');
-  } catch(e) {
-    toast('Erro ao remover: ' + e.message, 'err');
-  }
-  setBar(false);
-}
-
-// ── MODAL HELPERS ─────────────────────────────────────
+// ── MODAL HELPERS ─────────────────────────────────────────────
 function abrirModal(id) { document.getElementById(id).classList.add('open'); }
 function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
-// Fecha clicando fora
 document.querySelectorAll('.modal-bg').forEach(bg => {
   bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
 });
 
-// ── BADGE HELPERS ─────────────────────────────────────
+// ── BADGE HELPERS ─────────────────────────────────────────────
 function badgeStatus(s) {
   const map = {
     'Ativo':'badge-green','Ativa':'badge-green','Concluída':'badge-green','Realizada':'badge-green',
@@ -1660,24 +1599,31 @@ function badgeAval(a) {
   return `<span class="badge ${map[a]||'badge-blue'}">${a||'—'}</span>`;
 }
 
-// ── UI HELPERS ────────────────────────────────────────
+// ── UI HELPERS ────────────────────────────────────────────────
 function setDot(state) {
   const d = document.getElementById('syncDot');
   d.className = 'sync-dot' + (state ? ' ' + state : '');
 }
 function setBar(on) {
-  const b = document.getElementById('loadbar');
-  b.style.width = on ? '70%' : '0';
+  document.getElementById('loadbar').style.width = on ? '70%' : '0';
 }
 function toast(msg, type='ok') {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'show ' + type;
   clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = '', 3000);
+  t._t = setTimeout(() => t.className = '', 3200);
 }
 
-// ── INIT ──────────────────────────────────────────────
-window.onload = () => syncAll();
+// ── INIT ──────────────────────────────────────────────────────
+window.onload = () => {
+  if (API_URL === 'COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT') {
+    setDot('err');
+    document.getElementById('syncText').textContent = 'Configure a URL';
+    toast('⚠ Cole a URL do Apps Script na variável API_URL', 'warn');
+    return;
+  }
+  syncAll();
+};
 </script>
 </body>
 </html>
