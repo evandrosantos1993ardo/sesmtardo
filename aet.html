@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plano de Ação AET</title>
+
+  <!-- jsPDF para exportação em PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===========================
+       VARIÁVEIS E RESET
+    =========================== */
+    :root {
+      --blue-900: #0d2b52;
+      --blue-700: #1a4a8a;
+      --blue-500: #2563eb;
+      --blue-300: #93c5fd;
+      --blue-100: #dbeafe;
+      --blue-50:  #eff6ff;
+
+      --gray-900: #111827;
+      --gray-700: #374151;
+      --gray-500: #6b7280;
+      --gray-300: #d1d5db;
+      --gray-100: #f3f4f6;
+      --gray-50:  #f9fafb;
+
+      --green-600: #16a34a;
+      --green-100: #dcfce7;
+      --green-700: #15803d;
+
+      --yellow-600: #ca8a04;
+      --yellow-100: #fef9c3;
+      --yellow-700: #a16207;
+
+      --red-600: #dc2626;
+      --red-100: #fee2e2;
+      --red-700: #b91c1c;
+
+      --white: #ffffff;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+      --transition: all 0.18s ease;
+
+      --font: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: #f0f4fb;
+      color: var(--gray-900);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ===========================
+       HEADER
+    =========================== */
+    .app-header {
+      background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
+      color: var(--white);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      opacity: 0.65;
+      font-weight: 400;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ===========================
+       BOTÕES
+    =========================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--blue-500);
+      color: var(--white);
+    }
+
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.4);
+    }
+
+    .btn-outline:hover { background: rgba(255,255,255,0.12); }
+
+    .btn-ghost {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .btn-ghost:hover { background: var(--gray-300); }
+
+    .btn-danger {
+      background: var(--red-100);
+      color: var(--red-700);
+    }
+
+    .btn-danger:hover { background: #fecaca; }
+
+    .btn-success {
+      background: var(--green-100);
+      color: var(--green-700);
+    }
+
+    .btn-success:hover { background: #bbf7d0; }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    /* ===========================
+       LAYOUT PRINCIPAL
+    =========================== */
+    .app-body {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 24px;
+    }
+
+    /* ===========================
+       CARDS / PAINÉIS
+    =========================== */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-100);
+    }
+
+    .card-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-body { padding: 24px; }
+
+    /* ===========================
+       FORMULÁRIO
+    =========================== */
+    #form-section { margin-bottom: 20px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      font-family: var(--font);
+      font-size: 13px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--gray-900);
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--blue-500);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    textarea { resize: vertical; min-height: 72px; }
+
+    .form-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    /* ===========================
+       FILTROS
+    =========================== */
+    #filter-section { margin-bottom: 20px; }
+
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filters-row input,
+    .filters-row select {
+      width: auto;
+      min-width: 180px;
+      flex: 1;
+    }
+
+    .filter-count {
+      font-size: 12px;
+      color: var(--gray-500);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    /* ===========================
+       BADGES DE STATUS
+    =========================== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+
+    .badge-concluido  { background: var(--green-100); color: var(--green-700); }
+    .badge-andamento  { background: var(--yellow-100); color: var(--yellow-700); }
+    .badge-pendente   { background: var(--blue-100); color: var(--blue-700); }
+    .badge-atrasado   { background: var(--red-100); color: var(--red-700); }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .badge-concluido .badge-dot  { background: var(--green-600); }
+    .badge-andamento .badge-dot  { background: var(--yellow-600); }
+    .badge-pendente .badge-dot   { background: var(--blue-500); }
+    .badge-atrasado .badge-dot   { background: var(--red-600); }
+
+    /* ===========================
+       TABELA
+    =========================== */
+    #table-section { margin-bottom: 20px; }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      background: var(--blue-900);
+      color: var(--white);
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+    }
+
+    thead th:first-child { border-radius: var(--radius-md) 0 0 0; }
+    thead th:last-child  { border-radius: 0 var(--radius-md) 0 0; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--gray-100);
+      transition: var(--transition);
+    }
+
+    tbody tr:hover { background: var(--blue-50); }
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr.row-concluido { opacity: 0.72; }
+
+    td {
+      padding: 11px 16px;
+      vertical-align: middle;
+      color: var(--gray-700);
+    }
+
+    td.td-setor { font-weight: 600; color: var(--blue-700); font-size: 12px; }
+    td.td-item  { color: var(--gray-900); max-width: 240px; }
+    td.td-item span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    td.td-prazo { font-family: var(--font-mono); font-size: 12px; }
+    td.td-acoes { white-space: nowrap; }
+
+    .td-acoes-inner { display: flex; gap: 6px; }
+
+    /* ===========================
+       EMPTY STATE
+    =========================== */
+    .empty-state {
+      text-align: center;
+      padding: 56px 24px;
+      color: var(--gray-500);
+    }
+
+    .empty-state-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 15px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
+
+    /* ===========================
+       LOADER
+    =========================== */
+    .loading-overlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-size: 14px;
+      color: var(--blue-700);
+      gap: 12px;
+      backdrop-filter: blur(3px);
+    }
+
+    .spinner {
+      width: 22px; height: 22px;
+      border: 3px solid var(--blue-100);
+      border-top-color: var(--blue-500);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===========================
+       TOAST / NOTIFICAÇÕES
+    =========================== */
+    #toast-container {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--gray-900);
+      color: var(--white);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      animation: slideIn 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 340px;
+    }
+
+    .toast-success { background: var(--green-600); }
+    .toast-error   { background: var(--red-600); }
+    .toast-info    { background: var(--blue-700); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ===========================
+       MODAL DE EDIÇÃO
+    =========================== */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-box {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: scaleIn 0.22s ease;
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .modal-title { font-size: 15px; font-weight: 600; }
+
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--gray-500); font-size: 20px; line-height: 1;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .modal-close:hover { background: var(--gray-100); color: var(--gray-900); }
+
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* ===========================
+       CONFIGURAÇÃO URL
+    =========================== */
+    #config-section { margin-bottom: 20px; }
+
+    .config-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .config-bar input {
+      flex: 1;
+      min-width: 300px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .url-indicator {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      flex-shrink: 0;
+    }
+
+    .url-indicator.connected { background: var(--green-600); }
+
+    /* ===========================
+       INSTRUÇÕES
+    =========================== */
+    details summary {
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--blue-700);
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--blue-50);
+      border: 1px solid var(--blue-100);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    details summary::-webkit-details-marker { display: none; }
+
+    .instructions-body {
+      margin-top: 12px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .instructions-body h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue-900);
+      margin: 16px 0 6px;
+    }
+
+    .instructions-body h3:first-child { margin-top: 0; }
+
+    .instructions-body ol {
+      padding-left: 20px;
+      color: var(--gray-700);
+    }
+
+    .instructions-body code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--blue-700);
+    }
+
+    pre.code-block {
+      background: var(--gray-900);
+      color: #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      overflow-x: auto;
+      margin: 10px 0;
+      line-height: 1.7;
+    }
+
+    /* ===========================
+       RESPONSIVO
+    =========================== */
+    @media (max-width: 640px) {
+      .app-header { padding: 0 16px; }
+      .app-body   { padding: 16px; }
+      .card-body  { padding: 16px; }
+      .header-subtitle { display: none; }
+      .btn span   { display: none; }
+      .filters-row { flex-direction: column; }
+      .filters-row input, .filters-row select { min-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ============================
+     LOADER GLOBAL
+============================ -->
+<div id="loading-overlay" class="loading-overlay" style="display:none;">
+  <div class="spinner"></div>
+  <span id="loading-text">Carregando...</span>
+</div>
+
+<!-- ============================
+     TOAST CONTAINER
+============================ -->
+<div id="toast-container"></div>
+
+<!-- ============================
+     MODAL DE EDIÇÃO
+============================ -->
+<div id="edit-modal" class="modal-backdrop" style="display:none;" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">✏️ Editar Registro</span>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Setor</label>
+          <input type="text" id="edit-setor" placeholder="Ex: Produção" />
+        </div>
+        <div class="form-group">
+          <label>Prazo</label>
+          <input type="date" id="edit-tempo" />
+        </div>
+        <div class="form-group full">
+          <label>Item / Descrição da Ação</label>
+          <input type="text" id="edit-item" placeholder="Descreva a ação..." />
+        </div>
+        <div class="form-group">
+          <label>Responsável</label>
+          <input type="text" id="edit-responsavel" placeholder="Nome do responsável" />
+        </div>
+        <div class="form-group full">
+          <label>Observação</label>
+          <textarea id="edit-obs" rows="3" placeholder="Informações adicionais..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarEdicao()">💾 Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     HEADER
+============================ -->
+<header class="app-header">
+  <div class="header-brand">
+    <div class="header-icon">📋</div>
+    <div>
+      <div class="header-title">Plano de Ação AET</div>
+      <div class="header-subtitle">Análise Ergonômica do Trabalho</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="carregarDados()">
+      🔄 <span>Atualizar</span>
+    </button>
+    <button class="btn btn-outline" onclick="exportarPDF()">
+      📄 <span>Exportar PDF</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================
+     CORPO PRINCIPAL
+============================ -->
+<div class="app-body">
+
+  <!-- ===== INSTRUÇÕES ===== -->
+  <section id="config-section" class="card" style="margin-bottom:20px;">
+    <div class="card-body">
+      <details>
+        <summary>📖 Como configurar a integração com Google Sheets (clique para expandir)</summary>
+        <div class="instructions-body">
+          <h3>Passo 1 — Criar a Planilha Google Sheets</h3>
+          <ol>
+            <li>Acesse <a href="https://sheets.google.com" target="_blank">sheets.google.com</a> e crie uma nova planilha.</li>
+            <li>Nomeie a aba como <code>Plano de Acao</code>.</li>
+            <li>Na linha 1, insira os cabeçalhos exatamente assim (uma coluna por célula):</li>
+          </ol>
+          <pre class="code-block">A1: ID | B1: Setor | C1: Item | D1: Tempo | E1: Responsavel | F1: Observacao | G1: Status</pre>
+
+          <h3>Passo 2 — Criar o Apps Script (API Backend)</h3>
+          <ol>
+            <li>Na planilha, clique em <strong>Extensões → Apps Script</strong>.</li>
+            <li>Apague o código existente e cole o código abaixo:</li>
+          </ol>
+          <pre class="code-block">
+// ============================================================
+// BACKEND APPS SCRIPT — Plano de Ação AET
+// Substitua "SUA_PLANILHA_ID" pelo ID da sua planilha
+// (o ID fica na URL: .../spreadsheets/d/AQUI/edit)
+// ============================================================
+
+const SHEET_NAME = "Plano de Acao";
+
+function getSheet() {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+}
+
+// --- doGet: retorna todos os dados como JSON ---
+function doGet(e) {
+  try {
+    const sheet = getSheet();
+    const data  = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const rows = data.slice(1).map((row, i) => {
+      let obj = {};
+      headers.forEach((h, j) => obj[h] = row[j]);
+      obj._row = i + 2; // linha real na planilha (1-based + header)
+      return obj;
+    }).filter(r => r.ID); // ignora linhas vazias
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "ok", data: rows }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// --- doPost: adiciona, edita ou exclui registros ---
+function doPost(e) {
+  try {
+    const payload = JSON.parse(e.postData.contents);
+    const sheet   = getSheet();
+    const acao    = payload.acao;
+
+    if (acao === "add") {
+      const newId = Utilities.getUuid().split("-")[0].toUpperCase();
+      sheet.appendRow([
+        newId,
+        payload.Setor,
+        payload.Item,
+        payload.Tempo,
+        payload.Responsavel,
+        payload.Observacao,
+        payload.Status || "Pendente"
+      ]);
+      return json({ status: "ok", message: "Registro adicionado", id: newId });
+
+    } else if (acao === "edit") {
+      const rows   = sheet.getDataRange().getValues();
+      const idx    = rows.findIndex(r => r[0] == payload.ID);
+      if (idx < 0) return json({ status: "error", message: "ID não encontrado" });
+      const line   = idx + 1;
+      sheet.getRange(line, 2).setValue(payload.Setor);
+      sheet.getRange(line, 3).setValue(payload.Item);
+      sheet.getRange(line, 4).setValue(payload.Tempo);
+      sheet.getRange(line, 5).setValue(payload.Responsavel);
+      sheet.getRange(line, 6).setValue(payload.Observacao);
+      sheet.getRange(line, 7).setValue(payload.Status);
+      return json({ status: "ok", message: "Registro atualizado" });
+
+    } else if (acao === "delete") {
+      const rows = sheet.getDataRange().getValues();
+      const idx  = rows.findIndex(r => r[0] == payload.ID);
+      if (idx < 0) return json({ status: "error", message: "ID não encontrado" });
+      sheet.deleteRow(idx + 1);
+      return json({ status: "ok", message: "Registro excluído" });
+
+    } else if (acao === "concluir") {
+      const rows = sheet.getDataRange().getValues();
+      const idx  = rows.findIndex(r => r[0] == payload.ID);
+      if (idx < 0) return json({ status: "error", message: "ID não encontrado" });
+      sheet.getRange(idx + 1, 7).setValue("Concluído");
+      return json({ status: "ok", message: "Marcado como concluído" });
+    }
+
+    return json({ status: "error", message: "Ação desconhecida" });
+  } catch(err) {
+    return json({ status: "error", message: err.toString() });
+  }
+}
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+</pre>
+          <h3>Passo 3 — Publicar como Web App</h3>
+          <ol>
+            <li>Clique em <strong>Implantar → Nova implantação</strong>.</li>
+            <li>Tipo: <code>Aplicativo da Web</code>.</li>
+            <li>Em "Executar como": <code>Eu (seu e-mail)</code>.</li>
+            <li>Em "Quem tem acesso": <code>Qualquer pessoa</code>.</li>
+            <li>Clique em <strong>Implantar</strong> e copie a URL gerada.</li>
+          </ol>
+          <h3>Passo 4 — Colar a URL abaixo</h3>
+          <ol>
+            <li>Cole a URL copiada no campo abaixo e clique em <strong>Conectar</strong>.</li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- URL da API -->
+      <div class="config-bar" style="margin-top:16px;">
+        <div class="url-indicator" id="url-indicator"></div>
+        <input type="text" id="api-url" placeholder="Cole aqui a URL do seu Apps Script Web App..." value="https://script.google.com/macros/s/AKfycbzVulb3gqs_h6dMkBLrmFlnhGKSzqRD6jnw9m-7hZVAuXRAappczyCHmgoax6UgKKybMQ/exec" />
+        <button class="btn btn-primary" onclick="conectarAPI()">🔗 Conectar</button>
+        <button class="btn btn-ghost" onclick="usarModoDemo()">🧪 Modo Demo</button>
+      </div>
+      <p style="font-size:11px;color:var(--gray-500);margin-top:8px;">
+        Cole a URL gerada no Apps Script e clique em Conectar. O <strong>Modo Demo</strong> usa dados de exemplo sem conexão real.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== FORMULÁRIO ===== -->
+  <section id="form-section" class="card">
+    <div class="card-header">
+      <span class="card-title">➕ Cadastrar Nova Ação</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Setor <span style="color:red">*</span></label>
+          <input type="text" id="f-setor" placeholder="Ex: Produção, Logística..." />
+        </div>
+        <div class="form-group">
+          <label>Prazo <span style="color:red">*</span></label>
+          <input type="date" id="f-tempo" />
+        </div>
+        <div class="form-group full">
+          <label>Item / Descrição da Ação <span style="color:red">*</span></label>
+          <input type="text" id="f-item" placeholder="Descreva detalhadamente a ação ergonômica a ser realizada..." />
+        </div>
+        <div class="form-group">
+          <label>Responsável <span style="color:red">*</span></label>
+          <input type="text" id="f-responsavel" placeholder="Nome do responsável" />
+        </div>
+        <div class="form-group full">
+          <label>Observação</label>
+          <textarea id="f-obs" placeholder="Informações adicionais, recursos necessários, prioridade..."></textarea>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-ghost" onclick="limparFormulario()">🧹 Limpar</button>
+        <button class="btn btn-primary" id="btn-salvar" onclick="salvarRegistro()">💾 Salvar Registro</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FILTROS ===== -->
+  <section id="filter-section" class="card">
+    <div class="card-body" style="padding:16px 24px;">
+      <div class="filters-row">
+        <select id="filtro-setor" onchange="aplicarFiltros()">
+          <option value="">🏭 Todos os setores</option>
+        </select>
+        <input type="text" id="filtro-responsavel" placeholder="🔍 Buscar por responsável..." oninput="aplicarFiltros()" />
+        <select id="filtro-status" onchange="aplicarFiltros()">
+          <option value="">📊 Todos os status</option>
+          <option value="Pendente">Pendente</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Atrasado">Atrasado</option>
+          <option value="Concluído">Concluído</option>
+        </select>
+        <span class="filter-count" id="filter-count"></span>
+        <button class="btn btn-ghost btn-sm" onclick="limparFiltros()">✕ Limpar filtros</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TABELA ===== -->
+  <section id="table-section" class="card">
+    <div class="card-header">
+      <span class="card-title">📊 Registros do Plano de Ação</span>
+    </div>
+    <div class="table-wrapper">
+      <table id="tabela-dados">
+        <thead>
+          <tr>
+            <th>Setor</th>
+            <th>Ação / Item</th>
+            <th>Prazo</th>
+            <th>Responsável</th>
+            <th>Observação</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-body">
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h3>Nenhum dado carregado</h3>
+                <p style="font-size:13px;">Configure a URL do Apps Script ou use o Modo Demo para começar.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div><!-- /.app-body -->
+
+<!-- ============================
+     JAVASCRIPT
+============================ -->
+<script>
+/* ====================================================
+   ESTADO GLOBAL DA APLICAÇÃO
+==================================================== */
+let registros        = [];     // todos os registros carregados
+let registrosFiltrados = [];   // registros após filtro
+let editandoId       = null;   // ID do registro sendo editado
+let apiURL           = '';     // URL do Apps Script
+let modoDemo         = false;  // true = sem conexão real
+
+/* ====================================================
+   INICIALIZAÇÃO
+==================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  // Auto-conecta com a URL embutida
+  const urlEmbutida = "https://script.google.com/macros/s/AKfycbzVulb3gqs_h6dMkBLrmFlnhGKSzqRD6jnw9m-7hZVAuXRAappczyCHmgoax6UgKKybMQ/exec";
+  if (urlEmbutida) {
+    document.getElementById('api-url').value = urlEmbutida;
+    apiURL = urlEmbutida;
+    modoDemo = false;
+    document.getElementById('url-indicator').classList.add('connected');
+    carregarDados();
+  }
+
+  // Define data mínima como hoje no campo de prazo
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('f-tempo').setAttribute('min', hoje);
+});
+
+/* ====================================================
+   CONEXÃO COM API
+==================================================== */
+function conectarAPI() {
+  const url = document.getElementById('api-url').value.trim();
+  if (!url) {
+    showToast('Cole a URL do Apps Script antes de conectar.', 'error');
+    return;
+  }
+  apiURL = url;
+  modoDemo = false;
+  document.getElementById('url-indicator').classList.add('connected');
+  showToast('URL salva! Carregando dados...', 'info');
+  carregarDados();
+}
+
+/* ====================================================
+   MODO DEMO (dados locais sem API)
+==================================================== */
+function usarModoDemo() {
+  modoDemo = true;
+  apiURL   = '';
+  document.getElementById('url-indicator').classList.remove('connected');
+
+  const hoje = new Date();
+  const fmt  = (d) => d.toISOString().split('T')[0];
+
+  registros = [
+    {
+      ID: 'DEMO01', Setor: 'Produção',
+      Item: 'Instalar apoio de pés nas bancadas da linha de montagem',
+      Tempo: fmt(futuro(7)), Responsavel: 'Ana Souza',
+      Observacao: 'Prioridade alta — afeta 12 operadores', Status: ''
+    },
+    {
+      ID: 'DEMO02', Setor: 'Logística',
+      Item: 'Substituir esteiras por plataformas reguláveis de altura',
+      Tempo: fmt(futuro(2)), Responsavel: 'Carlos Mendes',
+      Observacao: 'Orçamento aprovado', Status: ''
+    },
+    {
+      ID: 'DEMO03', Setor: 'Escritório',
+      Item: 'Fornecer cadeiras ergonômicas para o setor administrativo',
+      Tempo: fmt(futuro(-5)), Responsavel: 'Maria Lima',
+      Observacao: 'Aguardando aprovação de compra', Status: ''
+    },
+    {
+      ID: 'DEMO04', Setor: 'Produção',
+      Item: 'Treinar equipe sobre posturas corretas na operação de prensas',
+      Tempo: fmt(futuro(30)), Responsavel: 'João Silva',
+      Observacao: 'Treinamento de 4h', Status: ''
+    },
+    {
+      ID: 'DEMO05', Setor: 'Manutenção',
+      Item: 'Instalar iluminação localizada nos pontos de reparo',
+      Tempo: fmt(futuro(10)), Responsavel: 'Pedro Alves',
+      Observacao: '', Status: 'Concluído'
+    }
+  ];
+
+  calcularStatusAutomatico();
+  renderizarTabela(registros);
+  atualizarFiltroSetor();
+  showToast('Modo Demo ativado com 5 registros de exemplo.', 'info');
+}
+
+function futuro(dias) {
+  const d = new Date();
+  d.setDate(d.getDate() + dias);
+  return d;
+}
+
+/* ====================================================
+   CALCULAR STATUS AUTOMÁTICO
+   - Concluído: definido manualmente
+   - Atrasado: prazo < hoje
+   - Em andamento: prazo em até 3 dias
+   - Pendente: demais
+==================================================== */
+function calcularStatus(registro) {
+  if (registro.Status === 'Concluído') return 'Concluído';
+
+  const hoje  = new Date(); hoje.setHours(0,0,0,0);
+  const prazo = new Date(registro.Tempo + 'T00:00:00');
+  const diff  = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
+
+  if (isNaN(diff))    return 'Pendente';
+  if (diff < 0)       return 'Atrasado';
+  if (diff <= 3)      return 'Em andamento';
+  return 'Pendente';
+}
+
+function calcularStatusAutomatico() {
+  registros = registros.map(r => ({ ...r, Status: calcularStatus(r) }));
+}
+
+/* ====================================================
+   CARREGAR DADOS DA API
+==================================================== */
+async function carregarDados() {
+  if (modoDemo) { renderizarTabela(registros); return; }
+  if (!apiURL)  { showToast('Configure a URL da API primeiro.', 'error'); return; }
+
+  mostrarLoader('Carregando dados...');
+  try {
+    // Google Apps Script exige CORS via no-cors, mas usamos o truque
+    // de adicionar ?action=get para diferenciar a rota no doGet
+    const resp = await fetch(apiURL + '?acao=get', { method: 'GET' });
+    const json = await resp.json();
+
+    if (json.status === 'ok') {
+      registros = json.data;
+      calcularStatusAutomatico();
+      renderizarTabela(registros);
+      atualizarFiltroSetor();
+      showToast(`${registros.length} registro(s) carregado(s).`, 'success');
+    } else {
+      showToast('Erro ao carregar: ' + json.message, 'error');
+    }
+  } catch (err) {
+    showToast('Erro de conexão. Verifique a URL da API.', 'error');
+    console.error(err);
+  } finally {
+    ocultarLoader();
+  }
+}
+
+/* ====================================================
+   SALVAR NOVO REGISTRO
+==================================================== */
+async function salvarRegistro() {
+  const setor       = document.getElementById('f-setor').value.trim();
+  const item        = document.getElementById('f-item').value.trim();
+  const tempo       = document.getElementById('f-tempo').value;
+  const responsavel = document.getElementById('f-responsavel').value.trim();
+  const obs         = document.getElementById('f-obs').value.trim();
+
+  // Validação dos campos obrigatórios
+  if (!setor || !item || !tempo || !responsavel) {
+    showToast('Preencha todos os campos obrigatórios (*)','error');
+    return;
+  }
+
+  const payload = { acao: 'add', Setor: setor, Item: item, Tempo: tempo, Responsavel: responsavel, Observacao: obs };
+
+  if (modoDemo) {
+    // Em modo demo, gera ID local e insere direto
+    const novoId = 'DEMO' + Math.floor(Math.random() * 9000 + 1000);
+    registros.push({ ID: novoId, ...payload, Status: '' });
+    calcularStatusAutomatico();
+    renderizarTabela(registros);
+    atualizarFiltroSetor();
+    limparFormulario();
+    showToast('Registro adicionado (Modo Demo)!', 'success');
+    return;
+  }
+
+  if (!apiURL) { showToast('Configure a URL da API.', 'error'); return; }
+
+  mostrarLoader('Salvando registro...');
+  try {
+    const resp = await chamarAPI(payload);
+    if (resp.status === 'ok') {
+      showToast('Registro salvo com sucesso!', 'success');
+      limparFormulario();
+      await carregarDados();
+    } else {
+      showToast('Erro ao salvar: ' + resp.message, 'error');
+    }
+  } catch (err) {
+    showToast('Erro de conexão.', 'error');
+  } finally {
+    ocultarLoader();
+  }
+}
+
+/* ====================================================
+   EXCLUIR REGISTRO
+==================================================== */
+async function excluirRegistro(id) {
+  if (!confirm('Tem certeza que deseja excluir este registro?')) return;
+
+  if (modoDemo) {
+    registros = registros.filter(r => r.ID !== id);
+    calcularStatusAutomatico();
+    renderizarTabela(aplicarFiltroAtual());
+    atualizarFiltroSetor();
+    showToast('Registro excluído (Modo Demo).', 'success');
+    return;
+  }
+
+  mostrarLoader('Excluindo...');
+  try {
+    const resp = await chamarAPI({ acao: 'delete', ID: id });
+    if (resp.status === 'ok') {
+      showToast('Registro excluído!', 'success');
+      await carregarDados();
+    } else {
+      showToast('Erro: ' + resp.message, 'error');
+    }
+  } catch (err) {
+    showToast('Erro de conexão.', 'error');
+  } finally {
+    ocultarLoader();
+  }
+}
+
+/* ====================================================
+   ABRIR MODAL DE EDIÇÃO
+==================================================== */
+function abrirModalEdicao(id) {
+  const reg = registros.find(r => r.ID === id);
+  if (!reg) return;
+
+  editandoId = id;
+  document.getElementById('edit-setor').value       = reg.Setor || '';
+  document.getElementById('edit-item').value        = reg.Item  || '';
+  document.getElementById('edit-tempo').value       = reg.Tempo || '';
+  document.getElementById('edit-responsavel').value = reg.Responsavel || '';
+  document.getElementById('edit-obs').value         = reg.Observacao || '';
+
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+
+function closeModal(event) {
+  if (!event || event.target === document.getElementById('edit-modal')) {
+    document.getElementById('edit-modal').style.display = 'none';
+    editandoId = null;
+  }
+}
+
+/* ====================================================
+   SALVAR EDIÇÃO
+==================================================== */
+async function salvarEdicao() {
+  const setor       = document.getElementById('edit-setor').value.trim();
+  const item        = document.getElementById('edit-item').value.trim();
+  const tempo       = document.getElementById('edit-tempo').value;
+  const responsavel = document.getElementById('edit-responsavel').value.trim();
+  const obs         = document.getElementById('edit-obs').value.trim();
+
+  if (!setor || !item || !tempo || !responsavel) {
+    showToast('Preencha todos os campos obrigatórios.', 'error');
+    return;
+  }
+
+  const payload = { acao: 'edit', ID: editandoId, Setor: setor, Item: item, Tempo: tempo, Responsavel: responsavel, Observacao: obs, Status: '' };
+
+  if (modoDemo) {
+    registros = registros.map(r => {
+      if (r.ID !== editandoId) return r;
+      return { ...r, ...payload, Status: r.Status === 'Concluído' ? 'Concluído' : '' };
+    });
+    calcularStatusAutomatico();
+    renderizarTabela(aplicarFiltroAtual());
+    atualizarFiltroSetor();
+    closeModal();
+    showToast('Registro atualizado (Modo Demo)!', 'success');
+    return;
+  }
+
+  mostrarLoader('Salvando edição...');
+  try {
+    const resp = await chamarAPI(payload);
+    if (resp.status === 'ok') {
+      showToast('Registro atualizado!', 'success');
+      closeModal();
+      await carregarDados();
+    } else {
+      showToast('Erro: ' + resp.message, 'error');
+    }
+  } catch (err) {
+    showToast('Erro de conexão.', 'error');
+  } finally {
+    ocultarLoader();
+  }
+}
+
+/* ====================================================
+   MARCAR COMO CONCLUÍDO
+==================================================== */
+async function marcarConcluido(id) {
+  if (modoDemo) {
+    registros = registros.map(r => r.ID === id ? { ...r, Status: 'Concluído' } : r);
+    renderizarTabela(aplicarFiltroAtual());
+    showToast('Marcado como concluído!', 'success');
+    return;
+  }
+
+  mostrarLoader('Atualizando...');
+  try {
+    const resp = await chamarAPI({ acao: 'concluir', ID: id });
+    if (resp.status === 'ok') {
+      showToast('Marcado como concluído!', 'success');
+      await carregarDados();
+    } else {
+      showToast('Erro: ' + resp.message, 'error');
+    }
+  } catch (err) {
+    showToast('Erro de conexão.', 'error');
+  } finally {
+    ocultarLoader();
+  }
+}
+
+/* ====================================================
+   HELPER: CHAMAR API (POST)
+   Apps Script exige no-cors em alguns contextos.
+   Para evitar problemas de CORS, usamos mode: 'no-cors'
+   mas isso torna a resposta opaca. A solução recomendada
+   é verificar os dados novamente via GET após cada POST.
+==================================================== */
+async function chamarAPI(payload) {
+  const resp = await fetch(apiURL, {
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  });
+  return await resp.json();
+}
+
+/* ====================================================
+   RENDERIZAR TABELA
+==================================================== */
+function renderizarTabela(dados) {
+  const tbody = document.getElementById('tabela-body');
+
+  if (!dados || dados.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <h3>Nenhum registro encontrado</h3>
+          <p style="font-size:13px;">Tente ajustar os filtros ou cadastre uma nova ação.</p>
+        </div>
+      </td></tr>`;
+    document.getElementById('filter-count').textContent = '';
+    return;
+  }
+
+  document.getElementById('filter-count').textContent = `${dados.length} registro(s)`;
+
+  tbody.innerHTML = dados.map(r => {
+    const status = r.Status || 'Pendente';
+    const cls    = statusClass(status);
+    const prazo  = formatarData(r.Tempo);
+    const concluido = status === 'Concluído';
+
+    return `
+    <tr class="${concluido ? 'row-concluido' : ''}">
+      <td class="td-setor">${esc(r.Setor)}</td>
+      <td class="td-item"><span title="${esc(r.Item)}">${esc(r.Item)}</span></td>
+      <td class="td-prazo">${prazo}</td>
+      <td>${esc(r.Responsavel)}</td>
+      <td style="max-width:180px;"><span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;" title="${esc(r.Observacao)}">${esc(r.Observacao) || '—'}</span></td>
+      <td><span class="badge badge-${cls}"><span class="badge-dot"></span>${status}</span></td>
+      <td class="td-acoes">
+        <div class="td-acoes-inner">
+          ${!concluido ? `<button class="btn btn-success btn-sm" onclick="marcarConcluido('${r.ID}')" title="Marcar como concluído">✓</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="abrirModalEdicao('${r.ID}')" title="Editar">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="excluirRegistro('${r.ID}')" title="Excluir">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  registrosFiltrados = dados;
+}
+
+function statusClass(status) {
+  const map = { 'Concluído': 'concluido', 'Em andamento': 'andamento', 'Atrasado': 'atrasado', 'Pendente': 'pendente' };
+  return map[status] || 'pendente';
+}
+
+/* ====================================================
+   FILTROS
+==================================================== */
+function aplicarFiltros() {
+  const setor  = document.getElementById('filtro-setor').value;
+  const resp   = document.getElementById('filtro-responsavel').value.toLowerCase();
+  const status = document.getElementById('filtro-status').value;
+
+  const filtrados = registros.filter(r => {
+    const okSetor  = !setor  || r.Setor === setor;
+    const okResp   = !resp   || (r.Responsavel || '').toLowerCase().includes(resp);
+    const okStatus = !status || r.Status === status;
+    return okSetor && okResp && okStatus;
+  });
+
+  renderizarTabela(filtrados);
+}
+
+function aplicarFiltroAtual() {
+  // Retorna os registros já com filtros aplicados (para uso interno)
+  const setor  = document.getElementById('filtro-setor').value;
+  const resp   = document.getElementById('filtro-responsavel').value.toLowerCase();
+  const status = document.getElementById('filtro-status').value;
+
+  return registros.filter(r => {
+    const okSetor  = !setor  || r.Setor === setor;
+    const okResp   = !resp   || (r.Responsavel || '').toLowerCase().includes(resp);
+    const okStatus = !status || r.Status === status;
+    return okSetor && okResp && okStatus;
+  });
+}
+
+function limparFiltros() {
+  document.getElementById('filtro-setor').value = '';
+  document.getElementById('filtro-responsavel').value = '';
+  document.getElementById('filtro-status').value = '';
+  renderizarTabela(registros);
+}
+
+function atualizarFiltroSetor() {
+  const select = document.getElementById('filtro-setor');
+  const setores = [...new Set(registros.map(r => r.Setor).filter(Boolean))].sort();
+  const atual   = select.value;
+  select.innerHTML = '<option value="">🏭 Todos os setores</option>' +
+    setores.map(s => `<option value="${esc(s)}" ${s === atual ? 'selected' : ''}>${esc(s)}</option>`).join('');
+}
+
+/* ====================================================
+   EXPORTAÇÃO PDF
+==================================================== */
+function exportarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape' });
+
+  // Título
+  doc.setFontSize(16);
+  doc.setTextColor(13, 43, 82);
+  doc.text('Plano de Ação AET — Análise Ergonômica do Trabalho', 14, 18);
+
+  // Data de geração
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`, 14, 25);
+
+  // Dados da tabela
+  const dados = registrosFiltrados.length > 0 ? registrosFiltrados : registros;
+  const rows  = dados.map(r => [
+    r.Setor || '',
+    r.Item  || '',
+    formatarData(r.Tempo),
+    r.Responsavel || '',
+    r.Observacao  || '',
+    r.Status      || ''
+  ]);
+
+  // Cores de status para o PDF
+  const statusColors = {
+    'Concluído':    [22, 163, 74],
+    'Em andamento': [202, 138, 4],
+    'Atrasado':     [220, 38, 38],
+    'Pendente':     [37, 99, 235]
+  };
+
+  doc.autoTable({
+    startY: 30,
+    head: [['Setor', 'Item / Ação', 'Prazo', 'Responsável', 'Observação', 'Status']],
+    body: rows,
+    headStyles: {
+      fillColor: [13, 43, 82],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      fontSize: 9
+    },
+    bodyStyles: { fontSize: 8, cellPadding: 4 },
+    columnStyles: {
+      0: { cellWidth: 35 },
+      1: { cellWidth: 70 },
+      2: { cellWidth: 28 },
+      3: { cellWidth: 38 },
+      4: { cellWidth: 55 },
+      5: { cellWidth: 30 }
+    },
+    didDrawCell: (data) => {
+      // Colore a célula de status
+      if (data.column.index === 5 && data.section === 'body') {
+        const val   = data.cell.raw;
+        const cor   = statusColors[val] || [108, 117, 125];
+        const { x, y, width, height } = data.cell;
+        doc.setFillColor(...cor);
+        doc.roundedRect(x + 2, y + 2, width - 4, height - 4, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(7);
+        doc.text(val, x + width / 2, y + height / 2 + 1, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+      }
+    },
+    alternateRowStyles: { fillColor: [240, 244, 251] },
+    margin: { left: 14, right: 14 }
+  });
+
+  doc.save('plano-acao-aet.pdf');
+  showToast('PDF exportado com sucesso!', 'success');
+}
+
+/* ====================================================
+   UTILITÁRIOS
+==================================================== */
+function limparFormulario() {
+  ['f-setor','f-item','f-tempo','f-responsavel','f-obs'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function formatarData(valor) {
+  if (!valor) return '—';
+  const d = new Date(valor + 'T00:00:00');
+  return d.toLocaleDateString('pt-BR');
+}
+
+// Escapa HTML para evitar XSS
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ====================================================
+   LOADER
+==================================================== */
+function mostrarLoader(msg) {
+  document.getElementById('loading-text').textContent = msg || 'Aguarde...';
+  document.getElementById('loading-overlay').style.display = 'flex';
+}
+
+function ocultarLoader() {
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+
+/* ====================================================
+   TOAST / NOTIFICAÇÕES
+==================================================== */
+function showToast(msg, tipo = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  toast.className = `toast toast-${tipo}`;
+  toast.innerHTML = `<span style="font-size:14px;">${icons[tipo] || ''}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+</script>
+
+</body>
+</html>
