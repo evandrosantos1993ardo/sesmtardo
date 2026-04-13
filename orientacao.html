@@ -252,7 +252,7 @@ select option{background:#1a2060;color:var(--white);}
       <table>
         <thead>
           <tr>
-            <th>#</th><th>Título</th><th>Data</th><th>Funcionário</th><th>Setor</th><th>Status</th><th>Ação</th>
+            <th>#</th><th>Título</th><th>Data</th><th>Funcionário</th><th>Setor</th><th>Status</th><th>Finalizado em</th><th>Ação</th>
           </tr>
         </thead>
         <tbody id="tabelaBody"></tbody>
@@ -466,6 +466,7 @@ async function carregarDoSheets() {
           descricao:    String(row[7] || ''),
           justificativa:String(row[8] || ''),
           status:       String(row[9] || 'Pendente'),
+          dataFinalizacao: String(row[10] || ''),
         }));
 
       dot.classList.add('ok');
@@ -595,7 +596,8 @@ function gerarDocumento(){
     data:new Date().toLocaleDateString('pt-BR'),
     dataBruta:new Date().toISOString(),
     nome:dados.nome,setor:dados.setor,responsavel:dados.responsavel,
-    cargo:dados.cargo,descricao:dados.descricao,justificativa:dados.justificativa,status:'Pendente'
+    cargo:dados.cargo,descricao:dados.descricao,justificativa:dados.justificativa,status:'Pendente',
+    dataFinalizacao:''
   };
   orientacoes.unshift(registro);
   enviarSheets(registro);
@@ -722,7 +724,7 @@ function renderTabela(){
   });
   const tbody=document.getElementById('tabelaBody');
   if(lista.length===0){
-    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div>Nenhuma orientação encontrada</div></td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📭</div>Nenhuma orientação encontrada</div></td></tr>`;
     return;
   }
   tbody.innerHTML=lista.map((o,i)=>`
@@ -733,6 +735,7 @@ function renderTabela(){
       <td>${esc(o.nome)}</td>
       <td><span style="background:rgba(26,32,96,.8);color:#7a9cff;padding:2px 8px;border-radius:50px;font-size:.72rem;">${esc(o.setor)}</span></td>
       <td><span class="badge badge-${o.status==='Realizado'?'realizado':'pendente'}">${esc(o.status)}</span></td>
+      <td style="white-space:nowrap;font-size:.78rem;color:var(--muted);">${o.dataFinalizacao?'🕐 '+esc(o.dataFinalizacao):'—'}</td>
       <td>${o.status==='Pendente'?`<button class="btn-marcar" onclick="marcarFeito('${esc(o.id)}')">✔ Marcar como Feito</button>`:'<span style="color:var(--muted);font-size:.78rem;">—</span>'}</td>
     </tr>`).join('');
 }
@@ -742,7 +745,10 @@ function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function marcarFeito(id){
   const idx=orientacoes.findIndex(o=>o.id===String(id));
   if(idx===-1)return;
+  const agora=new Date();
+  const dataFin=agora.toLocaleDateString('pt-BR')+' '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   orientacoes[idx].status='Realizado';
+  orientacoes[idx].dataFinalizacao=dataFin;
   atualizarUI();
   atualizarStatusSheets(orientacoes[idx]);
   showToast('✅ Orientação marcada como Realizada!','success');
@@ -783,7 +789,7 @@ async function enviarSheets(reg){
 
 async function atualizarStatusSheets(reg){
   try{
-    const params=new URLSearchParams({action:'atualizar',id:reg.id,status:'Realizado'});
+    const params=new URLSearchParams({action:'atualizar',id:reg.id,status:'Realizado',dataFinalizacao:reg.dataFinalizacao||''});
     await fetch(scriptUrl+'?'+params.toString(),{method:'GET',redirect:'follow'});
   }catch(err){console.error('atualizarStatus error:',err);}
 }
