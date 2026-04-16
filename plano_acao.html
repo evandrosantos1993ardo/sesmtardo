@@ -937,10 +937,10 @@ async function apiCall(params) {
   }
   try {
     const url = new URL(SCRIPT_URL);
-    Object.keys(params).forEach(k => url.searchParams.set(k, typeof params[k] === 'object' ? JSON.stringify(params[k]) : params[k]));
+    Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
     const resp = await fetch(url.toString());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    return await resp.json();
+    const txt = await resp.text(); return JSON.parse(txt);
   } catch (e) {
     showToast('Erro ao comunicar com o servidor: ' + e.message, 'error');
     return null;
@@ -1177,9 +1177,10 @@ async function saveAcao() {
     return;
   }
 
+  // Monta parâmetros flat — o backend lê cada campo individualmente
   const params = editingId
-    ? { action: 'updateAcao', id: editingId, dados: JSON.stringify(dados) }
-    : { action: 'addAcao', dados: JSON.stringify(dados) };
+    ? { action: 'updateAcao', id: editingId, ...dados }
+    : { action: 'addAcao', ...dados };
 
   const result = await apiCall(params);
   btn.disabled = false;
