@@ -938,16 +938,44 @@ async function apiCall(params) {
     showToast('Configure a URL do Apps Script na barra lateral.', 'error');
     return null;
   }
-  try {
-    const url = new URL(SCRIPT_URL);
-    Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
-    const resp = await fetch(url.toString());
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const txt = await resp.text(); return JSON.parse(txt);
-  } catch (e) {
-    showToast('Erro ao comunicar com o servidor: ' + e.message, 'error');
-    return null;
-  }
+  return new Promise((resolve) => {
+    try {
+      const cbName = '_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      const url = new URL(SCRIPT_URL);
+      Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+      url.searchParams.set('callback', cbName);
+
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => {
+        cleanup();
+        showToast('Tempo esgotado ao comunicar com o servidor.', 'error');
+        resolve(null);
+      }, 15000);
+
+      function cleanup() {
+        clearTimeout(timeout);
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cbName] = function(data) {
+        cleanup();
+        resolve(data);
+      };
+
+      script.onerror = function() {
+        cleanup();
+        showToast('Erro ao comunicar com o servidor.', 'error');
+        resolve(null);
+      };
+
+      script.src = url.toString();
+      document.head.appendChild(script);
+    } catch (e) {
+      showToast('Erro ao comunicar com o servidor: ' + e.message, 'error');
+      resolve(null);
+    }
+  });
 }
 
 async function loadData() {
