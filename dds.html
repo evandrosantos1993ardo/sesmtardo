@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>DDS Sistema Completo</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;margin:0;padding:20px}
+.container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
+input,select,button{width:100%;padding:10px;margin:5px 0}
+button{background:#007bff;color:#fff;border:none;cursor:pointer}
+button:hover{background:#0056b3}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Sistema DDS</h1>
+
+<div id="login">
+<h2>Login</h2>
+<input id="user" placeholder="CPF ou admin">
+<input id="pass" placeholder="Senha" type="password">
+<button onclick="login()">Entrar</button>
+</div>
+
+<div id="admin" class="hidden">
+<h2>Admin</h2>
+
+<h3>Cadastrar Usuário</h3>
+<input id="nome" placeholder="Nome">
+<input id="cpf" placeholder="CPF">
+<input id="setor" placeholder="Setor">
+<button onclick="cadastrarUsuario()">Salvar Usuário</button>
+
+<h3>Cadastrar Pergunta</h3>
+<input id="pergunta" placeholder="Pergunta">
+<input id="a" placeholder="Alternativa A">
+<input id="b" placeholder="Alternativa B">
+<input id="c" placeholder="Alternativa C">
+<input id="d" placeholder="Alternativa D">
+<select id="correta">
+<option value="A">A</option>
+<option value="B">B</option>
+<option value="C">C</option>
+<option value="D">D</option>
+</select>
+<button onclick="cadastrarPergunta()">Salvar Pergunta</button>
+
+<button onclick="logout()">Sair</button>
+</div>
+
+<div id="func" class="hidden">
+<h2>Funcionário</h2>
+<div id="quiz"></div>
+<button onclick="finalizar()">Finalizar</button>
+<h3 id="resultado"></h3>
+<button onclick="logout()">Sair</button>
+</div>
+
+</div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycbydNjX4Vatru-SXzRuEEO8ESNPguCpnswGy3VzJWbMPqGEcoFAc0ExTkn9EUQftGsqk/exec";
+let perguntas = [];
+let usuarioLogado = {};
+
+function login(){
+let u = user.value;
+let p = pass.value;
+
+if(u==='admin' && p==='admin123'){
+loginDiv(false);
+admin.classList.remove('hidden');
+return;
+}
+
+fetch(URL+"?usuarios=1")
+.then(r=>r.json())
+.then(data=>{
+let user = data.find(x=>x.cpf==u && x.senha==p);
+if(user){
+usuarioLogado = user;
+loginDiv(false);
+func.classList.remove('hidden');
+carregarQuiz();
+}else alert('Login inválido');
+});
+}
+
+function loginDiv(show){
+login.classList.toggle('hidden',!show);
+}
+
+function logout(){location.reload();}
+
+function cadastrarUsuario(){
+fetch(URL,{
+method:'POST',
+body: JSON.stringify({tipo:'usuario',nome:nome.value,cpf:cpf.value,setor:setor.value})
+});
+alert('Usuário salvo');
+}
+
+function cadastrarPergunta(){
+fetch(URL,{
+method:'POST',
+body: JSON.stringify({
+tipo:'pergunta',
+pergunta:pergunta.value,
+a:a.value,
+b:b.value,
+c:c.value,
+d:d.value,
+correta:correta.value
+})
+});
+alert('Pergunta salva');
+}
+
+function carregarQuiz(){
+fetch(URL)
+.then(r=>r.json())
+.then(data=>{
+perguntas = data.sort(()=>0.5-Math.random()).slice(0,10);
+let html='';
+perguntas.forEach((q,i)=>{
+html+=`<p>${i+1}. ${q.pergunta}</p>
+<label><input type='radio' name='q${i}' value='A'> ${q.a}</label><br>
+<label><input type='radio' name='q${i}' value='B'> ${q.b}</label><br>
+<label><input type='radio' name='q${i}' value='C'> ${q.c}</label><br>
+<label><input type='radio' name='q${i}' value='D'> ${q.d}</label><br><br>`;
+});
+quiz.innerHTML = html;
+});
+}
+
+function finalizar(){
+let acertos=0;
+perguntas.forEach((q,i)=>{
+let r = document.querySelector(`input[name=q${i}]:checked`);
+if(r && r.value===q.correta) acertos++;
+});
+
+let resultado = acertos>=7 ? 'APROVADO' : 'REPROVADO';
+resultadoDiv.innerText = `Resultado: ${acertos} acertos - ${resultado}`;
+
+fetch(URL,{
+method:'POST',
+body: JSON.stringify({
+tipo:'resultado',
+cpf:usuarioLogado.cpf,
+nome:usuarioLogado.nome,
+setor:usuarioLogado.setor,
+acertos,
+resultado
+})
+});
+}
+</script>
+
+</body>
+</html>
