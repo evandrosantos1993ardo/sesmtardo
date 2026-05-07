@@ -1,165 +1,434 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>DDS Sistema Completo</title>
+
 <style>
-body{font-family:Arial;background:#f4f6f9;margin:0;padding:20px}
-.container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
-input,select,button{width:100%;padding:10px;margin:5px 0}
-button{background:#007bff;color:#fff;border:none;cursor:pointer}
-button:hover{background:#0056b3}
-.hidden{display:none}
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0f1117;--surface:#181c27;--card:#1e2335;--border:#2a3050;
+--accent:#4f8ef7;--accent2:#38d9a9;--danger:#ff6b6b;--warn:#ffd43b;
+--txt:#e8eaf6;--txt2:#8892b0;--txt3:#4a5580;
+--r:12px;--r2:8px;
+}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);min-height:600px;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.wrap{width:100%;max-width:640px}
+
+.logo{text-align:center;margin-bottom:2rem}
+.logo h1{font-size:2rem;font-weight:600;letter-spacing:-0.5px}
+.logo h1 span{color:var(--accent)}
+.logo p{font-size:13px;color:var(--txt2);margin-top:4px;font-family:'JetBrains Mono',monospace}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem}
+.card-title{font-size:15px;font-weight:500;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.card-title i{font-size:16px;color:var(--accent)}
+
+label{display:block;font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:5px;margin-top:12px;text-transform:uppercase;letter-spacing:.5px}
+input,select{width:100%;background:#13172200;border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;color:var(--txt);font-family:'Sora',sans-serif;font-size:14px;outline:none;transition:border .2s}
+input:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--card)}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:var(--r2);font-family:'Sora',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;margin-top:1rem}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#3d7de8}
+.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--txt2)}
+.btn-secondary:hover{border-color:var(--txt2);color:var(--txt)}
+.btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger)}
+.btn-danger:hover{background:rgba(255,107,107,.1)}
+.btn-success{background:var(--accent2);color:#0f2720}
+.btn-success:hover{background:#2dc99b}
+
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--surface);border-radius:var(--r2);padding:4px}
+.tab{flex:1;padding:8px;border:none;border-radius:6px;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;background:transparent;color:var(--txt2);transition:all .15s}
+.tab.active{background:var(--card);color:var(--txt);font-weight:500}
+
+.hidden{display:none!important}
+
+.screen{animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.quiz-q{margin-bottom:1.5rem}
+.quiz-q p{font-size:14px;font-weight:500;margin-bottom:.75rem;line-height:1.5;color:var(--txt)}
+.opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--txt2)}
+.opt:hover{border-color:var(--accent);color:var(--txt);background:rgba(79,142,247,.06)}
+.opt input{width:16px;min-width:16px;height:16px;cursor:pointer;accent-color:var(--accent)}
+.opt.selected{border-color:var(--accent);background:rgba(79,142,247,.08);color:var(--txt)}
+.opt.correct{border-color:var(--accent2);background:rgba(56,217,169,.08);color:var(--accent2)}
+.opt.wrong{border-color:var(--danger);background:rgba(255,107,107,.08);color:var(--danger)}
+
+.progress{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.5rem}
+.progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+
+.result-box{text-align:center;padding:2rem 1rem}
+.result-badge{font-size:2.5rem;font-weight:600;margin:.5rem 0}
+.result-badge.aprovado{color:var(--accent2)}
+.result-badge.reprovado{color:var(--danger)}
+.result-sub{font-size:14px;color:var(--txt2);margin-bottom:1.5rem}
+
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.chip-info{background:rgba(79,142,247,.15);color:var(--accent)}
+.chip-success{background:rgba(56,217,169,.15);color:var(--accent2)}
+.chip-warn{background:rgba(255,212,59,.15);color:var(--warn)}
+
+.url-input-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:1.25rem}
+.url-input-row input{border-radius:var(--r2) 0 0 var(--r2)!important}
+.url-input-row .btn{margin-top:0;width:auto;min-width:80px;padding:10px 16px;border-radius:0 var(--r2) var(--r2) 0!important;font-size:13px}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+.alert{padding:10px 14px;border-radius:var(--r2);font-size:13px;margin-top:8px}
+.alert-success{background:rgba(56,217,169,.12);border:1px solid rgba(56,217,169,.3);color:var(--accent2)}
+.alert-error{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);color:var(--danger)}
+
+.sep{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+
+.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.nav-user{font-size:13px;color:var(--txt2)}
+.nav-user strong{color:var(--txt)}
+
+.empty{text-align:center;padding:2rem;color:var(--txt3);font-size:13px}
 </style>
-</head>
-<body>
-<div class="container">
-<h1>Sistema DDS</h1>
 
-<div id="login">
-<h2>Login</h2>
-<input id="user" placeholder="CPF ou admin">
-<input id="pass" placeholder="Senha" type="password">
-<button onclick="login()">Entrar</button>
+<div class="wrap">
+<div class="logo">
+  <h1>DDS <span>Sistema</span></h1>
+  <p>Diálogo Diário de Segurança</p>
 </div>
 
-<div id="admin" class="hidden">
-<h2>Admin</h2>
-
-<h3>Cadastrar Usuário</h3>
-<input id="nome" placeholder="Nome">
-<input id="cpf" placeholder="CPF">
-<input id="setor" placeholder="Setor">
-<button onclick="cadastrarUsuario()">Salvar Usuário</button>
-
-<h3>Cadastrar Pergunta</h3>
-<input id="pergunta" placeholder="Pergunta">
-<input id="a" placeholder="Alternativa A">
-<input id="b" placeholder="Alternativa B">
-<input id="c" placeholder="Alternativa C">
-<input id="d" placeholder="Alternativa D">
-<select id="correta">
-<option value="A">A</option>
-<option value="B">B</option>
-<option value="C">C</option>
-<option value="D">D</option>
-</select>
-<button onclick="cadastrarPergunta()">Salvar Pergunta</button>
-
-<button onclick="logout()">Sair</button>
+<div id="scr-url" class="screen">
+  <div class="card">
+    <div class="card-title"><i class="ti ti-link" aria-hidden="true"></i> Configurar URL do Script</div>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:1rem;line-height:1.6">Cole a URL do seu Google Apps Script (doGet/doPost) para conectar o sistema.</p>
+    <label>URL do Apps Script</label>
+    <div class="url-input-row">
+      <input id="inp-url" placeholder="https://script.google.com/macros/s/..." />
+      <button class="btn btn-primary" onclick="salvarURL()" style="margin-top:0;width:auto;min-width:90px;padding:10px 16px;font-size:13px;border-radius:0 8px 8px 0">Salvar</button>
+    </div>
+    <div id="url-msg"></div>
+  </div>
 </div>
 
-<div id="func" class="hidden">
-<h2>Funcionário</h2>
-<div id="quiz"></div>
-<button onclick="finalizar()">Finalizar</button>
-<h3 id="resultado"></h3>
-<button onclick="logout()">Sair</button>
+<div id="scr-login" class="screen hidden">
+  <div class="card">
+    <div class="card-title"><i class="ti ti-lock" aria-hidden="true"></i> Acesso ao Sistema</div>
+    <label>CPF ou usuário</label>
+    <input id="inp-user" placeholder="Digite seu CPF ou 'admin'" />
+    <label>Senha</label>
+    <input id="inp-pass" type="password" placeholder="Digite sua senha" />
+    <div id="login-msg"></div>
+    <button class="btn btn-primary" onclick="doLogin()">
+      <i class="ti ti-login" aria-hidden="true"></i> Entrar
+    </button>
+    <button class="btn btn-secondary" onclick="goURL()" style="margin-top:8px">
+      <i class="ti ti-settings" aria-hidden="true"></i> Alterar URL do script
+    </button>
+  </div>
+</div>
+
+<div id="scr-admin" class="screen hidden">
+  <div class="nav">
+    <div>
+      <span class="chip chip-info">Admin</span>
+    </div>
+    <button class="btn btn-danger" onclick="doLogout()" style="width:auto;padding:8px 16px;margin-top:0;font-size:13px">
+      <i class="ti ti-logout" aria-hidden="true"></i> Sair
+    </button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('tab-usuario')">Usuários</button>
+    <button class="tab" onclick="setTab('tab-pergunta')">Perguntas</button>
+  </div>
+  <div id="tab-usuario" class="card">
+    <div class="card-title"><i class="ti ti-user-plus" aria-hidden="true"></i> Cadastrar Usuário</div>
+    <label>Nome completo</label>
+    <input id="u-nome" placeholder="Nome do funcionário" />
+    <div class="row2">
+      <div>
+        <label>CPF (também será a senha)</label>
+        <input id="u-cpf" placeholder="000.000.000-00" />
+      </div>
+      <div>
+        <label>Setor</label>
+        <input id="u-setor" placeholder="Ex: Produção" />
+      </div>
+    </div>
+    <div id="user-msg"></div>
+    <button class="btn btn-primary" onclick="cadastrarUsuario()">
+      <i class="ti ti-check" aria-hidden="true"></i> Salvar Usuário
+    </button>
+  </div>
+  <div id="tab-pergunta" class="card hidden" style="margin-top:0">
+    <div class="card-title"><i class="ti ti-help" aria-hidden="true"></i> Cadastrar Pergunta</div>
+    <div class="row2">
+      <div>
+        <label>Setor</label>
+        <input id="p-setor" placeholder="Setor alvo" />
+      </div>
+      <div>
+        <label>DDS (tema)</label>
+        <input id="p-dds" placeholder="Ex: EPI" />
+      </div>
+    </div>
+    <label>Pergunta</label>
+    <input id="p-texto" placeholder="Digite a pergunta aqui" />
+    <div class="row2">
+      <div><label>Alternativa A</label><input id="p-a" placeholder="..." /></div>
+      <div><label>Alternativa B</label><input id="p-b" placeholder="..." /></div>
+    </div>
+    <div class="row2">
+      <div><label>Alternativa C</label><input id="p-c" placeholder="..." /></div>
+      <div><label>Alternativa D</label><input id="p-d" placeholder="..." /></div>
+    </div>
+    <label>Resposta correta</label>
+    <select id="p-correta">
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
+    <div id="perg-msg"></div>
+    <button class="btn btn-primary" onclick="cadastrarPergunta()">
+      <i class="ti ti-check" aria-hidden="true"></i> Salvar Pergunta
+    </button>
+  </div>
+</div>
+
+<div id="scr-func" class="screen hidden">
+  <div class="nav">
+    <div id="nav-info" class="nav-user"></div>
+    <button class="btn btn-danger" onclick="doLogout()" style="width:auto;padding:8px 16px;margin-top:0;font-size:13px">
+      <i class="ti ti-logout" aria-hidden="true"></i> Sair
+    </button>
+  </div>
+  <div class="card">
+    <div class="progress"><div class="progress-bar" id="prog" style="width:0%"></div></div>
+    <div id="quiz-area"></div>
+    <div id="result-area" class="hidden"></div>
+    <div id="quiz-footer">
+      <button class="btn btn-success" onclick="finalizar()">
+        <i class="ti ti-send" aria-hidden="true"></i> Finalizar Quiz
+      </button>
+    </div>
+  </div>
 </div>
 
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbydNjX4Vatru-SXzRuEEO8ESNPguCpnswGy3VzJWbMPqGEcoFAc0ExTkn9EUQftGsqk/exec";
+let SCRIPT_URL = '';
 let perguntas = [];
 let usuarioLogado = {};
+let respostas = {};
 
-function login(){
-let u = user.value;
-let p = pass.value;
-
-if(u==='admin' && p==='admin123'){
-loginDiv(false);
-admin.classList.remove('hidden');
-return;
+function show(id){
+  ['scr-url','scr-login','scr-admin','scr-func'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
+  });
 }
 
-fetch(URL+"?usuarios=1")
-.then(r=>r.json())
-.then(data=>{
-let user = data.find(x=>x.cpf==u && x.senha==p);
-if(user){
-usuarioLogado = user;
-loginDiv(false);
-func.classList.remove('hidden');
-carregarQuiz();
-}else alert('Login inválido');
-});
+function goURL(){show('scr-url')}
+
+function salvarURL(){
+  const u = document.getElementById('inp-url').value.trim();
+  const msg = document.getElementById('url-msg');
+  if(!u || !u.startsWith('https://')){
+    msg.innerHTML='<div class="alert alert-error">URL inválida. Deve começar com https://</div>';
+    return;
+  }
+  SCRIPT_URL = u;
+  try{localStorage.setItem('dds_url',u);}catch(e){}
+  msg.innerHTML='<div class="alert alert-success">URL salva! Redirecionando...</div>';
+  setTimeout(()=>show('scr-login'),1000);
 }
 
-function loginDiv(show){
-  const el = document.getElementById('login');
-  el.classList.toggle('hidden', !show);
+function doLogin(){
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value.trim();
+  const msg = document.getElementById('login-msg');
+  if(!SCRIPT_URL){show('scr-url');return;}
+  if(u==='admin'&&p==='admin123'){
+    show('scr-admin');
+    return;
+  }
+  msg.innerHTML='<div class="alert alert-success" style="opacity:.6">Verificando...</div>';
+  fetch(SCRIPT_URL+'?usuarios=1')
+    .then(r=>r.json())
+    .then(data=>{
+      const found = data.find(x=>String(x.cpf)===String(u)&&String(x.senha)===String(p));
+      if(found){
+        usuarioLogado=found;
+        document.getElementById('nav-info').innerHTML=`<strong>${found.nome}</strong> &nbsp;<span class="chip chip-info">${found.setor}</span>`;
+        show('scr-func');
+        carregarQuiz();
+      }else{
+        msg.innerHTML='<div class="alert alert-error">CPF ou senha inválidos.</div>';
+      }
+    })
+    .catch(()=>{
+      msg.innerHTML='<div class="alert alert-error">Erro ao conectar. Verifique a URL do script.</div>';
+    });
 }
 
-function logout(){location.reload();}
+function doLogout(){
+  usuarioLogado={};perguntas=[];respostas={};
+  document.getElementById('inp-user').value='';
+  document.getElementById('inp-pass').value='';
+  show('scr-login');
+}
+
+function setTab(id){
+  ['tab-usuario','tab-pergunta'].forEach(t=>{
+    const el=document.getElementById(t);
+    el.classList.toggle('hidden',t!==id);
+  });
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',['tab-usuario','tab-pergunta'][i]===id);
+  });
+}
+
+function showMsg(id,tipo,txt){
+  document.getElementById(id).innerHTML=`<div class="alert alert-${tipo}">${txt}</div>`;
+  setTimeout(()=>{const el=document.getElementById(id);if(el)el.innerHTML='';},3000);
+}
 
 function cadastrarUsuario(){
-fetch(URL,{
-method:'POST',
-body: JSON.stringify({tipo:'usuario',nome:nome.value,cpf:cpf.value,setor:setor.value})
-});
-alert('Usuário salvo');
+  const nome=document.getElementById('u-nome').value.trim();
+  const cpf=document.getElementById('u-cpf').value.trim();
+  const setor=document.getElementById('u-setor').value.trim();
+  if(!nome||!cpf||!setor){showMsg('user-msg','error','Preencha todos os campos.');return;}
+  fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:'usuario',nome,cpf,setor})})
+    .then(()=>{
+      showMsg('user-msg','success','Usuário salvo com sucesso!');
+      ['u-nome','u-cpf','u-setor'].forEach(id=>document.getElementById(id).value='');
+    })
+    .catch(()=>showMsg('user-msg','error','Erro ao salvar.'));
 }
 
 function cadastrarPergunta(){
-fetch(URL,{
-method:'POST',
-body: JSON.stringify({
-tipo:'pergunta',
-pergunta:pergunta.value,
-a:a.value,
-b:b.value,
-c:c.value,
-d:d.value,
-correta:correta.value
-})
-});
-alert('Pergunta salva');
+  const setor=document.getElementById('p-setor').value.trim();
+  const dds=document.getElementById('p-dds').value.trim();
+  const pergunta=document.getElementById('p-texto').value.trim();
+  const a=document.getElementById('p-a').value.trim();
+  const b=document.getElementById('p-b').value.trim();
+  const c=document.getElementById('p-c').value.trim();
+  const d=document.getElementById('p-d').value.trim();
+  const correta=document.getElementById('p-correta').value;
+  if(!pergunta||!a||!b||!c||!d){showMsg('perg-msg','error','Preencha todos os campos.');return;}
+  fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:'pergunta',setor,dds,pergunta,a,b,c,d,correta})})
+    .then(()=>{
+      showMsg('perg-msg','success','Pergunta salva!');
+      ['p-setor','p-dds','p-texto','p-a','p-b','p-c','p-d'].forEach(id=>document.getElementById(id).value='');
+    })
+    .catch(()=>showMsg('perg-msg','error','Erro ao salvar.'));
 }
 
 function carregarQuiz(){
-fetch(URL)
-.then(r=>r.json())
-.then(data=>{
-perguntas = data.sort(()=>0.5-Math.random()).slice(0,10);
-let html='';
-perguntas.forEach((q,i)=>{
-html+=`<p>${i+1}. ${q.pergunta}</p>
-<label><input type='radio' name='q${i}' value='A'> ${q.a}</label><br>
-<label><input type='radio' name='q${i}' value='B'> ${q.b}</label><br>
-<label><input type='radio' name='q${i}' value='C'> ${q.c}</label><br>
-<label><input type='radio' name='q${i}' value='D'> ${q.d}</label><br><br>`;
-});
-quiz.innerHTML = html;
-});
+  const area=document.getElementById('quiz-area');
+  area.innerHTML='<div class="empty"><i class="ti ti-loader" style="font-size:24px"></i><br>Carregando perguntas...</div>';
+  document.getElementById('result-area').classList.add('hidden');
+  document.getElementById('quiz-footer').classList.remove('hidden');
+  respostas={};
+  fetch(SCRIPT_URL)
+    .then(r=>r.json())
+    .then(data=>{
+      let pool = data;
+      if(usuarioLogado.setor){
+        const filt=data.filter(q=>!q.setor||q.setor.toLowerCase()===usuarioLogado.setor.toLowerCase());
+        if(filt.length>=5) pool=filt;
+      }
+      perguntas=pool.sort(()=>0.5-Math.random()).slice(0,10);
+      renderQuiz();
+    })
+    .catch(()=>{area.innerHTML='<div class="empty" style="color:var(--danger)">Erro ao carregar perguntas.</div>';});
+}
+
+function renderQuiz(){
+  const area=document.getElementById('quiz-area');
+  if(!perguntas.length){area.innerHTML='<div class="empty">Nenhuma pergunta encontrada.</div>';return;}
+  let html='';
+  perguntas.forEach((q,i)=>{
+    const opts=['a','b','c','d'];
+    const labels=['A','B','C','D'];
+    html+=`<div class="quiz-q" id="q${i}">
+      <p><span style="color:var(--txt2);font-size:12px;font-family:\'JetBrains Mono\',monospace">${i+1}/${perguntas.length}</span><br>${q.pergunta||q.dds}</p>`;
+    opts.forEach((o,j)=>{
+      if(q[o]) html+=`<div class="opt" id="opt-${i}-${j}" onclick="selecionarOpt(${i},${j},'${labels[j]}')">
+        <input type="radio" name="q${i}" value="${labels[j]}" id="r${i}${j}">
+        <label for="r${i}${j}" style="cursor:pointer;pointer-events:none"><strong>${labels[j]}.</strong> ${q[o]}</label>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  area.innerHTML=html;
+  updateProgress();
+}
+
+function selecionarOpt(qi,oi,val){
+  respostas[qi]=val;
+  for(let j=0;j<4;j++){
+    const el=document.getElementById(`opt-${qi}-${j}`);
+    if(el) el.classList.remove('selected');
+  }
+  const sel=document.getElementById(`opt-${qi}-${oi}`);
+  if(sel) sel.classList.add('selected');
+  const radio=document.getElementById(`r${qi}${oi}`);
+  if(radio) radio.checked=true;
+  updateProgress();
+}
+
+function updateProgress(){
+  const resp=Object.keys(respostas).length;
+  const pct=perguntas.length?Math.round((resp/perguntas.length)*100):0;
+  document.getElementById('prog').style.width=pct+'%';
 }
 
 function finalizar(){
-let acertos=0;
-perguntas.forEach((q,i)=>{
-let r = document.querySelector(`input[name=q${i}]:checked`);
-if(r && r.value===q.correta) acertos++;
-});
-
-let resultado = acertos>=7 ? 'APROVADO' : 'REPROVADO';
-
-document.getElementById('resultado').innerText =
-  `Resultado: ${acertos} acertos - ${resultado}`;
-
-fetch(URL,{
-method:'POST',
-body: JSON.stringify({
-tipo:'resultado',
-cpf:usuarioLogado.cpf,
-nome:usuarioLogado.nome,
-setor:usuarioLogado.setor,
-acertos,
-resultado
-})
-});
+  let acertos=0;
+  perguntas.forEach((q,i)=>{
+    const r=respostas[i];
+    const correta=(q.correta||'').toUpperCase();
+    if(r===correta) acertos++;
+    const opts=['a','b','c','d'];
+    const labels=['A','B','C','D'];
+    opts.forEach((o,j)=>{
+      const el=document.getElementById(`opt-${i}-${j}`);
+      if(!el) return;
+      if(labels[j]===correta) el.classList.add('correct');
+      else if(respostas[i]===labels[j]) el.classList.add('wrong');
+    });
+  });
+  const total=perguntas.length||10;
+  const pct=Math.round((acertos/total)*100);
+  const resultado=acertos>=7?'APROVADO':'REPROVADO';
+  const cl=resultado==='APROVADO'?'aprovado':'reprovado';
+  document.getElementById('result-area').innerHTML=`
+    <hr class="sep">
+    <div class="result-box">
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Resultado final</div>
+      <div class="result-badge ${cl}">${resultado}</div>
+      <div class="result-sub">${acertos} de ${total} corretas &nbsp;·&nbsp; ${pct}%</div>
+      <button class="btn btn-secondary" onclick="carregarQuiz()" style="max-width:240px;margin:0 auto">
+        <i class="ti ti-refresh" aria-hidden="true"></i> Refazer Quiz
+      </button>
+    </div>`;
+  document.getElementById('result-area').classList.remove('hidden');
+  document.getElementById('quiz-footer').classList.add('hidden');
+  if(usuarioLogado.cpf){
+    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({
+      tipo:'resultado',cpf:usuarioLogado.cpf,
+      nome:usuarioLogado.nome,setor:usuarioLogado.setor,
+      acertos,resultado
+    })}).catch(()=>{});
+  }
 }
-</script>
 
-</body>
-</html>
+(function init(){
+  let saved='';
+  try{saved=localStorage.getItem('dds_url')||'';}catch(e){}
+  if(saved){
+    SCRIPT_URL=saved;
+    document.getElementById('inp-url').value=saved;
+    show('scr-login');
+  }else{
+    show('scr-url');
+  }
+})();
+</script>
