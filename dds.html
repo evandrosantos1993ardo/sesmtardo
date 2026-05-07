@@ -1,434 +1,557 @@
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
---bg:#0f1117;--surface:#181c27;--card:#1e2335;--border:#2a3050;
---accent:#4f8ef7;--accent2:#38d9a9;--danger:#ff6b6b;--warn:#ffd43b;
---txt:#e8eaf6;--txt2:#8892b0;--txt3:#4a5580;
---r:12px;--r2:8px;
+--bg:#f0f2f5;--white:#ffffff;--surface:#f8f9fb;
+--blue:#1a56db;--blue-light:#e8f0fe;--blue-dark:#1241a8;
+--green:#057a55;--green-light:#def7ec;
+--red:#c81e1e;--red-light:#fde8e8;
+--yellow:#723b13;--yellow-light:#feecdc;
+--gray1:#111928;--gray2:#374151;--gray3:#6b7280;--gray4:#9ca3af;--gray5:#d1d5db;--gray6:#e5e7eb;--gray7:#f3f4f6;
+--r:10px;--r2:6px;
+--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+--shadow-lg:0 4px 16px rgba(0,0,0,.1);
 }
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt);min-height:600px;display:flex;align-items:center;justify-content:center;padding:1.5rem}
-.wrap{width:100%;max-width:640px}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--gray1);min-height:600px;display:flex;flex-direction:column}
 
-.logo{text-align:center;margin-bottom:2rem}
-.logo h1{font-size:2rem;font-weight:600;letter-spacing:-0.5px}
-.logo h1 span{color:var(--accent)}
-.logo p{font-size:13px;color:var(--txt2);margin-top:4px;font-family:'JetBrains Mono',monospace}
+.topbar{background:var(--gray1);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;flex-shrink:0}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-brand .dot{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.topbar-brand .dot i{font-size:16px;color:#fff}
+.topbar-brand span{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.2px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-user{font-size:13px;color:#9ca3af;display:flex;align-items:center;gap:8px}
+.topbar-user strong{color:#e5e7eb}
+.btn-topbar{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r2);padding:6px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;color:#e5e7eb;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
+.btn-topbar:hover{background:rgba(255,255,255,.18)}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem}
-.card-title{font-size:15px;font-weight:500;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
-.card-title i{font-size:16px;color:var(--accent)}
+.main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px}
+.center-wrap{width:100%;max-width:520px}
+.wide-wrap{width:100%;max-width:860px}
 
-label{display:block;font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:5px;margin-top:12px;text-transform:uppercase;letter-spacing:.5px}
-input,select{width:100%;background:#13172200;border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;color:var(--txt);font-family:'Sora',sans-serif;font-size:14px;outline:none;transition:border .2s}
-input:focus,select:focus{border-color:var(--accent)}
-select option{background:var(--card)}
+.card{background:var(--white);border:1px solid var(--gray6);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:20px 24px 0;border-bottom:1px solid var(--gray6);padding-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:15px;font-weight:600;color:var(--gray1);display:flex;align-items:center;gap:8px}
+.card-title i{font-size:17px;color:var(--blue)}
+.card-body{padding:24px}
 
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:var(--r2);font-family:'Sora',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;margin-top:1rem}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#3d7de8}
-.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--txt2)}
-.btn-secondary:hover{border-color:var(--txt2);color:var(--txt)}
-.btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger)}
-.btn-danger:hover{background:rgba(255,107,107,.1)}
-.btn-success{background:var(--accent2);color:#0f2720}
-.btn-success:hover{background:#2dc99b}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--gray2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select,.field textarea{width:100%;background:var(--gray7);border:1px solid var(--gray5);border-radius:var(--r2);padding:10px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--gray1);outline:none;transition:border .15s,box-shadow .15s}
+.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.12);background:#fff}
+.field select option{background:#fff}
 
-.tabs{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--surface);border-radius:var(--r2);padding:4px}
-.tab{flex:1;padding:8px;border:none;border-radius:6px;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;background:transparent;color:var(--txt2);transition:all .15s}
-.tab.active{background:var(--card);color:var(--txt);font-weight:500}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border:none;border-radius:var(--r2);font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-dark)}
+.btn-ghost{background:transparent;border:1px solid var(--gray5);color:var(--gray2)}
+.btn-ghost:hover{border-color:var(--gray3);background:var(--gray7)}
+.btn-red{background:var(--red-light);color:var(--red);border:1px solid #fca5a5}
+.btn-red:hover{background:#fca5a5}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#046c4e}
+.btn-block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 
 .hidden{display:none!important}
+.screen{animation:up .2s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-.screen{animation:fadeIn .25s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.tabs{display:flex;border-bottom:1px solid var(--gray6);padding:0 24px;gap:0}
+.tab{padding:12px 16px;font-size:14px;font-weight:500;color:var(--gray3);border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;background:none;border-left:none;border-right:none;border-top:none;font-family:'IBM Plex Sans',sans-serif}
+.tab:hover{color:var(--gray1)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
 
-.quiz-q{margin-bottom:1.5rem}
-.quiz-q p{font-size:14px;font-weight:500;margin-bottom:.75rem;line-height:1.5;color:var(--txt)}
-.opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--txt2)}
-.opt:hover{border-color:var(--accent);color:var(--txt);background:rgba(79,142,247,.06)}
-.opt input{width:16px;min-width:16px;height:16px;cursor:pointer;accent-color:var(--accent)}
-.opt.selected{border-color:var(--accent);background:rgba(79,142,247,.08);color:var(--txt)}
-.opt.correct{border-color:var(--accent2);background:rgba(56,217,169,.08);color:var(--accent2)}
-.opt.wrong{border-color:var(--danger);background:rgba(255,107,107,.08);color:var(--danger)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.badge-blue{background:var(--blue-light);color:var(--blue-dark)}
+.badge-green{background:var(--green-light);color:var(--green)}
+.badge-red{background:var(--red-light);color:var(--red)}
+.badge-yellow{background:var(--yellow-light);color:var(--yellow)}
 
-.progress{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.5rem}
-.progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+.alert{padding:11px 14px;border-radius:var(--r2);font-size:13px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.alert i{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-success{background:var(--green-light);color:var(--green);border:1px solid #a7f3d0}
+.alert-error{background:var(--red-light);color:var(--red);border:1px solid #fca5a5}
+.alert-info{background:var(--blue-light);color:var(--blue-dark);border:1px solid #bfdbfe}
+.alert-warn{background:var(--yellow-light);color:var(--yellow);border:1px solid #fcd34d}
 
-.result-box{text-align:center;padding:2rem 1rem}
-.result-badge{font-size:2.5rem;font-weight:600;margin:.5rem 0}
-.result-badge.aprovado{color:var(--accent2)}
-.result-badge.reprovado{color:var(--danger)}
-.result-sub{font-size:14px;color:var(--txt2);margin-bottom:1.5rem}
+.progress-wrap{margin-bottom:20px}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--gray3);margin-bottom:6px}
+.progress-track{height:6px;background:var(--gray6);border-radius:3px}
+.progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .3s}
 
-.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
-.chip-info{background:rgba(79,142,247,.15);color:var(--accent)}
-.chip-success{background:rgba(56,217,169,.15);color:var(--accent2)}
-.chip-warn{background:rgba(255,212,59,.15);color:var(--warn)}
+.q-num{font-size:11px;font-weight:500;color:var(--gray4);text-transform:uppercase;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
+.q-text{font-size:15px;font-weight:500;color:var(--gray1);line-height:1.55;margin-bottom:16px}
 
-.url-input-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:1.25rem}
-.url-input-row input{border-radius:var(--r2) 0 0 var(--r2)!important}
-.url-input-row .btn{margin-top:0;width:auto;min-width:80px;padding:10px 16px;border-radius:0 var(--r2) var(--r2) 0!important;font-size:13px}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--gray5);border-radius:var(--r2);margin-bottom:8px;cursor:pointer;transition:all .15s;background:#fff}
+.opt:hover{border-color:var(--blue);background:var(--blue-light)}
+.opt.selected{border-color:var(--blue);background:var(--blue-light)}
+.opt.correct{border-color:var(--green);background:var(--green-light)!important}
+.opt.wrong{border-color:var(--red);background:var(--red-light)!important}
+.opt-key{width:28px;height:28px;border-radius:6px;background:var(--gray6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--gray3);flex-shrink:0;transition:all .15s;font-family:'IBM Plex Mono',monospace}
+.opt.selected .opt-key{background:var(--blue);color:#fff}
+.opt.correct .opt-key{background:var(--green);color:#fff}
+.opt.wrong .opt-key{background:var(--red);color:#fff}
+.opt-text{font-size:14px;color:var(--gray2)}
 
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.result-hero{text-align:center;padding:32px 24px}
+.result-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.result-ring.ok{background:var(--green-light);color:var(--green);border:3px solid #6ee7b7}
+.result-ring.fail{background:var(--red-light);color:var(--red);border:3px solid #fca5a5}
+.result-label{font-size:22px;font-weight:600;margin-bottom:6px}
+.result-label.ok{color:var(--green)}
+.result-label.fail{color:var(--red)}
+.result-sub{font-size:14px;color:var(--gray3);margin-bottom:24px}
 
-.alert{padding:10px 14px;border-radius:var(--r2);font-size:13px;margin-top:8px}
-.alert-success{background:rgba(56,217,169,.12);border:1px solid rgba(56,217,169,.3);color:var(--accent2)}
-.alert-error{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);color:var(--danger)}
+.q-block{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--gray6)}
+.q-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 
-.sep{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+.login-logo{text-align:center;padding:32px 24px 0}
+.login-logo .icon-big{width:56px;height:56px;background:var(--blue);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.login-logo .icon-big i{font-size:28px;color:#fff}
+.login-logo h2{font-size:20px;font-weight:600;margin-bottom:4px}
+.login-logo p{font-size:13px;color:var(--gray3)}
 
-.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
-.nav-user{font-size:13px;color:var(--txt2)}
-.nav-user strong{color:var(--txt)}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--gray4);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gray6)}
 
-.empty{text-align:center;padding:2rem;color:var(--txt3);font-size:13px}
+.url-setup{background:var(--gray7);border:1px solid var(--gray6);border-radius:var(--r2);padding:14px;margin-bottom:16px}
+.url-setup p{font-size:12px;color:var(--gray3);line-height:1.6;margin-bottom:10px}
+.url-setup input{background:#fff}
+.url-row{display:flex;gap:8px}
+.url-row input{border-radius:var(--r2) 0 0 var(--r2)!important}
+.url-row .btn{border-radius:0 var(--r2) var(--r2) 0!important;padding-left:14px;padding-right:14px}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--gray7);border-radius:var(--r2);padding:14px;text-align:center}
+.stat-num{font-size:26px;font-weight:600;color:var(--gray1);font-family:'IBM Plex Mono',monospace}
+.stat-lbl{font-size:11px;color:var(--gray3);margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--gray6)}
+
+.fix-401{background:#fff8ed;border:1px solid #fcd34d;border-radius:var(--r2);padding:14px;margin-bottom:16px}
+.fix-401 p{font-size:12px;color:#92400e;line-height:1.6}
+.fix-401 strong{color:#78350f}
+.fix-401 ol{padding-left:16px;margin-top:6px}
+.fix-401 li{font-size:12px;color:#92400e;line-height:1.8}
 </style>
 
-<div class="wrap">
-<div class="logo">
-  <h1>DDS <span>Sistema</span></h1>
-  <p>Diálogo Diário de Segurança</p>
+<div id="app">
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="dot"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+    <span>DDS Sistema</span>
+  </div>
+  <div class="topbar-right" id="top-right"></div>
 </div>
-
-<div id="scr-url" class="screen">
-  <div class="card">
-    <div class="card-title"><i class="ti ti-link" aria-hidden="true"></i> Configurar URL do Script</div>
-    <p style="font-size:13px;color:var(--txt2);margin-bottom:1rem;line-height:1.6">Cole a URL do seu Google Apps Script (doGet/doPost) para conectar o sistema.</p>
-    <label>URL do Apps Script</label>
-    <div class="url-input-row">
-      <input id="inp-url" placeholder="https://script.google.com/macros/s/..." />
-      <button class="btn btn-primary" onclick="salvarURL()" style="margin-top:0;width:auto;min-width:90px;padding:10px 16px;font-size:13px;border-radius:0 8px 8px 0">Salvar</button>
-    </div>
-    <div id="url-msg"></div>
-  </div>
+<div class="main" id="main-area">
 </div>
-
-<div id="scr-login" class="screen hidden">
-  <div class="card">
-    <div class="card-title"><i class="ti ti-lock" aria-hidden="true"></i> Acesso ao Sistema</div>
-    <label>CPF ou usuário</label>
-    <input id="inp-user" placeholder="Digite seu CPF ou 'admin'" />
-    <label>Senha</label>
-    <input id="inp-pass" type="password" placeholder="Digite sua senha" />
-    <div id="login-msg"></div>
-    <button class="btn btn-primary" onclick="doLogin()">
-      <i class="ti ti-login" aria-hidden="true"></i> Entrar
-    </button>
-    <button class="btn btn-secondary" onclick="goURL()" style="margin-top:8px">
-      <i class="ti ti-settings" aria-hidden="true"></i> Alterar URL do script
-    </button>
-  </div>
-</div>
-
-<div id="scr-admin" class="screen hidden">
-  <div class="nav">
-    <div>
-      <span class="chip chip-info">Admin</span>
-    </div>
-    <button class="btn btn-danger" onclick="doLogout()" style="width:auto;padding:8px 16px;margin-top:0;font-size:13px">
-      <i class="ti ti-logout" aria-hidden="true"></i> Sair
-    </button>
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="setTab('tab-usuario')">Usuários</button>
-    <button class="tab" onclick="setTab('tab-pergunta')">Perguntas</button>
-  </div>
-  <div id="tab-usuario" class="card">
-    <div class="card-title"><i class="ti ti-user-plus" aria-hidden="true"></i> Cadastrar Usuário</div>
-    <label>Nome completo</label>
-    <input id="u-nome" placeholder="Nome do funcionário" />
-    <div class="row2">
-      <div>
-        <label>CPF (também será a senha)</label>
-        <input id="u-cpf" placeholder="000.000.000-00" />
-      </div>
-      <div>
-        <label>Setor</label>
-        <input id="u-setor" placeholder="Ex: Produção" />
-      </div>
-    </div>
-    <div id="user-msg"></div>
-    <button class="btn btn-primary" onclick="cadastrarUsuario()">
-      <i class="ti ti-check" aria-hidden="true"></i> Salvar Usuário
-    </button>
-  </div>
-  <div id="tab-pergunta" class="card hidden" style="margin-top:0">
-    <div class="card-title"><i class="ti ti-help" aria-hidden="true"></i> Cadastrar Pergunta</div>
-    <div class="row2">
-      <div>
-        <label>Setor</label>
-        <input id="p-setor" placeholder="Setor alvo" />
-      </div>
-      <div>
-        <label>DDS (tema)</label>
-        <input id="p-dds" placeholder="Ex: EPI" />
-      </div>
-    </div>
-    <label>Pergunta</label>
-    <input id="p-texto" placeholder="Digite a pergunta aqui" />
-    <div class="row2">
-      <div><label>Alternativa A</label><input id="p-a" placeholder="..." /></div>
-      <div><label>Alternativa B</label><input id="p-b" placeholder="..." /></div>
-    </div>
-    <div class="row2">
-      <div><label>Alternativa C</label><input id="p-c" placeholder="..." /></div>
-      <div><label>Alternativa D</label><input id="p-d" placeholder="..." /></div>
-    </div>
-    <label>Resposta correta</label>
-    <select id="p-correta">
-      <option value="A">A</option>
-      <option value="B">B</option>
-      <option value="C">C</option>
-      <option value="D">D</option>
-    </select>
-    <div id="perg-msg"></div>
-    <button class="btn btn-primary" onclick="cadastrarPergunta()">
-      <i class="ti ti-check" aria-hidden="true"></i> Salvar Pergunta
-    </button>
-  </div>
-</div>
-
-<div id="scr-func" class="screen hidden">
-  <div class="nav">
-    <div id="nav-info" class="nav-user"></div>
-    <button class="btn btn-danger" onclick="doLogout()" style="width:auto;padding:8px 16px;margin-top:0;font-size:13px">
-      <i class="ti ti-logout" aria-hidden="true"></i> Sair
-    </button>
-  </div>
-  <div class="card">
-    <div class="progress"><div class="progress-bar" id="prog" style="width:0%"></div></div>
-    <div id="quiz-area"></div>
-    <div id="result-area" class="hidden"></div>
-    <div id="quiz-footer">
-      <button class="btn btn-success" onclick="finalizar()">
-        <i class="ti ti-send" aria-hidden="true"></i> Finalizar Quiz
-      </button>
-    </div>
-  </div>
-</div>
-
 </div>
 
 <script>
-let SCRIPT_URL = '';
-let perguntas = [];
-let usuarioLogado = {};
-let respostas = {};
+const ADMIN_USER='admin';
+const ADMIN_PASS='admin123';
+let URL_SCRIPT='';
+let usuarioLogado=null;
+let perguntas=[];
+let respostas={};
+let qIdx=0;
+let finalizado=false;
 
-function show(id){
-  ['scr-url','scr-login','scr-admin','scr-func'].forEach(s=>{
-    document.getElementById(s).classList.toggle('hidden', s!==id);
-  });
+function getMain(){return document.getElementById('main-area')}
+function getTop(){return document.getElementById('top-right')}
+
+function renderTopbar(user){
+  const top=getTop();
+  if(!user){top.innerHTML='';return;}
+  const isAdmin=user==='admin';
+  top.innerHTML=`<div class="topbar-user">
+    <i class="ti ti-user-circle" style="font-size:18px" aria-hidden="true"></i>
+    <strong>${isAdmin?'Administrador':user.nome}</strong>
+    ${!isAdmin?`<span class="badge badge-blue">${user.setor||''}</span>`:''}
+  </div>
+  <button class="btn-topbar" onclick="doLogout()"><i class="ti ti-logout" aria-hidden="true"></i> Sair</button>`;
 }
 
-function goURL(){show('scr-url')}
+function showLogin(){
+  renderTopbar(null);
+  getMain().innerHTML=`
+  <div class="center-wrap screen">
+    <div class="card">
+      <div class="login-logo">
+        <div class="icon-big"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+        <h2>Diálogo Diário de Segurança</h2>
+        <p>Acesse com seu CPF e senha</p>
+      </div>
+      <div class="card-body">
+        <div class="url-setup">
+          <p><i class="ti ti-api" style="vertical-align:-2px;margin-right:4px" aria-hidden="true"></i><strong>URL do Google Apps Script</strong> — cole abaixo e clique em Salvar</p>
+          <div class="url-row">
+            <input id="inp-url" placeholder="https://script.google.com/macros/s/..." value="${URL_SCRIPT}" style="flex:1;border-radius:6px 0 0 6px!important"/>
+            <button class="btn btn-primary" onclick="salvarURL()" style="border-radius:0 6px 6px 0;padding:10px 14px">Salvar</button>
+          </div>
+          <div id="url-msg" style="margin-top:8px"></div>
+        </div>
+
+        <div id="fix-box" class="${URL_SCRIPT?'hidden':''}">
+          <div class="fix-401">
+            <p><strong>⚠ Se aparecer erro 401:</strong></p>
+            <ol>
+              <li>Abra o Apps Script → <strong>Implantações</strong> → Gerenciar implantações</li>
+              <li>Editar → Acesso: <strong>"Qualquer pessoa"</strong></li>
+              <li>Copie a nova URL e cole acima</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>CPF ou usuário</label>
+          <input id="inp-user" placeholder="Digite seu CPF" />
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input id="inp-pass" type="password" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <div id="login-msg" style="margin-bottom:12px"></div>
+        <button class="btn btn-primary btn-block" onclick="doLogin()">
+          <i class="ti ti-login" aria-hidden="true"></i> Entrar
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
 
 function salvarURL(){
-  const u = document.getElementById('inp-url').value.trim();
-  const msg = document.getElementById('url-msg');
-  if(!u || !u.startsWith('https://')){
-    msg.innerHTML='<div class="alert alert-error">URL inválida. Deve começar com https://</div>';
+  const v=document.getElementById('inp-url').value.trim();
+  const msg=document.getElementById('url-msg');
+  if(!v.startsWith('https://')){
+    msg.innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>URL inválida.</div>';
     return;
   }
-  SCRIPT_URL = u;
-  try{localStorage.setItem('dds_url',u);}catch(e){}
-  msg.innerHTML='<div class="alert alert-success">URL salva! Redirecionando...</div>';
-  setTimeout(()=>show('scr-login'),1000);
+  URL_SCRIPT=v;
+  try{localStorage.setItem('dds_url',v);}catch(e){}
+  msg.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>URL salva!</div>';
+  const fb=document.getElementById('fix-box');
+  if(fb) fb.classList.add('hidden');
+  setTimeout(()=>{if(document.getElementById('url-msg'))document.getElementById('url-msg').innerHTML='';},2500);
 }
 
-function doLogin(){
-  const u = document.getElementById('inp-user').value.trim();
-  const p = document.getElementById('inp-pass').value.trim();
-  const msg = document.getElementById('login-msg');
-  if(!SCRIPT_URL){show('scr-url');return;}
-  if(u==='admin'&&p==='admin123'){
-    show('scr-admin');
+async function doLogin(){
+  const u=document.getElementById('inp-user').value.trim();
+  const p=document.getElementById('inp-pass').value.trim();
+  const msg=document.getElementById('login-msg');
+  if(!URL_SCRIPT){msg.innerHTML='<div class="alert alert-warn"><i class="ti ti-alert-triangle"></i>Salve a URL do script antes de entrar.</div>';return;}
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    usuarioLogado='admin';
+    renderTopbar('admin');
+    showAdmin();
     return;
   }
-  msg.innerHTML='<div class="alert alert-success" style="opacity:.6">Verificando...</div>';
-  fetch(SCRIPT_URL+'?usuarios=1')
-    .then(r=>r.json())
-    .then(data=>{
-      const found = data.find(x=>String(x.cpf)===String(u)&&String(x.senha)===String(p));
-      if(found){
-        usuarioLogado=found;
-        document.getElementById('nav-info').innerHTML=`<strong>${found.nome}</strong> &nbsp;<span class="chip chip-info">${found.setor}</span>`;
-        show('scr-func');
-        carregarQuiz();
-      }else{
-        msg.innerHTML='<div class="alert alert-error">CPF ou senha inválidos.</div>';
-      }
-    })
-    .catch(()=>{
-      msg.innerHTML='<div class="alert alert-error">Erro ao conectar. Verifique a URL do script.</div>';
-    });
+  msg.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Verificando...</div>';
+  try{
+    const r=await fetch(URL_SCRIPT+'?usuarios=1');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    const found=data.find(x=>String(x.cpf).replace(/\D/g,'')===String(u).replace(/\D/g,'')&&String(x.senha).replace(/\D/g,'')===String(p).replace(/\D/g,''));
+    if(found){
+      usuarioLogado=found;
+      renderTopbar(found);
+      showQuiz();
+    }else{
+      msg.innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>CPF ou senha inválidos.</div>';
+    }
+  }catch(e){
+    msg.innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Erro de conexão: ${e.message}. Verifique a URL e as permissões do script.</div>`;
+  }
 }
 
 function doLogout(){
-  usuarioLogado={};perguntas=[];respostas={};
-  document.getElementById('inp-user').value='';
-  document.getElementById('inp-pass').value='';
-  show('scr-login');
+  usuarioLogado=null;perguntas=[];respostas={};qIdx=0;finalizado=false;
+  showLogin();
 }
 
-function setTab(id){
-  ['tab-usuario','tab-pergunta'].forEach(t=>{
-    const el=document.getElementById(t);
-    el.classList.toggle('hidden',t!==id);
+function showAdmin(){
+  getMain().innerHTML=`
+  <div class="wide-wrap screen">
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" id="tab-u" onclick="adminTab('u')">
+          <i class="ti ti-users" aria-hidden="true"></i> Usuários
+        </button>
+        <button class="tab" id="tab-p" onclick="adminTab('p')">
+          <i class="ti ti-help-circle" aria-hidden="true"></i> Perguntas
+        </button>
+      </div>
+      <div id="admin-body" class="card-body"></div>
+    </div>
+  </div>`;
+  adminTab('u');
+}
+
+function adminTab(t){
+  ['u','p'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
   });
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('active',['tab-usuario','tab-pergunta'][i]===id);
-  });
+  const body=document.getElementById('admin-body');
+  if(t==='u'){
+    body.innerHTML=`
+      <h3 style="font-size:14px;font-weight:600;color:var(--gray2);margin-bottom:16px">Cadastrar Funcionário</h3>
+      <div class="field"><label>Nome completo</label><input id="u-nome" placeholder="Ex: João da Silva"/></div>
+      <div class="row2">
+        <div class="field"><label>CPF <span style="color:var(--gray4);font-size:11px">(será a senha)</span></label><input id="u-cpf" placeholder="000.000.000-00"/></div>
+        <div class="field"><label>Setor</label><input id="u-setor" placeholder="Ex: Produção"/></div>
+      </div>
+      <div id="u-msg" style="margin-bottom:12px"></div>
+      <button class="btn btn-primary" onclick="cadastrarUsuario()"><i class="ti ti-user-plus" aria-hidden="true"></i> Salvar Usuário</button>`;
+  }else{
+    body.innerHTML=`
+      <h3 style="font-size:14px;font-weight:600;color:var(--gray2);margin-bottom:16px">Cadastrar Pergunta</h3>
+      <div class="row2">
+        <div class="field"><label>Setor alvo</label><input id="p-setor" placeholder="Deixe vazio = todos"/></div>
+        <div class="field"><label>Tema DDS</label><input id="p-dds" placeholder="Ex: Uso de EPI"/></div>
+      </div>
+      <div class="field"><label>Pergunta</label><input id="p-text" placeholder="Digite a pergunta completa"/></div>
+      <div class="row2">
+        <div class="field"><label>Alternativa A</label><input id="p-a" placeholder="Opção A"/></div>
+        <div class="field"><label>Alternativa B</label><input id="p-b" placeholder="Opção B"/></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Alternativa C</label><input id="p-c" placeholder="Opção C"/></div>
+        <div class="field"><label>Alternativa D</label><input id="p-d" placeholder="Opção D"/></div>
+      </div>
+      <div class="field"><label>Resposta correta</label>
+        <select id="p-correta"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+      </div>
+      <div id="p-msg" style="margin-bottom:12px"></div>
+      <button class="btn btn-primary" onclick="cadastrarPergunta()"><i class="ti ti-check" aria-hidden="true"></i> Salvar Pergunta</button>`;
+  }
 }
 
-function showMsg(id,tipo,txt){
-  document.getElementById(id).innerHTML=`<div class="alert alert-${tipo}">${txt}</div>`;
-  setTimeout(()=>{const el=document.getElementById(id);if(el)el.innerHTML='';},3000);
-}
-
-function cadastrarUsuario(){
-  const nome=document.getElementById('u-nome').value.trim();
-  const cpf=document.getElementById('u-cpf').value.trim();
-  const setor=document.getElementById('u-setor').value.trim();
-  if(!nome||!cpf||!setor){showMsg('user-msg','error','Preencha todos os campos.');return;}
-  fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:'usuario',nome,cpf,setor})})
-    .then(()=>{
-      showMsg('user-msg','success','Usuário salvo com sucesso!');
-      ['u-nome','u-cpf','u-setor'].forEach(id=>document.getElementById(id).value='');
-    })
-    .catch(()=>showMsg('user-msg','error','Erro ao salvar.'));
-}
-
-function cadastrarPergunta(){
-  const setor=document.getElementById('p-setor').value.trim();
-  const dds=document.getElementById('p-dds').value.trim();
-  const pergunta=document.getElementById('p-texto').value.trim();
-  const a=document.getElementById('p-a').value.trim();
-  const b=document.getElementById('p-b').value.trim();
-  const c=document.getElementById('p-c').value.trim();
-  const d=document.getElementById('p-d').value.trim();
-  const correta=document.getElementById('p-correta').value;
-  if(!pergunta||!a||!b||!c||!d){showMsg('perg-msg','error','Preencha todos os campos.');return;}
-  fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:'pergunta',setor,dds,pergunta,a,b,c,d,correta})})
-    .then(()=>{
-      showMsg('perg-msg','success','Pergunta salva!');
-      ['p-setor','p-dds','p-texto','p-a','p-b','p-c','p-d'].forEach(id=>document.getElementById(id).value='');
-    })
-    .catch(()=>showMsg('perg-msg','error','Erro ao salvar.'));
-}
-
-function carregarQuiz(){
-  const area=document.getElementById('quiz-area');
-  area.innerHTML='<div class="empty"><i class="ti ti-loader" style="font-size:24px"></i><br>Carregando perguntas...</div>';
-  document.getElementById('result-area').classList.add('hidden');
-  document.getElementById('quiz-footer').classList.remove('hidden');
-  respostas={};
-  fetch(SCRIPT_URL)
-    .then(r=>r.json())
-    .then(data=>{
-      let pool = data;
-      if(usuarioLogado.setor){
-        const filt=data.filter(q=>!q.setor||q.setor.toLowerCase()===usuarioLogado.setor.toLowerCase());
-        if(filt.length>=5) pool=filt;
-      }
-      perguntas=pool.sort(()=>0.5-Math.random()).slice(0,10);
-      renderQuiz();
-    })
-    .catch(()=>{area.innerHTML='<div class="empty" style="color:var(--danger)">Erro ao carregar perguntas.</div>';});
-}
-
-function renderQuiz(){
-  const area=document.getElementById('quiz-area');
-  if(!perguntas.length){area.innerHTML='<div class="empty">Nenhuma pergunta encontrada.</div>';return;}
-  let html='';
-  perguntas.forEach((q,i)=>{
-    const opts=['a','b','c','d'];
-    const labels=['A','B','C','D'];
-    html+=`<div class="quiz-q" id="q${i}">
-      <p><span style="color:var(--txt2);font-size:12px;font-family:\'JetBrains Mono\',monospace">${i+1}/${perguntas.length}</span><br>${q.pergunta||q.dds}</p>`;
-    opts.forEach((o,j)=>{
-      if(q[o]) html+=`<div class="opt" id="opt-${i}-${j}" onclick="selecionarOpt(${i},${j},'${labels[j]}')">
-        <input type="radio" name="q${i}" value="${labels[j]}" id="r${i}${j}">
-        <label for="r${i}${j}" style="cursor:pointer;pointer-events:none"><strong>${labels[j]}.</strong> ${q[o]}</label>
-      </div>`;
+async function postScript(payload,msgId){
+  const msg=document.getElementById(msgId);
+  msg.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Salvando...</div>';
+  try{
+    await fetch(URL_SCRIPT,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(payload)
     });
-    html+='</div>';
+    msg.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Salvo com sucesso!</div>';
+    setTimeout(()=>{if(document.getElementById(msgId))document.getElementById(msgId).innerHTML='';},3000);
+    return true;
+  }catch(e){
+    msg.innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Erro: ${e.message}</div>`;
+    return false;
+  }
+}
+
+function v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+async function cadastrarUsuario(){
+  const nome=v('u-nome'),cpf=v('u-cpf'),setor=v('u-setor');
+  if(!nome||!cpf||!setor){
+    document.getElementById('u-msg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha todos os campos.</div>';
+    return;
+  }
+  const ok=await postScript({tipo:'usuario',nome,cpf,setor},'u-msg');
+  if(ok){['u-nome','u-cpf','u-setor'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});}
+}
+
+async function cadastrarPergunta(){
+  const setor=v('p-setor'),dds=v('p-dds'),pergunta=v('p-text'),a=v('p-a'),b=v('p-b'),c=v('p-c'),d=v('p-d'),correta=v('p-correta');
+  if(!pergunta||!a||!b){
+    document.getElementById('p-msg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha ao menos a pergunta e as opções A e B.</div>';
+    return;
+  }
+  const ok=await postScript({tipo:'pergunta',setor,dds,pergunta,a,b,c,d,correta},'p-msg');
+  if(ok){['p-setor','p-dds','p-text','p-a','p-b','p-c','p-d'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});}
+}
+
+async function showQuiz(){
+  getMain().innerHTML=`<div class="center-wrap screen"><div class="card"><div class="card-body"><div class="alert alert-info"><i class="ti ti-loader"></i>Carregando perguntas...</div></div></div></div>`;
+  try{
+    const r=await fetch(URL_SCRIPT);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    let pool=data;
+    if(usuarioLogado&&usuarioLogado.setor){
+      const filt=data.filter(q=>!q.setor||q.setor.toLowerCase()===usuarioLogado.setor.toLowerCase());
+      if(filt.length>=5) pool=filt;
+    }
+    perguntas=pool.sort(()=>0.5-Math.random()).slice(0,10);
+    respostas={};qIdx=0;finalizado=false;
+    renderQuizPage();
+  }catch(e){
+    getMain().innerHTML=`<div class="center-wrap screen"><div class="card"><div class="card-body">
+      <div class="alert alert-error"><i class="ti ti-alert-circle"></i>Erro ao carregar perguntas: ${e.message}</div>
+      <button class="btn btn-ghost" onclick="showQuiz()" style="margin-top:12px"><i class="ti ti-refresh"></i> Tentar novamente</button>
+    </div></div></div>`;
+  }
+}
+
+function renderQuizPage(){
+  const total=perguntas.length;
+  const resp=Object.keys(respostas).length;
+  const pct=total?Math.round((resp/total)*100):0;
+  if(finalizado){renderResultado();return;}
+  const q=perguntas[qIdx];
+  if(!q) return;
+  const opts=['a','b','c','d'];
+  const labels=['A','B','C','D'];
+  let optsHtml='';
+  opts.forEach((o,j)=>{
+    if(!q[o]) return;
+    const sel=respostas[qIdx]===labels[j];
+    optsHtml+=`<div class="opt${sel?' selected':''}" onclick="selecionarOpt(${qIdx},${j},'${labels[j]}')">
+      <div class="opt-key">${labels[j]}</div>
+      <div class="opt-text">${q[o]}</div>
+    </div>`;
   });
-  area.innerHTML=html;
-  updateProgress();
+  getMain().innerHTML=`
+  <div class="center-wrap screen">
+    <div class="card">
+      <div class="card-body">
+        <div class="progress-wrap">
+          <div class="progress-info">
+            <span>${resp} de ${total} respondidas</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="q-num">Questão ${qIdx+1} de ${total}</div>
+        <div class="q-text">${q.pergunta||q.dds}</div>
+        ${optsHtml}
+        <div class="q-nav">
+          <button class="btn btn-ghost" onclick="qIdx=Math.max(0,qIdx-1);renderQuizPage()" ${qIdx===0?'disabled':''}>
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Anterior
+          </button>
+          ${qIdx<total-1
+            ?`<button class="btn btn-primary" onclick="qIdx++;renderQuizPage()">Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i></button>`
+            :`<button class="btn btn-green" onclick="confirmarFinalizar()">Finalizar <i class="ti ti-send" aria-hidden="true"></i></button>`
+          }
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:12px">
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+        ${perguntas.map((_,i)=>`<div onclick="qIdx=${i};renderQuizPage()" style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid ${i===qIdx?'var(--blue)':respostas[i]?'var(--green)':'var(--gray5)'};background:${i===qIdx?'var(--blue-light)':respostas[i]?'var(--green-light)':'var(--white)'};color:${i===qIdx?'var(--blue-dark)':respostas[i]?'var(--green)':'var(--gray3)'};">${i+1}</div>`).join('')}
+      </div>
+    </div>
+  </div>`;
 }
 
 function selecionarOpt(qi,oi,val){
   respostas[qi]=val;
-  for(let j=0;j<4;j++){
-    const el=document.getElementById(`opt-${qi}-${j}`);
-    if(el) el.classList.remove('selected');
-  }
-  const sel=document.getElementById(`opt-${qi}-${oi}`);
-  if(sel) sel.classList.add('selected');
-  const radio=document.getElementById(`r${qi}${oi}`);
-  if(radio) radio.checked=true;
-  updateProgress();
+  renderQuizPage();
 }
 
-function updateProgress(){
+function confirmarFinalizar(){
   const resp=Object.keys(respostas).length;
-  const pct=perguntas.length?Math.round((resp/perguntas.length)*100):0;
-  document.getElementById('prog').style.width=pct+'%';
+  const total=perguntas.length;
+  if(resp<total){
+    const missing=total-resp;
+    if(!confirm(`Ainda há ${missing} pergunta(s) sem resposta. Deseja finalizar mesmo assim?`)) return;
+  }
+  finalizarQuiz();
 }
 
-function finalizar(){
+async function finalizarQuiz(){
   let acertos=0;
   perguntas.forEach((q,i)=>{
-    const r=respostas[i];
-    const correta=(q.correta||'').toUpperCase();
-    if(r===correta) acertos++;
-    const opts=['a','b','c','d'];
-    const labels=['A','B','C','D'];
-    opts.forEach((o,j)=>{
-      const el=document.getElementById(`opt-${i}-${j}`);
-      if(!el) return;
-      if(labels[j]===correta) el.classList.add('correct');
-      else if(respostas[i]===labels[j]) el.classList.add('wrong');
-    });
+    if(respostas[i]===(q.correta||'').toUpperCase()) acertos++;
   });
-  const total=perguntas.length||10;
-  const pct=Math.round((acertos/total)*100);
+  finalizado=true;
   const resultado=acertos>=7?'APROVADO':'REPROVADO';
-  const cl=resultado==='APROVADO'?'aprovado':'reprovado';
-  document.getElementById('result-area').innerHTML=`
-    <hr class="sep">
-    <div class="result-box">
-      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Resultado final</div>
-      <div class="result-badge ${cl}">${resultado}</div>
-      <div class="result-sub">${acertos} de ${total} corretas &nbsp;·&nbsp; ${pct}%</div>
-      <button class="btn btn-secondary" onclick="carregarQuiz()" style="max-width:240px;margin:0 auto">
-        <i class="ti ti-refresh" aria-hidden="true"></i> Refazer Quiz
-      </button>
-    </div>`;
-  document.getElementById('result-area').classList.remove('hidden');
-  document.getElementById('quiz-footer').classList.add('hidden');
-  if(usuarioLogado.cpf){
-    fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({
-      tipo:'resultado',cpf:usuarioLogado.cpf,
-      nome:usuarioLogado.nome,setor:usuarioLogado.setor,
-      acertos,resultado
-    })}).catch(()=>{});
+  if(usuarioLogado&&usuarioLogado.cpf){
+    try{
+      await fetch(URL_SCRIPT,{
+        method:'POST',mode:'no-cors',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({tipo:'resultado',cpf:usuarioLogado.cpf,nome:usuarioLogado.nome,setor:usuarioLogado.setor,acertos,resultado})
+      });
+    }catch(e){}
   }
+  renderResultado(acertos,resultado);
+}
+
+function renderResultado(acertos,resultado){
+  const total=perguntas.length;
+  let ac=acertos;
+  let res=resultado;
+  if(ac===undefined){
+    ac=0;
+    perguntas.forEach((q,i)=>{if(respostas[i]===(q.correta||'').toUpperCase())ac++;});
+    res=ac>=7?'APROVADO':'REPROVADO';
+  }
+  const pct=Math.round((ac/total)*100);
+  const ok=res==='APROVADO';
+  getMain().innerHTML=`
+  <div class="center-wrap screen">
+    <div class="card">
+      <div class="result-hero">
+        <div class="result-ring ${ok?'ok':'fail'}">${pct}%</div>
+        <div class="result-label ${ok?'ok':'fail'}">${res}</div>
+        <div class="result-sub">${ac} acertos em ${total} questões</div>
+        <div class="stat-row" style="max-width:320px;margin:0 auto 24px">
+          <div class="stat"><div class="stat-num" style="color:var(--green)">${ac}</div><div class="stat-lbl">Acertos</div></div>
+          <div class="stat"><div class="stat-num" style="color:var(--red)">${total-ac}</div><div class="stat-lbl">Erros</div></div>
+          <div class="stat"><div class="stat-num">${pct}%</div><div class="stat-lbl">Aproveit.</div></div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showGabarito()"><i class="ti ti-list-check" aria-hidden="true"></i> Ver gabarito</button>
+          <button class="btn btn-ghost" onclick="showQuiz()"><i class="ti ti-refresh" aria-hidden="true"></i> Refazer</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showGabarito(){
+  const labels=['A','B','C','D'];
+  const opts=['a','b','c','d'];
+  let html='';
+  perguntas.forEach((q,i)=>{
+    const correta=(q.correta||'').toUpperCase();
+    const resp=respostas[i]||null;
+    const acertou=resp===correta;
+    html+=`<div class="q-block">
+      <div class="q-num">Questão ${i+1} · ${acertou?`<span style="color:var(--green)">Correta</span>`:`<span style="color:var(--red)">Errada</span>`}</div>
+      <div class="q-text" style="font-size:14px">${q.pergunta||q.dds}</div>`;
+    opts.forEach((o,j)=>{
+      if(!q[o]) return;
+      const isCorreta=labels[j]===correta;
+      const isResp=labels[j]===resp;
+      let cls='opt';
+      if(isCorreta) cls+=' correct';
+      else if(isResp&&!isCorreta) cls+=' wrong';
+      html+=`<div class="${cls}" style="cursor:default">
+        <div class="opt-key">${labels[j]}</div>
+        <div class="opt-text">${q[o]}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  getMain().innerHTML=`
+  <div class="center-wrap screen">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="ti ti-list-check" aria-hidden="true"></i> Gabarito completo</div>
+        <button class="btn btn-ghost" onclick="renderResultado()" style="padding:6px 12px;font-size:13px">
+          <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
+        </button>
+      </div>
+      <div class="card-body">${html}</div>
+    </div>
+  </div>`;
 }
 
 (function init(){
-  let saved='';
-  try{saved=localStorage.getItem('dds_url')||'';}catch(e){}
-  if(saved){
-    SCRIPT_URL=saved;
-    document.getElementById('inp-url').value=saved;
-    show('scr-login');
-  }else{
-    show('scr-url');
-  }
+  try{const s=localStorage.getItem('dds_url');if(s)URL_SCRIPT=s;}catch(e){}
+  showLogin();
 })();
 </script>
