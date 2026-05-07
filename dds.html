@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+16+33<!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
@@ -8,7 +8,6 @@ body{font-family:Arial;background:#f4f6f9;margin:0;padding:20px}
 .container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
 input,select,button{width:100%;padding:10px;margin:5px 0}
 button{background:#007bff;color:#fff;border:none;cursor:pointer}
-button:hover{background:#0056b3}
 .hidden{display:none}
 </style>
 </head>
@@ -32,7 +31,8 @@ button:hover{background:#0056b3}
 <input id="setor" placeholder="Setor">
 <button onclick="cadastrarUsuario()">Salvar Usuário</button>
 
-<h3>Cadastrar Pergunta</h3>
+<h3>Cadastrar DDS (Quiz)</h3>
+<input id="nomeDDS" placeholder="Nome do DDS (Ex: Maio Amarelo)">
 <input id="pergunta" placeholder="Pergunta">
 <input id="a" placeholder="Alternativa A">
 <input id="b" placeholder="Alternativa B">
@@ -50,7 +50,7 @@ button:hover{background:#0056b3}
 </div>
 
 <div id="func" class="hidden">
-<h2>Funcionário</h2>
+<h2 id="tituloDDS"></h2>
 <div id="quiz"></div>
 <button onclick="finalizar()">Finalizar</button>
 <h3 id="resultado"></h3>
@@ -61,16 +61,17 @@ button:hover{background:#0056b3}
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycbydNjX4Vatru-SXzRuEEO8ESNPguCpnswGy3VzJWbMPqGEcoFAc0ExTkn9EUQftGsqk/exec";
+
 let perguntas = [];
 let usuarioLogado = {};
 
 function login(){
-let u = user.value;
-let p = pass.value;
+let u = document.getElementById('user').value;
+let p = document.getElementById('pass').value;
 
 if(u==='admin' && p==='admin123'){
-loginDiv(false);
-admin.classList.remove('hidden');
+document.getElementById('login').classList.add('hidden');
+document.getElementById('admin').classList.remove('hidden');
 return;
 }
 
@@ -78,51 +79,80 @@ fetch(URL+"?usuarios=1")
 .then(r=>r.json())
 .then(data=>{
 let user = data.find(x=>x.cpf==u && x.senha==p);
+
 if(user){
 usuarioLogado = user;
-loginDiv(false);
-func.classList.remove('hidden');
+document.getElementById('login').classList.add('hidden');
+document.getElementById('func').classList.remove('hidden');
 carregarQuiz();
-}else alert('Login inválido');
+}else{
+alert('Login inválido');
+}
 });
 }
 
-function loginDiv(show){
-  const el = document.getElementById('login');
-  el.classList.toggle('hidden', !show);
-}
-
-function logout(){location.reload();}
+function logout(){ location.reload(); }
 
 function cadastrarUsuario(){
 fetch(URL,{
 method:'POST',
-body: JSON.stringify({tipo:'usuario',nome:nome.value,cpf:cpf.value,setor:setor.value})
+mode:'no-cors',
+body: JSON.stringify({
+tipo:'usuario',
+nome:document.getElementById('nome').value,
+cpf:document.getElementById('cpf').value,
+setor:document.getElementById('setor').value
+})
 });
 alert('Usuário salvo');
 }
 
 function cadastrarPergunta(){
+let setor = document.getElementById('setor').value;
+let nomeDDS = document.getElementById('nomeDDS').value;
+
+if(!setor || !nomeDDS){
+alert('Preencha setor e nome do DDS!');
+return;
+}
+
 fetch(URL,{
 method:'POST',
+mode:'no-cors',
 body: JSON.stringify({
 tipo:'pergunta',
-pergunta:pergunta.value,
-a:a.value,
-b:b.value,
-c:c.value,
-d:d.value,
-correta:correta.value
+setor:setor,
+dds:nomeDDS,
+pergunta:document.getElementById('pergunta').value,
+a:document.getElementById('a').value,
+b:document.getElementById('b').value,
+c:document.getElementById('c').value,
+d:document.getElementById('d').value,
+correta:document.getElementById('correta').value
 })
 });
-alert('Pergunta salva');
+
+alert('Pergunta salva no DDS: ' + nomeDDS);
 }
 
 function carregarQuiz(){
 fetch(URL)
 .then(r=>r.json())
 .then(data=>{
-perguntas = data.sort(()=>0.5-Math.random()).slice(0,10);
+
+let filtradas = data.filter(q => q.setor == usuarioLogado.setor);
+
+if(filtradas.length === 0){
+document.getElementById('quiz').innerHTML = "<p>Nenhum DDS disponível para seu setor.</p>";
+return;
+}
+
+// pegar nome do DDS
+let nomeDDS = filtradas[0].dds || "DDS";
+document.getElementById('tituloDDS').innerText = nomeDDS;
+
+perguntas = filtradas.sort(()=>0.5-Math.random()).slice(0,10);
+
 let html='';
 perguntas.forEach((q,i)=>{
 html+=`<p>${i+1}. ${q.pergunta}</p>
@@ -131,12 +161,14 @@ html+=`<p>${i+1}. ${q.pergunta}</p>
 <label><input type='radio' name='q${i}' value='C'> ${q.c}</label><br>
 <label><input type='radio' name='q${i}' value='D'> ${q.d}</label><br><br>`;
 });
-quiz.innerHTML = html;
+
+document.getElementById('quiz').innerHTML = html;
 });
 }
 
 function finalizar(){
 let acertos=0;
+
 perguntas.forEach((q,i)=>{
 let r = document.querySelector(`input[name=q${i}]:checked`);
 if(r && r.value===q.correta) acertos++;
@@ -144,11 +176,13 @@ if(r && r.value===q.correta) acertos++;
 
 let resultado = acertos>=7 ? 'APROVADO' : 'REPROVADO';
 
+
 document.getElementById('resultado').innerText =
-  `Resultado: ${acertos} acertos - ${resultado}`;
+`Resultado: ${acertos} acertos - ${resultado}`;
 
 fetch(URL,{
 method:'POST',
+mode:'no-cors',
 body: JSON.stringify({
 tipo:'resultado',
 cpf:usuarioLogado.cpf,
