@@ -1,196 +1,149 @@
-16+33<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html>
 <head>
 <meta charset="UTF-8">
-<title>DDS Sistema Completo</title>
+<title>DDS Sistema</title>
+
 <style>
-body{font-family:Arial;background:#f4f6f9;margin:0;padding:20px}
-.container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
-input,select,button{width:100%;padding:10px;margin:5px 0}
-button{background:#007bff;color:#fff;border:none;cursor:pointer}
-.hidden{display:none}
+body{font-family:Arial;background:#0f172a;color:#fff;text-align:center;}
+.container{max-width:500px;margin:auto;background:#1e293b;padding:20px;border-radius:12px;margin-top:40px;}
+button{background:#22c55e;color:#fff;border:none;padding:10px;width:100%;margin-top:10px;border-radius:8px;}
+.progresso{height:10px;background:#38bdf8;border-radius:10px;}
 </style>
 </head>
-<body>
-<div class="container">
-<h1>Sistema DDS</h1>
 
-<div id="login">
+<body>
+
+<div id="login" class="container">
 <h2>Login</h2>
-<input id="user" placeholder="CPF ou admin">
-<input id="pass" placeholder="Senha" type="password">
+<input id="user" placeholder="CPF"><br>
+<input id="pass" placeholder="Senha"><br>
 <button onclick="login()">Entrar</button>
 </div>
 
-<div id="admin" class="hidden">
-<h2>Admin</h2>
-
-<h3>Cadastrar Usuário</h3>
-<input id="nome" placeholder="Nome">
-<input id="cpf" placeholder="CPF">
-<input id="setor" placeholder="Setor">
-<button onclick="cadastrarUsuario()">Salvar Usuário</button>
-
-<h3>Cadastrar DDS (Quiz)</h3>
-<input id="nomeDDS" placeholder="Nome do DDS (Ex: Maio Amarelo)">
-<input id="pergunta" placeholder="Pergunta">
-<input id="a" placeholder="Alternativa A">
-<input id="b" placeholder="Alternativa B">
-<input id="c" placeholder="Alternativa C">
-<input id="d" placeholder="Alternativa D">
-<select id="correta">
-<option value="A">A</option>
-<option value="B">B</option>
-<option value="C">C</option>
-<option value="D">D</option>
-</select>
-<button onclick="cadastrarPergunta()">Salvar Pergunta</button>
-
-<button onclick="logout()">Sair</button>
-</div>
-
-<div id="func" class="hidden">
-<h2 id="tituloDDS"></h2>
+<div id="func" class="container" style="display:none;">
 <div id="quiz"></div>
-<button onclick="finalizar()">Finalizar</button>
-<h3 id="resultado"></h3>
-<button onclick="logout()">Sair</button>
 </div>
 
+<div id="admin" class="container" style="display:none;">
+<h2>ADMIN</h2>
+<button onclick="carregarResultados()">Resultados</button>
+<button onclick="verRanking()">Ranking</button>
+<button onclick="verNaoFizeram()">Não fizeram</button>
+
+<div id="painel"></div>
 </div>
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycbydNjX4Vatru-SXzRuEEO8ESNPguCpnswGy3VzJWbMPqGEcoFAc0ExTkn9EUQftGsqk/exec";
 
-let perguntas = [];
-let usuarioLogado = {};
+let perguntas=[],respostas=[],i=0,usuario={};
 
 function login(){
-let u = document.getElementById('user').value;
-let p = document.getElementById('pass').value;
+let u=user.value,p=pass.value;
 
 if(u==='admin' && p==='admin123'){
-document.getElementById('login').classList.add('hidden');
-document.getElementById('admin').classList.remove('hidden');
+loginDiv.style.display='none';
+admin.style.display='block';
 return;
 }
 
 fetch(URL+"?usuarios=1")
 .then(r=>r.json())
 .then(data=>{
-let user = data.find(x=>x.cpf==u && x.senha==p);
-
+let user=data.find(x=>x.cpf==u && x.senha==p);
 if(user){
-usuarioLogado = user;
-document.getElementById('login').classList.add('hidden');
-document.getElementById('func').classList.remove('hidden');
+usuario=user;
+loginDiv.style.display='none';
+func.style.display='block';
 carregarQuiz();
-}else{
-alert('Login inválido');
-}
+}else alert('erro');
 });
-}
-
-function logout(){ location.reload(); }
-
-function cadastrarUsuario(){
-fetch(URL,{
-method:'POST',
-mode:'no-cors',
-body: JSON.stringify({
-tipo:'usuario',
-nome:document.getElementById('nome').value,
-cpf:document.getElementById('cpf').value,
-setor:document.getElementById('setor').value
-})
-});
-alert('Usuário salvo');
-}
-
-function cadastrarPergunta(){
-let setor = document.getElementById('setor').value;
-let nomeDDS = document.getElementById('nomeDDS').value;
-
-if(!setor || !nomeDDS){
-alert('Preencha setor e nome do DDS!');
-return;
-}
-
-fetch(URL,{
-method:'POST',
-mode:'no-cors',
-body: JSON.stringify({
-tipo:'pergunta',
-setor:setor,
-dds:nomeDDS,
-pergunta:document.getElementById('pergunta').value,
-a:document.getElementById('a').value,
-b:document.getElementById('b').value,
-c:document.getElementById('c').value,
-d:document.getElementById('d').value,
-correta:document.getElementById('correta').value
-})
-});
-
-alert('Pergunta salva no DDS: ' + nomeDDS);
 }
 
 function carregarQuiz(){
 fetch(URL)
 .then(r=>r.json())
 .then(data=>{
-
-let filtradas = data.filter(q => q.setor == usuarioLogado.setor);
-
-if(filtradas.length === 0){
-document.getElementById('quiz').innerHTML = "<p>Nenhum DDS disponível para seu setor.</p>";
-return;
+perguntas=data.filter(q=>q.setor==usuario.setor);
+i=0;respostas=[];
+mostrar();
+});
 }
 
-// pegar nome do DDS
-let nomeDDS = filtradas[0].dds || "DDS";
-document.getElementById('tituloDDS').innerText = nomeDDS;
+function mostrar(){
+let q=perguntas[i];
+let prog=((i+1)/perguntas.length)*100;
 
-perguntas = filtradas.sort(()=>0.5-Math.random()).slice(0,10);
+quiz.innerHTML=`
+<div class="progresso" style="width:${prog}%"></div>
+<h3>${q.dds}</h3>
+<p>${q.pergunta}</p>
 
-let html='';
-perguntas.forEach((q,i)=>{
-html+=`<p>${i+1}. ${q.pergunta}</p>
-<label><input type='radio' name='q${i}' value='A'> ${q.a}</label><br>
-<label><input type='radio' name='q${i}' value='B'> ${q.b}</label><br>
-<label><input type='radio' name='q${i}' value='C'> ${q.c}</label><br>
-<label><input type='radio' name='q${i}' value='D'> ${q.d}</label><br><br>`;
-});
+<label><input type=radio name=r value=A>${q.a}</label><br>
+<label><input type=radio name=r value=B>${q.b}</label><br>
+<label><input type=radio name=r value=C>${q.c}</label><br>
+<label><input type=radio name=r value=D>${q.d}</label><br>
 
-document.getElementById('quiz').innerHTML = html;
-});
+<button onclick="prox()">Próxima</button>
+`;
+}
+
+function prox(){
+let r=document.querySelector("input[name=r]:checked");
+respostas.push(r?r.value:null);
+i++;
+
+if(i<perguntas.length) mostrar();
+else finalizar();
 }
 
 function finalizar(){
 let acertos=0;
 
-perguntas.forEach((q,i)=>{
-let r = document.querySelector(`input[name=q${i}]:checked`);
-if(r && r.value===q.correta) acertos++;
+perguntas.forEach((q,x)=>{
+if(respostas[x]==q.correta) acertos++;
 });
 
-let resultado = acertos>=7 ? 'APROVADO' : 'REPROVADO';
-
-
-document.getElementById('resultado').innerText =
-`Resultado: ${acertos} acertos - ${resultado}`;
+quiz.innerHTML=`<h2>${acertos} acertos</h2>`;
 
 fetch(URL,{
 method:'POST',
 mode:'no-cors',
-body: JSON.stringify({
+body:JSON.stringify({
 tipo:'resultado',
-cpf:usuarioLogado.cpf,
-nome:usuarioLogado.nome,
-setor:usuarioLogado.setor,
+cpf:usuario.cpf,
+nome:usuario.nome,
+setor:usuario.setor,
+dds:perguntas[0].dds,
 acertos,
-resultado
+resultado:acertos>=7?'APROVADO':'REPROVADO'
 })
+});
+}
+
+function carregarResultados(){
+fetch(URL+"?ranking=1")
+.then(r=>r.json())
+.then(d=>{
+painel.innerHTML=JSON.stringify(d);
+});
+}
+
+function verRanking(){
+fetch(URL+"?ranking=1")
+.then(r=>r.json())
+.then(d=>{
+d.sort((a,b)=>b.acertos-a.acertos);
+painel.innerHTML=d.map(x=>x.nome+" - "+x.acertos).join("<br>");
+});
+}
+
+function verNaoFizeram(){
+fetch(URL+"?naofez=1")
+.then(r=>r.json())
+.then(d=>{
+painel.innerHTML=d.map(x=>x.nome+" - "+x.setor).join("<br>");
 });
 }
 </script>
