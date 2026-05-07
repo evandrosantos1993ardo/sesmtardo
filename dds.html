@@ -88,7 +88,8 @@ carregarQuiz();
 }
 
 function loginDiv(show){
-login.classList.toggle('hidden',!show);
+  const el = document.getElementById('login');
+  el.classList.toggle('hidden', !show);
 }
 
 function logout(){location.reload();}
@@ -142,7 +143,9 @@ if(r && r.value===q.correta) acertos++;
 });
 
 let resultado = acertos>=7 ? 'APROVADO' : 'REPROVADO';
-resultadoDiv.innerText = `Resultado: ${acertos} acertos - ${resultado}`;
+
+document.getElementById('resultado').innerText =
+  `Resultado: ${acertos} acertos - ${resultado}`;
 
 fetch(URL,{
 method:'POST',
