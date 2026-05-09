@@ -1,785 +1,192 @@
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--color-background-tertiary,#f3f4f6);color:var(--color-text-primary,#111);min-height:600px;display:flex;flex-direction:column}
+.topbar{background:#111928;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:50px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:8px}
+.brand-dot{width:24px;height:24px;background:#1a56db;border-radius:5px;display:flex;align-items:center;justify-content:center}
+.brand-dot i{font-size:13px;color:#fff}
+.brand-name{font-size:13px;font-weight:600;color:#fff}
+.top-right{display:flex;align-items:center;gap:10px}
+.top-user{font-size:12px;color:#9ca3af;display:flex;align-items:center;gap:6px}
+.top-user strong{color:#e5e7eb}
+.btn-top{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:5px 10px;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;color:#e5e7eb;cursor:pointer;display:flex;align-items:center;gap:5px}
+.btn-top:hover{background:rgba(255,255,255,.18)}
+.main{flex:1;padding:24px 16px 40px;display:flex;align-items:flex-start;justify-content:center}
+.wrap{width:100%;max-width:520px}
+.wrap-wide{width:100%;max-width:860px}
 
-:root {
-  --bg-base: #0f172a;
-  --bg-surface: #1e293b;
-  --bg-elevated: #253347;
-  --bg-card: rgba(30,41,59,0.8);
-  --bg-glass: rgba(255,255,255,0.04);
-  --bg-glass-hover: rgba(255,255,255,0.07);
+.card{background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.12));border-radius:var(--border-radius-lg,12px)}
+.card-hd{padding:14px 18px;border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.1));display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:6px}
+.card-title i{font-size:15px;color:#1a56db}
+.card-body{padding:18px}
 
-  --blue: #2563eb;
-  --blue-light: #3b82f6;
-  --blue-glow: rgba(37,99,235,0.35);
-  --blue-subtle: rgba(37,99,235,0.12);
-  --blue-subtle2: rgba(59,130,246,0.18);
+.field{margin-bottom:13px}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select{width:100%;background:var(--color-background-secondary,#f9fafb);border:0.5px solid var(--color-border-secondary,rgba(0,0,0,.2));border-radius:var(--border-radius-md,8px);padding:9px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--color-text-primary);outline:none;transition:border .15s,box-shadow .15s}
+.field input:focus,.field select:focus{border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,86,219,.1);background:var(--color-background-primary)}
+.field select option{background:var(--color-background-primary)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-  --green: #10b981;
-  --green-glow: rgba(16,185,129,0.3);
-  --green-subtle: rgba(16,185,129,0.12);
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--border-radius-md,8px);font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-primary{background:#1a56db;color:#fff}
+.btn-primary:hover{background:#1241a8}
+.btn-ghost{background:transparent;border:0.5px solid var(--color-border-secondary,rgba(0,0,0,.2));color:var(--color-text-secondary)}
+.btn-ghost:hover{background:var(--color-background-secondary)}
+.btn-green{background:#057a55;color:#fff}
+.btn-green:hover{background:#046c4e}
+.btn-block{width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-  --red: #ef4444;
-  --red-glow: rgba(239,68,68,0.3);
-  --red-subtle: rgba(239,68,68,0.12);
+.hidden{display:none!important}
+.screen{animation:up .2s ease}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-  --amber: #f59e0b;
-  --amber-subtle: rgba(245,158,11,0.12);
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;gap:4px}
+.badge-blue{background:#e8f0fe;color:#1241a8}
+.badge-green{background:#def7ec;color:#057a55}
+.badge-red{background:#fde8e8;color:#c81e1e}
+.badge-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.badge-yellow{background:#feecdc;color:#723b13}
 
-  --text-1: #f8fafc;
-  --text-2: #94a3b8;
-  --text-3: #475569;
-  --text-4: #334155;
+.alert{padding:10px 12px;border-radius:var(--border-radius-md);font-size:13px;display:flex;align-items:flex-start;gap:7px;line-height:1.5;margin-bottom:10px}
+.alert i{font-size:14px;flex-shrink:0;margin-top:1px}
+.alert-success{background:#def7ec;color:#057a55;border:0.5px solid #a7f3d0}
+.alert-error{background:#fde8e8;color:#c81e1e;border:0.5px solid #fca5a5}
+.alert-info{background:#e8f0fe;color:#1241a8;border:0.5px solid #bfdbfe}
+.alert-warn{background:#feecdc;color:#723b13;border:0.5px solid #fcd34d}
 
-  --border: rgba(255,255,255,0.08);
-  --border-hover: rgba(255,255,255,0.15);
-  --border-blue: rgba(37,99,235,0.5);
+.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);padding:0 18px}
+.tab{padding:10px 12px;font-size:13px;font-weight:500;color:var(--color-text-secondary);border-bottom:2px solid transparent;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:'IBM Plex Sans',sans-serif;transition:all .15s}
+.tab:hover{color:var(--color-text-primary)}
+.tab.active{color:#1a56db;border-bottom-color:#1a56db}
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+/* Login tela colaborador */
+.login-hero{text-align:center;padding:24px 18px 8px}
+.login-icon{width:48px;height:48px;background:#1a56db;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 11px}
+.login-icon i{font-size:24px;color:#fff}
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-blue: 0 0 0 3px rgba(37,99,235,0.25);
-  --shadow-green: 0 0 20px rgba(16,185,129,0.2);
-  --shadow-red: 0 0 20px rgba(239,68,68,0.2);
+/* DDS cards grid */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;text-align:center}
+.stat-num{font-size:22px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.stat-lbl{font-size:10px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 
-  --transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-  --transition-slow: all 0.35s cubic-bezier(0.4,0,0.2,1);
-}
+.section-title{font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+.dds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.dds-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;cursor:pointer;transition:border .15s,box-shadow .15s;display:flex;flex-direction:column;gap:10px}
+.dds-card:hover{border-color:rgba(26,86,219,.4);box-shadow:0 2px 8px rgba(26,86,219,.08)}
+.dds-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.dds-card-icon{width:36px;height:36px;border-radius:8px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dds-card-icon i{font-size:18px;color:#1a56db}
+.dds-card-name{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.35;flex:1}
+.dds-card-setor{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.dds-card-footer{display:flex;align-items:center;justify-content:space-between}
+.dds-card-footer .btn{padding:6px 12px;font-size:12px}
 
-html { scroll-behavior: smooth; }
+/* Quiz */
+.prog-wrap{margin-bottom:16px}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:5px}
+.prog-track{height:5px;background:var(--color-background-secondary);border-radius:3px}
+.prog-fill{height:100%;background:#1a56db;border-radius:3px;transition:width .3s}
 
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--bg-base);
-  color: var(--text-1);
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  -webkit-font-smoothing: antialiased;
-}
+.q-label{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace;margin-bottom:5px}
+.q-text{font-size:15px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:14px}
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--bg-surface); }
-::-webkit-scrollbar-thumb { background: var(--text-4); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+.opt{display:flex;align-items:center;gap:10px;padding:10px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);margin-bottom:7px;cursor:pointer;transition:all .15s;background:var(--color-background-primary)}
+.opt:hover{border-color:#1a56db;background:#e8f0fe}
+.opt.sel{border-color:#1a56db;background:#e8f0fe}
+.opt.correct{border-color:#057a55!important;background:#def7ec!important}
+.opt.wrong{border-color:#c81e1e!important;background:#fde8e8!important}
+.opt-key{width:24px;height:24px;border-radius:5px;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--color-text-secondary);flex-shrink:0;font-family:'IBM Plex Mono',monospace;transition:all .15s}
+.opt.sel .opt-key{background:#1a56db;color:#fff}
+.opt.correct .opt-key{background:#057a55;color:#fff}
+.opt.wrong .opt-key{background:#c81e1e;color:#fff}
+.opt-text{font-size:13px;color:var(--color-text-secondary);line-height:1.35}
 
-/* ── TOPBAR ── */
-.topbar {
-  background: rgba(15,23,42,0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  flex-shrink: 0;
-}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary)}
 
-.brand { display: flex; align-items: center; gap: 10px; }
+.qmap{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.qm{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;border:0.5px solid;transition:all .15s}
 
-.brand-dot {
-  width: 30px; height: 30px;
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 12px var(--blue-glow);
-}
-.brand-dot i { font-size: 15px; color: #fff; }
+/* Resultado */
+.result-ring{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.r-ok{background:#def7ec;color:#057a55;border:2px solid #6ee7b7}
+.r-fail{background:#fde8e8;color:#c81e1e;border:2px solid #fca5a5}
 
-.brand-name {
-  font-size: 14px; font-weight: 600; color: var(--text-1);
-  letter-spacing: -0.3px;
-}
-.brand-tag {
-  font-size: 10px; font-weight: 500;
-  color: var(--blue-light);
-  background: var(--blue-subtle2);
-  border: 1px solid rgba(59,130,246,0.25);
-  padding: 2px 7px; border-radius: var(--radius-full);
-  letter-spacing: 0.3px;
-}
-
-.top-right { display: flex; align-items: center; gap: 10px; }
-
-.top-user {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--text-2);
-}
-.top-user strong { color: var(--text-1); font-weight: 500; }
-
-.top-avatar {
-  width: 28px; height: 28px; border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600; color: #fff;
-  flex-shrink: 0;
-}
-
-.btn-top {
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px; font-weight: 500;
-  color: var(--text-2);
-  cursor: pointer;
-  display: flex; align-items: center; gap: 5px;
-  transition: var(--transition);
-}
-.btn-top:hover {
-  background: var(--bg-glass-hover);
-  border-color: var(--border-hover);
-  color: var(--text-1);
-}
-
-/* ── MAIN ── */
-.main {
-  flex: 1;
-  padding: 32px 20px 60px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-.wrap { width: 100%; max-width: 480px; }
-.wrap-wide { width: 100%; max-width: 900px; }
-
-/* ── CARDS ── */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  transition: var(--transition);
-}
-
-.card-hd {
-  padding: 16px 22px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.card-title {
-  font-size: 13px; font-weight: 600; color: var(--text-1);
-  display: flex; align-items: center; gap: 8px;
-}
-.card-title i { font-size: 15px; color: var(--blue-light); }
-.card-body { padding: 22px; }
-
-/* ── FIELDS ── */
-.field { margin-bottom: 14px; }
-.field label {
-  display: block;
-  font-size: 11px; font-weight: 600;
-  color: var(--text-2);
-  margin-bottom: 6px;
-  text-transform: uppercase; letter-spacing: 0.6px;
-}
-
-.field input, .field select, .field textarea {
-  width: 100%;
-  background: rgba(15,23,42,0.6);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px; color: var(--text-1);
-  outline: none;
-  transition: var(--transition);
-}
-.field input::placeholder, .field select::placeholder { color: var(--text-3); }
-.field input:hover, .field select:hover { border-color: var(--border-hover); }
-.field input:focus, .field select:focus {
-  border-color: var(--blue);
-  box-shadow: var(--shadow-blue);
-  background: rgba(15,23,42,0.8);
-}
-.field select option { background: #1e293b; color: var(--text-1); }
-
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-/* ── BUTTONS ── */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 7px;
-  padding: 10px 18px;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: 'Inter', sans-serif;
-  font-size: 13px; font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  white-space: nowrap;
-  letter-spacing: -0.1px;
-  position: relative;
-  overflow: hidden;
-}
-.btn::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: rgba(255,255,255,0);
-  transition: var(--transition);
-}
-.btn:hover::after { background: rgba(255,255,255,0.06); }
-.btn:active { transform: scale(0.97); }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--blue), var(--blue-light));
-  color: #fff;
-  box-shadow: 0 2px 12px var(--blue-glow);
-}
-.btn-primary:hover { box-shadow: 0 4px 20px var(--blue-glow); transform: translateY(-1px); }
-.btn-primary:active { transform: translateY(0) scale(0.97); }
-
-.btn-ghost {
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
-  color: var(--text-2);
-}
-.btn-ghost:hover {
-  background: var(--bg-glass-hover);
-  border-color: var(--border-hover);
-  color: var(--text-1);
-}
-
-.btn-green {
-  background: linear-gradient(135deg, #059669, var(--green));
-  color: #fff;
-  box-shadow: 0 2px 12px var(--green-glow);
-}
-.btn-green:hover { box-shadow: 0 4px 20px var(--green-glow); transform: translateY(-1px); }
-
-.btn-danger {
-  background: var(--red-subtle);
-  border: 1px solid rgba(239,68,68,0.3);
-  color: var(--red);
-}
-.btn-danger:hover { background: rgba(239,68,68,0.2); }
-
-.btn-block { width: 100%; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-
-/* ── BADGES ── */
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; font-weight: 600;
-  padding: 3px 9px;
-  border-radius: var(--radius-full);
-  letter-spacing: 0.1px;
-}
-.badge-blue { background: var(--blue-subtle2); color: var(--blue-light); border: 1px solid rgba(59,130,246,0.2); }
-.badge-green { background: var(--green-subtle); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
-.badge-red { background: var(--red-subtle); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-.badge-amber { background: var(--amber-subtle); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
-.badge-gray { background: rgba(255,255,255,0.06); color: var(--text-2); border: 1px solid var(--border); }
-
-/* ── ALERTS ── */
-.alert {
-  padding: 11px 14px;
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  display: flex; align-items: flex-start; gap: 8px;
-  line-height: 1.5;
-  margin-bottom: 12px;
-  animation: fadeIn 0.2s ease;
-}
-.alert i { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-.alert-success { background: var(--green-subtle); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
-.alert-error { background: var(--red-subtle); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
-.alert-info { background: var(--blue-subtle); color: var(--blue-light); border: 1px solid rgba(37,99,235,0.2); }
-.alert-warn { background: var(--amber-subtle); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
-
-/* ── TABS ── */
-.tabs {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-  padding: 0 22px;
-  gap: 2px;
-}
-.tab {
-  padding: 12px 14px;
-  font-size: 13px; font-weight: 500;
-  color: var(--text-3);
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  background: none;
-  border-left: none; border-right: none; border-top: none;
-  font-family: 'Inter', sans-serif;
-  transition: var(--transition);
-  display: flex; align-items: center; gap: 6px;
-}
-.tab i { font-size: 14px; }
-.tab:hover { color: var(--text-2); }
-.tab.active { color: var(--blue-light); border-bottom-color: var(--blue); }
-
-/* ── ANIMATIONS ── */
-.screen { animation: slideUp 0.25s cubic-bezier(0.4,0,0.2,1); }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; } to { opacity: 1; }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.spin { display: inline-block; animation: spin 0.8s linear infinite; }
-
-.hidden { display: none !important; }
-
-/* ── LOGIN ── */
-.login-hero {
-  text-align: center;
-  padding: 36px 22px 12px;
-}
-.login-icon-wrap {
-  position: relative;
-  width: 64px; height: 64px;
-  margin: 0 auto 16px;
-}
-.login-icon {
-  width: 64px; height: 64px;
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-  border-radius: 18px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 30px var(--blue-glow);
-}
-.login-icon i { font-size: 30px; color: #fff; }
-.login-icon-ring {
-  position: absolute; inset: -6px;
-  border: 1px solid rgba(59,130,246,0.3);
-  border-radius: 24px;
-  animation: pulseRing 2.5s ease-in-out infinite;
-}
-@keyframes pulseRing {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.03); }
-}
-.login-title { font-size: 20px; font-weight: 700; color: var(--text-1); letter-spacing: -0.4px; margin-bottom: 5px; }
-.login-sub { font-size: 13px; color: var(--text-2); line-height: 1.5; }
-
-.divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 16px 0;
-  font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px;
-}
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-/* ── STATS CARDS ── */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  text-align: center;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
-.stat-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-}
-.stat-card.amber::before { background: linear-gradient(90deg, transparent, var(--amber), transparent); }
-.stat-card.green::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
-.stat-card.red::before { background: linear-gradient(90deg, transparent, var(--red), transparent); }
-.stat-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-
-.stat-num {
-  font-size: 28px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 5px;
-}
-.stat-lbl {
-  font-size: 10px; font-weight: 600;
-  color: var(--text-3);
-  text-transform: uppercase; letter-spacing: 0.8px;
-}
-
-/* ── SECTION TITLE ── */
-.section-title {
-  font-size: 11px; font-weight: 700;
-  color: var(--text-3);
-  text-transform: uppercase; letter-spacing: 0.8px;
-  margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.section-title::after {
-  content: ''; flex: 1; height: 1px;
-  background: var(--border);
-}
-
-/* ── DDS CARDS ── */
-.dds-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.dds-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 18px;
-  display: flex; flex-direction: column; gap: 14px;
-  transition: var(--transition-slow);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.dds-card::after {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, rgba(37,99,235,0.04), transparent);
-  opacity: 0;
-  transition: var(--transition);
-}
-.dds-card:hover {
-  border-color: rgba(59,130,246,0.4);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(59,130,246,0.15);
-}
-.dds-card:hover::after { opacity: 1; }
-
-.dds-card-top { display: flex; align-items: flex-start; gap: 12px; }
-.dds-card-icon {
-  width: 40px; height: 40px;
-  border-radius: var(--radius-md);
-  background: var(--blue-subtle2);
-  border: 1px solid rgba(59,130,246,0.2);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.dds-card-icon i { font-size: 19px; color: var(--blue-light); }
-.dds-card-name { font-size: 14px; font-weight: 600; color: var(--text-1); line-height: 1.4; }
-.dds-card-setor { font-size: 11px; color: var(--text-3); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
-.dds-card-footer { display: flex; align-items: center; justify-content: space-between; }
-.dds-card-footer .btn { padding: 6px 12px; font-size: 12px; }
-
-.dds-card.status-approved { border-color: rgba(16,185,129,0.2); }
-.dds-card.status-approved .dds-card-icon { background: var(--green-subtle); border-color: rgba(16,185,129,0.2); }
-.dds-card.status-approved .dds-card-icon i { color: var(--green); }
-.dds-card.status-failed { border-color: rgba(239,68,68,0.2); }
-.dds-card.status-failed .dds-card-icon { background: var(--red-subtle); border-color: rgba(239,68,68,0.2); }
-.dds-card.status-failed .dds-card-icon i { color: var(--red); }
-
-/* ── QUIZ ── */
-.prog-wrap { margin-bottom: 20px; }
-.prog-info {
-  display: flex; justify-content: space-between;
-  font-size: 12px; color: var(--text-2);
-  margin-bottom: 8px;
-}
-.prog-info span:last-child { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-3); }
-.prog-track {
-  height: 4px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 99px;
-  overflow: hidden;
-}
-.prog-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue), var(--blue-light));
-  border-radius: 99px;
-  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 0 8px var(--blue-glow);
-}
-
-.q-label {
-  font-size: 10px; font-weight: 700;
-  color: var(--text-3);
-  text-transform: uppercase; letter-spacing: 0.8px;
-  font-family: 'JetBrains Mono', monospace;
-  margin-bottom: 8px;
-}
-.q-text {
-  font-size: 15px; font-weight: 500;
-  color: var(--text-1);
-  line-height: 1.6;
-  margin-bottom: 18px;
-}
-
-.opt {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: var(--transition);
-  background: var(--bg-glass);
-  position: relative;
-  overflow: hidden;
-}
-.opt::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: transparent;
-  transition: var(--transition);
-}
-.opt:hover { border-color: var(--border-blue); background: var(--blue-subtle); }
-.opt:hover::before { background: var(--blue); }
-.opt.sel { border-color: var(--blue); background: var(--blue-subtle); }
-.opt.sel::before { background: var(--blue); }
-.opt.correct { border-color: rgba(16,185,129,0.5) !important; background: var(--green-subtle) !important; }
-.opt.correct::before { background: var(--green) !important; }
-.opt.wrong { border-color: rgba(239,68,68,0.5) !important; background: var(--red-subtle) !important; }
-.opt.wrong::before { background: var(--red) !important; }
-
-.opt-key {
-  width: 28px; height: 28px;
-  border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.06);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700;
-  color: var(--text-2);
-  flex-shrink: 0;
-  font-family: 'JetBrains Mono', monospace;
-  transition: var(--transition);
-}
-.opt.sel .opt-key { background: var(--blue); border-color: var(--blue); color: #fff; }
-.opt.correct .opt-key { background: var(--green); border-color: var(--green); color: #fff; }
-.opt.wrong .opt-key { background: var(--red); border-color: var(--red); color: #fff; }
-.opt-text { font-size: 13px; color: var(--text-2); line-height: 1.4; }
-.opt.sel .opt-text { color: var(--text-1); }
-
-.q-nav {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 20px; padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
-.qmap { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
-.qm {
-  width: 28px; height: 28px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  border: 1px solid;
-  transition: var(--transition);
-}
-.qm:hover { transform: scale(1.1); }
-
-/* ── RESULT ── */
-.result-ring {
-  width: 96px; height: 96px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 26px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  position: relative;
-}
-.result-ring::after {
-  content: '';
-  position: absolute; inset: -4px;
-  border-radius: 50%;
-  border: 2px solid;
-  opacity: 0.4;
-  animation: pulseRing 2.5s ease-in-out infinite;
-}
-.r-ok { background: var(--green-subtle); color: var(--green); border: 2px solid rgba(16,185,129,0.4); box-shadow: var(--shadow-green); }
-.r-ok::after { border-color: var(--green); }
-.r-fail { background: var(--red-subtle); color: var(--red); border: 2px solid rgba(239,68,68,0.4); box-shadow: var(--shadow-red); }
-.r-fail::after { border-color: var(--red); }
-
-/* ── WIZARD ── */
-.wiz-step { display: flex; align-items: center; gap: 4px; margin-bottom: 18px; flex-wrap: wrap; }
-.wiz-dot {
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  border: 1.5px solid;
-  transition: var(--transition);
-  flex-shrink: 0;
-}
-.wiz-dot.done { background: var(--green); border-color: var(--green); color: #fff; box-shadow: 0 0 8px var(--green-glow); }
-.wiz-dot.active { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 0 8px var(--blue-glow); }
-.wiz-dot.todo { background: transparent; border-color: var(--text-4); color: var(--text-4); }
-.wiz-line { flex: 1; height: 1px; background: var(--border); min-width: 4px; max-width: 16px; }
-
-/* ── WELCOME HEADER ── */
-.welcome-header {
-  margin-bottom: 28px;
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 16px;
-}
-.welcome-greeting { font-size: 22px; font-weight: 700; color: var(--text-1); letter-spacing: -0.5px; margin-bottom: 4px; }
-.welcome-sub { font-size: 13px; color: var(--text-2); }
-.welcome-sub strong { color: var(--text-1); }
-
-/* ── ADMIN INFO BOX ── */
-.info-box {
-  background: var(--blue-subtle);
-  border: 1px solid rgba(37,99,235,0.2);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  font-size: 12px;
-  color: var(--text-2);
-  margin-bottom: 16px;
-  line-height: 1.6;
-  display: flex; gap: 8px;
-}
-.info-box i { color: var(--blue-light); flex-shrink: 0; margin-top: 1px; }
-
-/* ── QUIZ HEADER STRIP ── */
-.quiz-strip {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 16px;
-  padding: 10px 14px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-}
-.quiz-strip-name { font-size: 13px; font-weight: 600; flex: 1; color: var(--text-1); }
-
-/* ── EMPTY STATE ── */
-.empty-state {
-  grid-column: 1 / -1;
-  text-align: center; padding: 48px 24px;
-  color: var(--text-3);
-}
-.empty-state i { font-size: 40px; display: block; margin-bottom: 12px; opacity: 0.5; }
-.empty-state p { font-size: 13px; line-height: 1.6; }
-
-/* ── REVIEW PREVIEW ── */
-.review-item {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: flex-start; gap: 10px;
-}
-.review-item:last-child { border-bottom: none; }
-.review-num {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--blue-subtle2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: var(--blue-light);
-  font-family: 'JetBrains Mono', monospace;
-  flex-shrink: 0; margin-top: 1px;
-}
-.review-text { font-size: 13px; color: var(--text-2); line-height: 1.45; flex: 1; }
-.review-text strong { color: var(--text-1); font-weight: 500; }
-
-/* ── GABARITO ── */
-.gab-block { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
-.gab-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 640px) {
-  .main { padding: 20px 12px 50px; }
-  .card-body { padding: 16px; }
-  .row2 { grid-template-columns: 1fr; }
-  .dds-grid { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .stat-num { font-size: 22px; }
-  .welcome-header { flex-direction: column; }
-  .topbar { padding: 0 14px; }
-  .brand-tag { display: none; }
-  .tabs { padding: 0 12px; }
-  .tab { padding: 10px 10px; font-size: 12px; }
-}
+/* Admin - wizard perguntas */
+.wiz-step{display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.wiz-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;font-family:'IBM Plex Mono',monospace;border:1.5px solid;transition:all .15s;flex-shrink:0}
+.wiz-dot.done{background:#057a55;border-color:#057a55;color:#fff}
+.wiz-dot.active{background:#1a56db;border-color:#1a56db;color:#fff}
+.wiz-dot.todo{background:transparent;border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
+.wiz-line{flex:1;height:1px;background:var(--color-border-tertiary);min-width:8px;max-width:20px}
 </style>
 
 <div id="app">
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-dot"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
-      <span class="brand-name">DDS Sistema</span>
-      <span class="brand-tag">SEGURANÇA</span>
-    </div>
-    <div class="top-right" id="top-right"></div>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-dot"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+    <span class="brand-name">DDS Sistema</span>
   </div>
-  <div class="main" id="main"></div>
+  <div class="top-right" id="top-right"></div>
+</div>
+<div class="main" id="main"></div>
 </div>
 
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzUtVKwS65dSO2LyGuXUHD-qz-rZsy4tauAaoYruHOlQ-DSbGwQZufnjjcFjLvVwTHuAQ/exec';
-let user=null,allPerguntas=[],allResultados=[],wizPerguntas=[],wizStep=0;
-let quizPerguntas=[],quizRespostas={},quizIdx=0,quizDDS='',quizEnded=false;
+let user=null;
+let allPerguntas=[];
+let allResultados=[];
+let allSetores=[];
+let wizPerguntas=[];
+let wizStep=0;
+let quizPerguntas=[];
+let quizRespostas={};
+let quizIdx=0;
+let quizDDS='';
+let quizEnded=false;
 
 const $=id=>document.getElementById(id);
 const main=()=>$('main');
 const gv=id=>{const e=$(id);return e?e.value.trim():'';}
 
-function initials(name){return (name||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();}
-
 function setTop(u){
   const t=$('top-right');
   if(!u){t.innerHTML='';return;}
   const isA=u==='admin';
-  const name=isA?'Administrador':u.nome;
-  t.innerHTML=`
-    <div class="top-user">
-      <div class="top-avatar">${initials(name)}</div>
-      <strong>${name}</strong>
-      ${!isA&&u.setor?`<span class="badge badge-blue">${u.setor}</span>`:''}
-    </div>
-    <button class="btn-top" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i> Sair</button>`;
+  t.innerHTML=`<div class="top-user"><i class="ti ti-user-circle" style="font-size:16px" aria-hidden="true"></i>
+    <strong>${isA?'Admin':u.nome}</strong>
+    ${!isA&&u.setor?`<span class="badge badge-blue" style="font-size:10px">${u.setor}</span>`:''}
+  </div>
+  <button class="btn-top" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i> Sair</button>`;
 }
 
-/* ── LOGIN ── */
+/* ===== LOGIN ===== */
 function showLogin(){
-  setTop(null); user=null;
+  setTop(null);user=null;
   main().innerHTML=`
   <div class="wrap screen">
     <div class="card">
       <div class="login-hero">
-        <div class="login-icon-wrap">
-          <div class="login-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
-          <div class="login-icon-ring"></div>
-        </div>
-        <div class="login-title">Diálogo Diário de Segurança</div>
-        <div class="login-sub">Acesse com seu CPF e senha para iniciar</div>
+        <div class="login-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:4px">Diálogo Diário de Segurança</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:4px">Identifique-se com CPF e Setor para iniciar</div>
       </div>
       <div class="card-body">
-        <div class="field"><label>CPF</label><input id="inp-u" placeholder="000.000.000-00" autocomplete="username"/></div>
-        <div class="field"><label>Senha</label><input id="inp-p" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div class="field"><label>CPF</label><input id="inp-u" placeholder="Digite seu CPF"/></div>
+        <div class="field"><label>Senha</label><input id="inp-p" type="password" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')doLogin()"/></div>
         <div id="lmsg"></div>
-        <button class="btn btn-primary btn-block" onclick="doLogin()">
-          <i class="ti ti-login" aria-hidden="true"></i> Entrar
-        </button>
-        <div class="divider">ou</div>
-        <button class="btn btn-ghost btn-block" onclick="showAdminLogin()" style="font-size:12px">
-          <i class="ti ti-settings" aria-hidden="true"></i> Acesso administrativo
-        </button>
+        <button class="btn btn-primary btn-block" onclick="doLogin()"><i class="ti ti-login" aria-hidden="true"></i> Entrar</button>
+        <div style="text-align:center;margin-top:14px">
+          <button class="btn btn-ghost" onclick="showAdminLogin()" style="font-size:12px;padding:6px 12px">
+            <i class="ti ti-settings" aria-hidden="true"></i> Acesso administrativo
+          </button>
+        </div>
       </div>
     </div>
   </div>`;
@@ -791,17 +198,13 @@ function showAdminLogin(){
     <div class="card">
       <div class="card-hd">
         <div class="card-title"><i class="ti ti-settings" aria-hidden="true"></i> Acesso Admin</div>
-        <button class="btn btn-ghost" onclick="showLogin()" style="padding:5px 10px;font-size:12px">
-          <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
-        </button>
+        <button class="btn btn-ghost" onclick="showLogin()" style="padding:5px 10px;font-size:12px"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
       </div>
       <div class="card-body">
-        <div class="field"><label>Usuário</label><input id="au" value="admin"/></div>
-        <div class="field"><label>Senha</label><input id="ap" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"/></div>
+        <div class="field"><label>Usuário</label><input id="au" placeholder="admin" value="admin"/></div>
+        <div class="field"><label>Senha</label><input id="ap" type="password" placeholder="admin123" onkeydown="if(event.key==='Enter')adminLogin()"/></div>
         <div id="amsg"></div>
-        <button class="btn btn-primary btn-block" onclick="adminLogin()">
-          <i class="ti ti-login" aria-hidden="true"></i> Entrar
-        </button>
+        <button class="btn btn-primary btn-block" onclick="adminLogin()"><i class="ti ti-login" aria-hidden="true"></i> Entrar</button>
       </div>
     </div>
   </div>`;
@@ -816,16 +219,15 @@ async function doLogin(){
   const u=gv('inp-u'),p=gv('inp-p');
   const m=$('lmsg');
   if(!u||!p){m.innerHTML='<div class="alert alert-warn"><i class="ti ti-alert-triangle"></i>Preencha CPF e senha.</div>';return;}
-  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i>Verificando...</div>';
+  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Verificando...</div>';
   try{
     const r=await fetch(SCRIPT_URL+'?usuarios=1');
-    if(!r.ok)throw new Error('Erro HTTP '+r.status);
+    if(!r.ok)throw new Error('HTTP '+r.status);
     const data=await r.json();
     const clean=s=>String(s||'').replace(/\D/g,'');
     const found=data.find(x=>clean(x.cpf)===clean(u)&&clean(x.senha)===clean(p));
     if(found){
-      user=found; setTop(found);
-      m.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Carregando seus dados...</div>';
+      user=found;setTop(found);
       await loadAllData();
       showDashboard();
     }else{
@@ -839,14 +241,15 @@ async function doLogin(){
 async function loadAllData(){
   try{
     const [rp,rr]=await Promise.all([fetch(SCRIPT_URL),fetch(SCRIPT_URL+'?resultados=1')]);
-    allPerguntas=await rp.json();
+    const pgs=await rp.json();
+    allPerguntas=pgs;
     try{const rs=await rr.json();allResultados=Array.isArray(rs)?rs:[];}catch(e){allResultados=[];}
   }catch(e){allPerguntas=[];allResultados=[];}
 }
 
 function logout(){user=null;allPerguntas=[];allResultados=[];showLogin();}
 
-/* ── DASHBOARD ── */
+/* ===== DASHBOARD COLABORADOR ===== */
 function showDashboard(){
   const setor=(user.setor||'').trim().toLowerCase();
   const pool=allPerguntas.filter(q=>!q.setor||q.setor.trim().toLowerCase()===setor||setor==='');
@@ -858,9 +261,9 @@ function showDashboard(){
   });
   const ddsList=Object.values(ddsMap);
 
-  const clean=s=>String(s||'').replace(/\D/g,'');
-  const userRes=allResultados.filter(r=>clean(r.cpf)===clean(user.cpf));
+  const userRes=allResultados.filter(r=>String(r.cpf||'').replace(/\D/g,'')===String(user.cpf||'').replace(/\D/g,''));
   const resMap={};
+  userRes.forEach(r=>{const k=(r.dds||r.resultado||'');if(r.dds)resMap[r.dds]=r.resultado;});
   userRes.forEach(r=>{if(r.dds)resMap[r.dds]=r.resultado;});
 
   let pendentes=0,concluidos=0,reprovados=0;
@@ -874,63 +277,56 @@ function showDashboard(){
   let cardsHtml='';
   ddsList.forEach(d=>{
     const res=resMap[d.nome];
-    let statusBadge,btnLabel,btnClass,cardClass='';
+    let statusBadge,btnLabel,btnClass;
     if(res==='APROVADO'){
       statusBadge='<span class="badge badge-green"><i class="ti ti-check"></i> Aprovado</span>';
-      btnLabel='Refazer'; btnClass='btn-ghost'; cardClass='status-approved';
+      btnLabel='Refazer';btnClass='btn-ghost';
     }else if(res==='REPROVADO'){
       statusBadge='<span class="badge badge-red"><i class="ti ti-x"></i> Reprovado</span>';
-      btnLabel='Tentar novamente'; btnClass='btn-primary'; cardClass='status-failed';
+      btnLabel='Tentar novamente';btnClass='btn-primary';
     }else{
-      statusBadge='<span class="badge badge-amber"><i class="ti ti-clock"></i> A fazer</span>';
-      btnLabel='Iniciar'; btnClass='btn-primary';
+      statusBadge='<span class="badge badge-gray"><i class="ti ti-clock"></i> A fazer</span>';
+      btnLabel='Iniciar';btnClass='btn-primary';
     }
-    cardsHtml+=`
-    <div class="dds-card ${cardClass}">
+    cardsHtml+=`<div class="dds-card">
       <div class="dds-card-top">
         <div class="dds-card-icon"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
-        <div style="flex:1;min-width:0">
+        <div style="flex:1">
           <div class="dds-card-name">${d.nome}</div>
-          ${d.setor?`<div class="dds-card-setor"><i class="ti ti-building" aria-hidden="true"></i>${d.setor}</div>`:''}
+          ${d.setor?`<div class="dds-card-setor"><i class="ti ti-building" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> ${d.setor}</div>`:''}
         </div>
       </div>
       <div class="dds-card-footer">
         ${statusBadge}
-        <button class="btn ${btnClass}" onclick="startQuiz('${encodeURIComponent(d.nome)}')" style="padding:7px 14px;font-size:12px">
-          ${res==='APROVADO'?'<i class="ti ti-refresh" aria-hidden="true"></i>':'<i class="ti ti-arrow-right" aria-hidden="true"></i>'}
-          ${btnLabel}
+        <button class="btn ${btnClass}" onclick="startQuiz('${encodeURIComponent(d.nome)}')" style="padding:6px 12px;font-size:12px">
+          <i class="ti ti-arrow-right" aria-hidden="true"></i> ${btnLabel}
         </button>
       </div>
     </div>`;
   });
 
-  if(!cardsHtml) cardsHtml=`<div class="empty-state">
-    <i class="ti ti-inbox" aria-hidden="true"></i>
-    <p>Nenhum DDS disponível para seu setor.<br>Aguarde o administrador cadastrar os conteúdos.</p>
+  if(!cardsHtml)cardsHtml=`<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--color-text-secondary);font-size:13px">
+    <i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:8px" aria-hidden="true"></i>
+    Nenhum DDS disponível para seu setor ainda.
   </div>`;
-
-  const hora=new Date().getHours();
-  const saudacao=hora<12?'Bom dia':'hora<18?'Boa tarde':'Boa noite';
 
   main().innerHTML=`
   <div class="wrap-wide screen">
-    <div class="welcome-header">
-      <div>
-        <div class="welcome-greeting">${saudacao}, ${user.nome.split(' ')[0]} 👋</div>
-        <div class="welcome-sub">Setor: <strong>${user.setor}</strong> &nbsp;·&nbsp; ${ddsList.length} DDS disponíveis</div>
-      </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:18px;font-weight:600;margin-bottom:2px">Olá, ${user.nome.split(' ')[0]} 👋</div>
+      <div style="font-size:13px;color:var(--color-text-secondary)">Setor: <strong>${user.setor}</strong></div>
     </div>
     <div class="stats-row">
-      <div class="stat-card amber">
-        <div class="stat-num" style="color:#f59e0b">${pendentes}</div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#723b13">${pendentes}</div>
         <div class="stat-lbl">Pendentes</div>
       </div>
-      <div class="stat-card green">
-        <div class="stat-num" style="color:#10b981">${concluidos}</div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#057a55">${concluidos}</div>
         <div class="stat-lbl">Concluídos</div>
       </div>
-      <div class="stat-card red">
-        <div class="stat-num" style="color:#ef4444">${reprovados}</div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:#c81e1e">${reprovados}</div>
         <div class="stat-lbl">Reprovados</div>
       </div>
     </div>
@@ -941,14 +337,20 @@ function showDashboard(){
 
 function startQuiz(ddsEncoded){
   const ddsNome=decodeURIComponent(ddsEncoded);
-  const pool=allPerguntas.filter(q=>(q.dds||q.setor||'Geral').trim()===ddsNome);
-  if(!pool.length){alert('Nenhuma pergunta cadastrada para este DDS.');return;}
+  const setor=(user.setor||'').trim().toLowerCase();
+  const pool=allPerguntas.filter(q=>{
+    const qDDS=(q.dds||q.setor||'Geral').trim();
+    return qDDS===ddsNome;
+  });
+  if(pool.length===0){
+    alert('Nenhuma pergunta cadastrada para este DDS.');return;
+  }
   quizPerguntas=pool.sort(()=>0.5-Math.random()).slice(0,10);
   quizRespostas={};quizIdx=0;quizEnded=false;quizDDS=ddsNome;
   renderQuiz();
 }
 
-/* ── QUIZ ── */
+/* ===== QUIZ ===== */
 function renderQuiz(){
   if(quizEnded){renderResult();return;}
   const total=quizPerguntas.length;
@@ -968,32 +370,30 @@ function renderQuiz(){
   });
   const isLast=quizIdx===total-1;
   const qmapH=quizPerguntas.map((_,i)=>{
-    const cur=i===quizIdx,ans=quizRespostas[i];
-    const bg=cur?'var(--blue)':ans?'var(--green)':'rgba(255,255,255,0.05)';
-    const bd=cur?'var(--blue)':ans?'var(--green)':'rgba(255,255,255,0.1)';
-    const cl=cur||ans?'#fff':'var(--text-3)';
+    const cur=i===quizIdx;
+    const ans=quizRespostas[i];
+    const bg=cur?'#1a56db':ans?'#057a55':'var(--color-background-secondary)';
+    const bd=cur?'#1a56db':ans?'#057a55':'var(--color-border-secondary)';
+    const cl=cur?'#fff':ans?'#fff':'var(--color-text-secondary)';
     return `<div class="qm" onclick="quizIdx=${i};renderQuiz()" style="background:${bg};border-color:${bd};color:${cl}">${i+1}</div>`;
   }).join('');
 
   main().innerHTML=`
   <div class="wrap screen">
-    <div class="quiz-strip">
-      <button class="btn btn-ghost" onclick="showDashboard()" style="padding:6px 10px;font-size:12px;flex-shrink:0">
-        <i class="ti ti-arrow-left" aria-hidden="true"></i>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <button class="btn btn-ghost" onclick="showDashboard()" style="padding:6px 10px;font-size:12px">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
       </button>
-      <div class="quiz-strip-name">${quizDDS}</div>
+      <div style="font-size:13px;font-weight:500;flex:1">${quizDDS}</div>
       <span class="badge badge-blue">${total} questões</span>
     </div>
     <div class="card">
       <div class="card-body">
         <div class="prog-wrap">
-          <div class="prog-info">
-            <span>${resp} de ${total} respondidas</span>
-            <span>${pct}%</span>
-          </div>
+          <div class="prog-info"><span>${resp} de ${total} respondidas</span><span>${pct}%</span></div>
           <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
         </div>
-        <div class="q-label">Questão ${quizIdx+1} / ${total}</div>
+        <div class="q-label">Questão ${quizIdx+1} de ${total}</div>
         <div class="q-text">${q.pergunta||'—'}</div>
         ${optsH}
         <div class="q-nav">
@@ -1002,11 +402,12 @@ function renderQuiz(){
           </button>
           ${isLast
             ?`<button class="btn btn-green" onclick="confirmFinalizar()">Finalizar <i class="ti ti-send" aria-hidden="true"></i></button>`
-            :`<button class="btn btn-primary" onclick="quizIdx++;renderQuiz()">Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i></button>`}
+            :`<button class="btn btn-primary" onclick="quizIdx++;renderQuiz()">Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i></button>`
+          }
         </div>
       </div>
     </div>
-    <div class="qmap">${qmapH}</div>
+    <div class="qmap" style="margin-top:12px">${qmapH}</div>
   </div>`;
 }
 
@@ -1041,15 +442,13 @@ function renderResult(ac,res){
   main().innerHTML=`
   <div class="wrap screen">
     <div class="card">
-      <div style="text-align:center;padding:36px 22px 28px">
+      <div style="text-align:center;padding:28px 18px">
         <div class="result-ring ${ok?'r-ok':'r-fail'}">${pct}%</div>
-        <div style="font-size:22px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};letter-spacing:-0.5px;margin-bottom:6px">${res}</div>
-        <div style="font-size:13px;color:var(--text-2);margin-bottom:24px">
-          ${ac} acertos em ${total} questões &nbsp;·&nbsp; <span style="font-family:'JetBrains Mono',monospace">${quizDDS}</span>
-        </div>
-        <div class="stats-row" style="max-width:300px;margin:0 auto 24px">
-          <div class="stat-card green"><div class="stat-num" style="color:var(--green)">${ac}</div><div class="stat-lbl">Acertos</div></div>
-          <div class="stat-card red"><div class="stat-num" style="color:var(--red)">${total-ac}</div><div class="stat-lbl">Erros</div></div>
+        <div style="font-size:20px;font-weight:600;color:${ok?'#057a55':'#c81e1e'};margin-bottom:4px">${res}</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px">${ac} acertos em ${total} questões — ${quizDDS}</div>
+        <div class="stats-row" style="max-width:280px;margin:0 auto 20px">
+          <div class="stat-card"><div class="stat-num" style="color:#057a55">${ac}</div><div class="stat-lbl">Acertos</div></div>
+          <div class="stat-card"><div class="stat-num" style="color:#c81e1e">${total-ac}</div><div class="stat-lbl">Erros</div></div>
           <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-lbl">Aproveit.</div></div>
         </div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
@@ -1065,16 +464,17 @@ function renderGabarito(){
   const opts=[['a','A'],['b','B'],['c','C'],['d','D']];
   let html='';
   quizPerguntas.forEach((q,i)=>{
-    const corr=(q.correta||'').toUpperCase(),resp=quizRespostas[i],ok=resp===corr;
-    html+=`<div class="gab-block">
-      <div style="font-size:10px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;font-family:'JetBrains Mono',monospace">
-        Q${i+1} · ${ok?'Correta ✓':'Errada ✗'}
-      </div>
-      <div style="font-size:14px;font-weight:500;margin-bottom:12px;line-height:1.5;color:var(--text-1)">${q.pergunta||'—'}</div>`;
+    const corr=(q.correta||'').toUpperCase();
+    const resp=quizRespostas[i];
+    const ok=resp===corr;
+    html+=`<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:0.5px solid var(--color-border-tertiary)">
+      <div style="font-size:10px;font-weight:500;color:${ok?'#057a55':'#c81e1e'};text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;font-family:'IBM Plex Mono',monospace">
+        Q${i+1} · ${ok?'Correta ✓':'Errada ✗'}</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:10px;line-height:1.45">${q.pergunta||'—'}</div>`;
     opts.forEach(([k,L])=>{
       if(!q[k])return;
       const isC=L===corr,isR=L===resp;
-      html+=`<div class="opt${isC?' correct':isR?' wrong':''}" style="cursor:default;margin-bottom:6px">
+      html+=`<div class="opt${isC?' correct':isR?' wrong':''}" style="cursor:default;margin-bottom:5px">
         <div class="opt-key">${L}</div>
         <div class="opt-text">${q[k]}</div>
       </div>`;
@@ -1095,18 +495,14 @@ function renderGabarito(){
   </div>`;
 }
 
-/* ── ADMIN ── */
+/* ===== ADMIN ===== */
 function showAdmin(){
   main().innerHTML=`
   <div class="wrap-wide screen">
     <div class="card">
       <div class="tabs">
-        <button class="tab active" id="tab-u" onclick="atab('u')">
-          <i class="ti ti-users" aria-hidden="true"></i> Usuários
-        </button>
-        <button class="tab" id="tab-p" onclick="atab('p')">
-          <i class="ti ti-clipboard-list" aria-hidden="true"></i> Perguntas (10)
-        </button>
+        <button class="tab active" id="tab-u" onclick="atab('u')"><i class="ti ti-users" aria-hidden="true"></i> Usuários</button>
+        <button class="tab" id="tab-p" onclick="atab('p')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Perguntas (10)</button>
       </div>
       <div id="abody" class="card-body"></div>
     </div>
@@ -1119,10 +515,10 @@ function atab(t){
   const b=$('abody');
   if(t==='u'){
     b.innerHTML=`
-      <div class="info-box"><i class="ti ti-info-circle" aria-hidden="true"></i>A senha do funcionário será o CPF (somente números). Ele deve usar o CPF para fazer login.</div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:14px">A senha do funcionário será o CPF (somente números).</div>
       <div class="field"><label>Nome completo</label><input id="u-n" placeholder="Ex: João da Silva"/></div>
       <div class="row2">
-        <div class="field"><label>CPF <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-3)">(será a senha)</span></label><input id="u-c" placeholder="000.000.000-00"/></div>
+        <div class="field"><label>CPF <span style="font-size:10px;color:var(--color-text-secondary)">(será a senha)</span></label><input id="u-c" placeholder="000.000.000-00"/></div>
         <div class="field"><label>Setor</label><input id="u-s" placeholder="Ex: Produção"/></div>
       </div>
       <div id="umsg"></div>
@@ -1143,24 +539,22 @@ function renderWiz(){
 
   if(wizStep===total){
     b.innerHTML=`
-      <div style="text-align:center;padding:24px 0 12px">
-        <div style="width:56px;height:56px;background:var(--green-subtle);border:1px solid rgba(16,185,129,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:var(--shadow-green)">
-          <i class="ti ti-check" style="font-size:26px;color:var(--green)" aria-hidden="true"></i>
-        </div>
-        <div style="font-size:16px;font-weight:700;margin-bottom:4px">10 perguntas prontas!</div>
-        <div style="font-size:13px;color:var(--text-2);margin-bottom:24px">Revise abaixo e envie tudo de uma vez para o Google Sheets.</div>
+      <div style="text-align:center;padding:20px 0 10px">
+        <i class="ti ti-check-circle" style="font-size:40px;color:#057a55;display:block;margin-bottom:10px" aria-hidden="true"></i>
+        <div style="font-size:16px;font-weight:500;margin-bottom:4px">10 perguntas prontas!</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px">Revise abaixo e envie tudo de uma vez.</div>
       </div>
-      <div id="wiz-preview" style="margin-bottom:18px"></div>
+      <div id="wiz-preview" style="margin-bottom:16px"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-green" onclick="enviarPerguntas()"><i class="ti ti-send" aria-hidden="true"></i> Enviar todas (10) para o Sheets</button>
         <button class="btn btn-ghost" onclick="wizStep=0;wizPerguntas=[];renderWiz()"><i class="ti ti-refresh" aria-hidden="true"></i> Recomeçar</button>
       </div>
-      <div id="wiz-msg" style="margin-top:12px"></div>`;
+      <div id="wiz-msg" style="margin-top:10px"></div>`;
     let prev='';
     wizPerguntas.forEach((p,i)=>{
-      prev+=`<div class="review-item">
-        <div class="review-num">${i+1}</div>
-        <div class="review-text"><strong>${p.pergunta}</strong> <span class="badge badge-green" style="font-size:10px;margin-left:6px">${p.correta}</span></div>
+      prev+=`<div style="padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);font-family:'IBM Plex Mono',monospace;margin-bottom:3px">Q${i+1} · <span class="badge badge-green" style="font-size:10px">${p.correta}</span></div>
+        <div style="font-size:13px;font-weight:500">${p.pergunta}</div>
       </div>`;
     });
     $('wiz-preview').innerHTML=prev;
@@ -1169,19 +563,17 @@ function renderWiz(){
 
   const cur=wizPerguntas[wizStep]||{setor:'',dds:'',pergunta:'',a:'',b:'',c:'',d:'',correta:'A'};
   b.innerHTML=`
-    <div style="margin-bottom:18px">
-      <div style="font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:10px">
-        Questão ${wizStep+1} de 10
-        <span style="font-size:11px;font-weight:400;color:var(--text-3);margin-left:8px">${Math.round(wizStep/10*100)}% concluído</span>
-      </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px">Questão ${wizStep+1} de 10</div>
       <div class="wiz-step">${steps}</div>
     </div>
     ${wizStep===0?`
     <div class="row2">
-      <div class="field"><label>Setor <span style="font-weight:400;text-transform:none;color:var(--text-3)">(vazio = todos)</span></label><input id="w-setor" value="${cur.setor}" placeholder="Ex: Produção"/></div>
+      <div class="field"><label>Setor <span style="font-size:10px;color:var(--color-text-secondary)">(vazio = todos)</span></label><input id="w-setor" value="${cur.setor}" placeholder="Ex: Produção"/></div>
       <div class="field"><label>Tema DDS</label><input id="w-dds" value="${cur.dds}" placeholder="Ex: Uso de EPI"/></div>
     </div>`:`
-    <div class="info-box"><i class="ti ti-tag" aria-hidden="true"></i>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">
+      <i class="ti ti-tag" style="vertical-align:-2px;margin-right:4px" aria-hidden="true"></i>
       <strong>Setor:</strong> ${wizPerguntas[0]&&wizPerguntas[0].setor||'Todos'} &nbsp;·&nbsp; <strong>DDS:</strong> ${wizPerguntas[0]&&wizPerguntas[0].dds||'—'}
     </div>`}
     <div class="field"><label>Pergunta ${wizStep+1}</label><input id="w-perg" value="${cur.pergunta}" placeholder="Digite a pergunta aqui"/></div>
@@ -1190,17 +582,19 @@ function renderWiz(){
       <div class="field"><label>Alternativa B</label><input id="w-b" value="${cur.b}" placeholder="Opção B"/></div>
     </div>
     <div class="row2">
-      <div class="field"><label>Alternativa C <span style="font-weight:400;text-transform:none;color:var(--text-3)">(opcional)</span></label><input id="w-c" value="${cur.c}" placeholder="Opção C"/></div>
-      <div class="field"><label>Alternativa D <span style="font-weight:400;text-transform:none;color:var(--text-3)">(opcional)</span></label><input id="w-d" value="${cur.d}" placeholder="Opção D"/></div>
+      <div class="field"><label>Alternativa C <span style="font-size:10px">(opcional)</span></label><input id="w-c" value="${cur.c}" placeholder="Opção C"/></div>
+      <div class="field"><label>Alternativa D <span style="font-size:10px">(opcional)</span></label><input id="w-d" value="${cur.d}" placeholder="Opção D"/></div>
     </div>
     <div class="field" style="max-width:180px"><label>Resposta correta</label>
-      <select id="w-correta">${['A','B','C','D'].map(v=>`<option value="${v}" ${cur.correta===v?'selected':''}>${v}</option>`).join('')}</select>
+      <select id="w-correta">
+        ${['A','B','C','D'].map(v=>`<option value="${v}" ${cur.correta===v?'selected':''}>${v}</option>`).join('')}
+      </select>
     </div>
     <div id="wmsg"></div>
-    <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
       ${wizStep>0?`<button class="btn btn-ghost" onclick="wizStep--;renderWiz()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Anterior</button>`:''}
       <button class="btn btn-primary" onclick="wizProx()">
-        ${wizStep<9?'Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i>':'Revisar <i class="ti ti-check" aria-hidden="true"></i>'}
+        ${wizStep<9?'Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i>':'Revisar e enviar <i class="ti ti-check" aria-hidden="true"></i>'}
       </button>
     </div>`;
 }
@@ -1208,7 +602,8 @@ function renderWiz(){
 function wizProx(){
   const setor=wizStep===0?gv('w-setor'):(wizPerguntas[0]&&wizPerguntas[0].setor||'');
   const dds=wizStep===0?gv('w-dds'):(wizPerguntas[0]&&wizPerguntas[0].dds||'');
-  const perg=gv('w-perg'),a=gv('w-a'),b=gv('w-b'),c=gv('w-c'),d=gv('w-d'),correta=gv('w-correta');
+  const perg=gv('w-perg'),a=gv('w-a'),b=gv('w-b'),c=gv('w-c'),d=gv('w-d');
+  const correta=gv('w-correta');
   if(!perg||!a||!b){
     $('wmsg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha a pergunta e as alternativas A e B.</div>';
     return;
@@ -1220,7 +615,7 @@ function wizProx(){
 
 async function enviarPerguntas(){
   const m=$('wiz-msg');
-  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i>Enviando 10 perguntas para o Sheets...</div>';
+  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Enviando 10 perguntas...</div>';
   let ok=0;
   for(const p of wizPerguntas){
     try{
@@ -1235,14 +630,12 @@ async function enviarPerguntas(){
 async function cadUser(){
   const n=gv('u-n'),c=gv('u-c'),s=gv('u-s');
   if(!n||!c||!s){$('umsg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha todos os campos.</div>';return;}
-  $('umsg').innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i>Salvando...</div>';
+  $('umsg').innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Salvando...</div>';
   try{
     await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'usuario',nome:n,cpf:c,setor:s})});
-    $('umsg').innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Usuário salvo com sucesso!</div>';
+    $('umsg').innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Usuário salvo!</div>';
     ['u-n','u-c','u-s'].forEach(i=>{const e=$(i);if(e)e.value='';});
-  }catch(e){
-    $('umsg').innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>${e.message}</div>`;
-  }
+  }catch(e){$('umsg').innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>${e.message}</div>`;}
 }
 
 showLogin();
