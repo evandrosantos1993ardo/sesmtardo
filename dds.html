@@ -1,213 +1,260 @@
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+--bg:#0f172a;--surface:#1e293b;--card:rgba(30,41,59,0.85);--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
+--blue:#2563eb;--blue2:#3b82f6;--blue-glow:rgba(37,99,235,0.35);--blue-sub:rgba(37,99,235,0.12);--blue-sub2:rgba(59,130,246,0.18);
+--green:#10b981;--green-glow:rgba(16,185,129,0.3);--green-sub:rgba(16,185,129,0.12);
+--red:#ef4444;--red-glow:rgba(239,68,68,0.3);--red-sub:rgba(239,68,68,0.12);
+--amber:#f59e0b;--amber-sub:rgba(245,158,11,0.12);
+--t1:#f8fafc;--t2:#94a3b8;--t3:#475569;--t4:#334155;
+--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--border-blue:rgba(37,99,235,0.5);
+--r:8px;--r2:12px;--r3:16px;--r4:20px;
+--sh:0 4px 16px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.3);
+--sh-blue:0 0 0 3px rgba(37,99,235,.25);
+--tr:all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'IBM Plex Sans',sans-serif;background:var(--color-background-tertiary,#f3f4f6);color:var(--color-text-primary,#111);min-height:600px;display:flex;flex-direction:column}
-.topbar{background:#111928;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:50px;flex-shrink:0}
-.brand{display:flex;align-items:center;gap:8px}
-.brand-dot{width:24px;height:24px;background:#1a56db;border-radius:5px;display:flex;align-items:center;justify-content:center}
-.brand-dot i{font-size:13px;color:#fff}
-.brand-name{font-size:13px;font-weight:600;color:#fff}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:600px;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--t4);border-radius:99px}
+
+.topbar{background:rgba(15,23,42,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-dot{width:30px;height:30px;background:linear-gradient(135deg,#2563eb,#3b82f6);border-radius:var(--r);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px var(--blue-glow)}
+.brand-dot i{font-size:15px;color:#fff}
+.brand-name{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-.3px}
+.brand-tag{font-size:10px;font-weight:500;color:var(--blue2);background:var(--blue-sub2);border:1px solid rgba(59,130,246,.25);padding:2px 7px;border-radius:99px}
 .top-right{display:flex;align-items:center;gap:10px}
-.top-user{font-size:12px;color:#9ca3af;display:flex;align-items:center;gap:6px}
-.top-user strong{color:#e5e7eb}
-.btn-top{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:5px 10px;font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;color:#e5e7eb;cursor:pointer;display:flex;align-items:center;gap:5px}
-.btn-top:hover{background:rgba(255,255,255,.18)}
-.main{flex:1;padding:24px 16px 40px;display:flex;align-items:flex-start;justify-content:center}
-.wrap{width:100%;max-width:520px}
-.wrap-wide{width:100%;max-width:860px}
+.top-user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+.top-user strong{color:var(--t1);font-weight:500}
+.top-avatar{width:28px;height:28px;border-radius:99px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+.btn-top{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:6px 12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:var(--tr)}
+.btn-top:hover{background:var(--glass2);border-color:var(--border2);color:var(--t1)}
 
-.card{background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.12));border-radius:var(--border-radius-lg,12px)}
-.card-hd{padding:14px 18px;border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,.1));display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);display:flex;align-items:center;gap:6px}
-.card-title i{font-size:15px;color:#1a56db}
-.card-body{padding:18px}
+.main{flex:1;padding:32px 20px 60px;display:flex;align-items:flex-start;justify-content:center}
+.wrap{width:100%;max-width:480px}
+.wrap-wide{width:100%;max-width:900px}
 
-.field{margin-bottom:13px}
-.field label{display:block;font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
-.field input,.field select{width:100%;background:var(--color-background-secondary,#f9fafb);border:0.5px solid var(--color-border-secondary,rgba(0,0,0,.2));border-radius:var(--border-radius-md,8px);padding:9px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--color-text-primary);outline:none;transition:border .15s,box-shadow .15s}
-.field input:focus,.field select:focus{border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,86,219,.1);background:var(--color-background-primary)}
-.field select option{background:var(--color-background-primary)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r4);backdrop-filter:blur(16px);box-shadow:var(--sh);overflow:hidden}
+.card-hd{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px}
+.card-title i{font-size:15px;color:var(--blue2)}
+.card-body{padding:22px}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--border-radius-md,8px);font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn-primary{background:#1a56db;color:#fff}
-.btn-primary:hover{background:#1241a8}
-.btn-ghost{background:transparent;border:0.5px solid var(--color-border-secondary,rgba(0,0,0,.2));color:var(--color-text-secondary)}
-.btn-ghost:hover{background:var(--color-background-secondary)}
-.btn-green{background:#057a55;color:#fff}
-.btn-green:hover{background:#046c4e}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
+.field input,.field select{width:100%;background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--t1);outline:none;transition:var(--tr)}
+.field input::placeholder{color:var(--t3)}
+.field input:hover,.field select:hover{border-color:var(--border2)}
+.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:var(--sh-blue);background:rgba(15,23,42,.8)}
+.field select option{background:#1e293b;color:var(--t1)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border:none;border-radius:var(--r2);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);white-space:nowrap;position:relative;overflow:hidden}
+.btn:active{transform:scale(0.97)!important}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 2px 12px var(--blue-glow)}
+.btn-primary:hover{box-shadow:0 4px 20px var(--blue-glow);transform:translateY(-1px)}
+.btn-ghost{background:var(--glass);border:1px solid var(--border);color:var(--t2)}
+.btn-ghost:hover{background:var(--glass2);border-color:var(--border2);color:var(--t1)}
+.btn-green{background:linear-gradient(135deg,#059669,var(--green));color:#fff;box-shadow:0 2px 12px var(--green-glow)}
+.btn-green:hover{box-shadow:0 4px 20px var(--green-glow);transform:translateY(-1px)}
 .btn-block{width:100%}
-.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px}
+.badge-blue{background:var(--blue-sub2);color:var(--blue2);border:1px solid rgba(59,130,246,.2)}
+.badge-green{background:var(--green-sub);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.badge-red{background:var(--red-sub);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.badge-amber{background:var(--amber-sub);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--border)}
+
+.alert{padding:11px 14px;border-radius:var(--r2);font-size:13px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;margin-bottom:12px}
+.alert i{font-size:14px;flex-shrink:0;margin-top:1px}
+.alert-success{background:var(--green-sub);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.alert-error{background:var(--red-sub);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.alert-info{background:var(--blue-sub);color:var(--blue2);border:1px solid rgba(37,99,235,.2)}
+.alert-warn{background:var(--amber-sub);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px}
+.tab{padding:12px 14px;font-size:13px;font-weight:500;color:var(--t3);border-bottom:2px solid transparent;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:'Inter',sans-serif;transition:var(--tr);display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--t2)}
+.tab.active{color:var(--blue2);border-bottom-color:var(--blue)}
 
 .hidden{display:none!important}
-.screen{animation:up .2s ease}
-@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.screen{animation:up .25s cubic-bezier(.4,0,.2,1)}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulseRing{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.04)}}
+.spin{display:inline-block;animation:spin .8s linear infinite}
 
-.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;gap:4px}
-.badge-blue{background:#e8f0fe;color:#1241a8}
-.badge-green{background:#def7ec;color:#057a55}
-.badge-red{background:#fde8e8;color:#c81e1e}
-.badge-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
-.badge-yellow{background:#feecdc;color:#723b13}
+.login-hero{text-align:center;padding:36px 22px 12px}
+.login-icon-wrap{position:relative;width:64px;height:64px;margin:0 auto 16px}
+.login-icon{width:64px;height:64px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px var(--blue-glow)}
+.login-icon i{font-size:30px;color:#fff}
+.login-ring{position:absolute;inset:-6px;border:1px solid rgba(59,130,246,.3);border-radius:24px;animation:pulseRing 2.5s ease-in-out infinite}
+.login-title{font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.4px;margin-bottom:5px}
+.login-sub{font-size:13px;color:var(--t2);margin-bottom:4px}
+.divider{display:flex;align-items:center;gap:12px;margin:16px 0;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-.alert{padding:10px 12px;border-radius:var(--border-radius-md);font-size:13px;display:flex;align-items:flex-start;gap:7px;line-height:1.5;margin-bottom:10px}
-.alert i{font-size:14px;flex-shrink:0;margin-top:1px}
-.alert-success{background:#def7ec;color:#057a55;border:0.5px solid #a7f3d0}
-.alert-error{background:#fde8e8;color:#c81e1e;border:0.5px solid #fca5a5}
-.alert-info{background:#e8f0fe;color:#1241a8;border:0.5px solid #bfdbfe}
-.alert-warn{background:#feecdc;color:#723b13;border:0.5px solid #fcd34d}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:16px;text-align:center;transition:var(--tr);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.s-amber::before{background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.stat-card.s-green::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.stat-card.s-red::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-num{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1;margin-bottom:5px}
+.stat-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px}
 
-.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);padding:0 18px}
-.tab{padding:10px 12px;font-size:13px;font-weight:500;color:var(--color-text-secondary);border-bottom:2px solid transparent;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:'IBM Plex Sans',sans-serif;transition:all .15s}
-.tab:hover{color:var(--color-text-primary)}
-.tab.active{color:#1a56db;border-bottom-color:#1a56db}
+.section-title{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* Login tela colaborador */
-.login-hero{text-align:center;padding:24px 18px 8px}
-.login-icon{width:48px;height:48px;background:#1a56db;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 11px}
-.login-icon i{font-size:24px;color:#fff}
+.dds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:24px}
+.dds-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r4);padding:18px;display:flex;flex-direction:column;gap:14px;transition:all .3s cubic-bezier(.4,0,.2,1);cursor:pointer;position:relative;overflow:hidden}
+.dds-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 1px rgba(59,130,246,.15)}
+.dds-card.s-ok{border-color:rgba(16,185,129,.2)}
+.dds-card.s-ok .dds-icon{background:var(--green-sub);border-color:rgba(16,185,129,.2)}
+.dds-card.s-ok .dds-icon i{color:var(--green)}
+.dds-card.s-fail{border-color:rgba(239,68,68,.2)}
+.dds-card.s-fail .dds-icon{background:var(--red-sub);border-color:rgba(239,68,68,.2)}
+.dds-card.s-fail .dds-icon i{color:var(--red)}
+.dds-card-top{display:flex;align-items:flex-start;gap:12px}
+.dds-icon{width:40px;height:40px;border-radius:var(--r2);background:var(--blue-sub2);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dds-icon i{font-size:19px;color:var(--blue2)}
+.dds-name{font-size:14px;font-weight:600;color:var(--t1);line-height:1.4}
+.dds-setor{font-size:11px;color:var(--t3);margin-top:3px}
+.dds-footer{display:flex;align-items:center;justify-content:space-between}
 
-/* DDS cards grid */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.stat-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;text-align:center}
-.stat-num{font-size:22px;font-weight:600;font-family:'IBM Plex Mono',monospace}
-.stat-lbl{font-size:10px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.prog-wrap{margin-bottom:20px}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:8px}
+.prog-track{height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:99px;transition:width .4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--blue-glow)}
+.q-label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono',monospace;margin-bottom:8px}
+.q-text{font-size:15px;font-weight:500;color:var(--t1);line-height:1.6;margin-bottom:18px}
 
-.section-title{font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;cursor:pointer;transition:var(--tr);background:var(--glass);position:relative;overflow:hidden}
+.opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:var(--tr)}
+.opt:hover{border-color:var(--border-blue);background:var(--blue-sub)}
+.opt:hover::before{background:var(--blue)}
+.opt.sel{border-color:var(--blue);background:var(--blue-sub)}
+.opt.sel::before{background:var(--blue)}
+.opt.correct{border-color:rgba(16,185,129,.5)!important;background:var(--green-sub)!important}
+.opt.correct::before{background:var(--green)!important}
+.opt.wrong{border-color:rgba(239,68,68,.5)!important;background:var(--red-sub)!important}
+.opt.wrong::before{background:var(--red)!important}
+.opt-key{width:28px;height:28px;border-radius:var(--r);background:rgba(255,255,255,.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--t2);flex-shrink:0;font-family:'JetBrains Mono',monospace;transition:var(--tr)}
+.opt.sel .opt-key{background:var(--blue);border-color:var(--blue);color:#fff}
+.opt.correct .opt-key{background:var(--green);border-color:var(--green);color:#fff}
+.opt.wrong .opt-key{background:var(--red);border-color:var(--red);color:#fff}
+.opt-text{font-size:13px;color:var(--t2);line-height:1.4}
+.opt.sel .opt-text,.opt.correct .opt-text{color:var(--t1)}
 
-.dds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
-.dds-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;cursor:pointer;transition:border .15s,box-shadow .15s;display:flex;flex-direction:column;gap:10px}
-.dds-card:hover{border-color:rgba(26,86,219,.4);box-shadow:0 2px 8px rgba(26,86,219,.08)}
-.dds-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.dds-card-icon{width:36px;height:36px;border-radius:8px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.dds-card-icon i{font-size:18px;color:#1a56db}
-.dds-card-name{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.35;flex:1}
-.dds-card-setor{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
-.dds-card-footer{display:flex;align-items:center;justify-content:space-between}
-.dds-card-footer .btn{padding:6px 12px;font-size:12px}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.qmap{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.qm{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;border:1px solid;transition:var(--tr)}
+.qm:hover{transform:scale(1.1)}
 
-/* Quiz */
-.prog-wrap{margin-bottom:16px}
-.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:5px}
-.prog-track{height:5px;background:var(--color-background-secondary);border-radius:3px}
-.prog-fill{height:100%;background:#1a56db;border-radius:3px;transition:width .3s}
+.result-ring{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;position:relative}
+.result-ring::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid;opacity:.4;animation:pulseRing 2.5s ease-in-out infinite}
+.r-ok{background:var(--green-sub);color:var(--green);border:2px solid rgba(16,185,129,.4);box-shadow:0 0 20px var(--green-glow)}
+.r-ok::after{border-color:var(--green)}
+.r-fail{background:var(--red-sub);color:var(--red);border:2px solid rgba(239,68,68,.4);box-shadow:0 0 20px var(--red-glow)}
+.r-fail::after{border-color:var(--red)}
 
-.q-label{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace;margin-bottom:5px}
-.q-text{font-size:15px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:14px}
-
-.opt{display:flex;align-items:center;gap:10px;padding:10px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);margin-bottom:7px;cursor:pointer;transition:all .15s;background:var(--color-background-primary)}
-.opt:hover{border-color:#1a56db;background:#e8f0fe}
-.opt.sel{border-color:#1a56db;background:#e8f0fe}
-.opt.correct{border-color:#057a55!important;background:#def7ec!important}
-.opt.wrong{border-color:#c81e1e!important;background:#fde8e8!important}
-.opt-key{width:24px;height:24px;border-radius:5px;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--color-text-secondary);flex-shrink:0;font-family:'IBM Plex Mono',monospace;transition:all .15s}
-.opt.sel .opt-key{background:#1a56db;color:#fff}
-.opt.correct .opt-key{background:#057a55;color:#fff}
-.opt.wrong .opt-key{background:#c81e1e;color:#fff}
-.opt-text{font-size:13px;color:var(--color-text-secondary);line-height:1.35}
-
-.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary)}
-
-.qmap{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:12px}
-.qm{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;font-family:'IBM Plex Mono',monospace;border:0.5px solid;transition:all .15s}
-
-/* Resultado */
-.result-ring{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;font-weight:600;font-family:'IBM Plex Mono',monospace}
-.r-ok{background:#def7ec;color:#057a55;border:2px solid #6ee7b7}
-.r-fail{background:#fde8e8;color:#c81e1e;border:2px solid #fca5a5}
-
-/* Admin - wizard perguntas */
-.wiz-step{display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-.wiz-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;font-family:'IBM Plex Mono',monospace;border:1.5px solid;transition:all .15s;flex-shrink:0}
-.wiz-dot.done{background:#057a55;border-color:#057a55;color:#fff}
-.wiz-dot.active{background:#1a56db;border-color:#1a56db;color:#fff}
-.wiz-dot.todo{background:transparent;border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
-.wiz-line{flex:1;height:1px;background:var(--color-border-tertiary);min-width:8px;max-width:20px}
+.wiz-step{display:flex;align-items:center;gap:4px;margin-bottom:18px;flex-wrap:wrap}
+.wiz-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;border:1.5px solid;transition:var(--tr);flex-shrink:0}
+.wiz-dot.done{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 8px var(--green-glow)}
+.wiz-dot.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 8px var(--blue-glow)}
+.wiz-dot.todo{background:transparent;border-color:var(--t4);color:var(--t4)}
+.wiz-line{flex:1;height:1px;background:var(--border);min-width:4px;max-width:16px}
+.info-box{background:var(--blue-sub);border:1px solid rgba(37,99,235,.2);border-radius:var(--r2);padding:12px 14px;font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.6;display:flex;gap:8px}
+.info-box i{color:var(--blue2);flex-shrink:0;margin-top:1px}
+.quiz-strip{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r2)}
+.quiz-strip-name{font-size:13px;font-weight:600;flex:1;color:var(--t1)}
+.review-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px}
+.review-item:last-child{border-bottom:none}
+.review-num{width:22px;height:22px;border-radius:50%;background:var(--blue-sub2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue2);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:1px}
+.review-text{font-size:13px;color:var(--t2);line-height:1.45;flex:1}
+.review-text strong{color:var(--t1);font-weight:500}
+.gab-block{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--border)}
+.gab-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.empty-state{grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--t3)}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;opacity:.5}
+.empty-state p{font-size:13px;line-height:1.6}
+@media(max-width:640px){.main{padding:20px 12px 50px}.card-body{padding:16px}.row2{grid-template-columns:1fr}.dds-grid{grid-template-columns:1fr}.stats-row{gap:8px}.stat-num{font-size:22px}.topbar{padding:0 14px}.brand-tag{display:none}.tabs{padding:0 12px}.tab{padding:10px 10px;font-size:12px}}
 </style>
 
 <div id="app">
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-dot"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
-    <span class="brand-name">DDS Sistema</span>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+      <span class="brand-name">DDS Sistema</span>
+      <span class="brand-tag">SEGURANÇA</span>
+    </div>
+    <div class="top-right" id="top-right"></div>
   </div>
-  <div class="top-right" id="top-right"></div>
-</div>
-<div class="main" id="main"></div>
+  <div class="main" id="main"></div>
 </div>
 
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzUtVKwS65dSO2LyGuXUHD-qz-rZsy4tauAaoYruHOlQ-DSbGwQZufnjjcFjLvVwTHuAQ/exec';
-let user=null;
-let allPerguntas=[];
-let allResultados=[];
-let allSetores=[];
-let wizPerguntas=[];
-let wizStep=0;
-let quizPerguntas=[];
-let quizRespostas={};
-let quizIdx=0;
-let quizDDS='';
-let quizEnded=false;
-
+const SURL='https://script.google.com/macros/s/AKfycbzUtVKwS65dSO2LyGuXUHD-qz-rZsy4tauAaoYruHOlQ-DSbGwQZufnjjcFjLvVwTHuAQ/exec';
+let user=null,allP=[],allR=[],wizQ=[],wizS=0;
+let qzP=[],qzR={},qzI=0,qzDDS='',qzEnd=false;
 const $=id=>document.getElementById(id);
-const main=()=>$('main');
+const M=()=>$('main');
 const gv=id=>{const e=$(id);return e?e.value.trim():'';}
+const clean=s=>String(s||'').replace(/\D/g,'');
+const inits=n=>(n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 
 function setTop(u){
   const t=$('top-right');
   if(!u){t.innerHTML='';return;}
   const isA=u==='admin';
-  t.innerHTML=`<div class="top-user"><i class="ti ti-user-circle" style="font-size:16px" aria-hidden="true"></i>
-    <strong>${isA?'Admin':u.nome}</strong>
-    ${!isA&&u.setor?`<span class="badge badge-blue" style="font-size:10px">${u.setor}</span>`:''}
+  const nm=isA?'Administrador':u.nome;
+  t.innerHTML=`<div class="top-user">
+    <div class="top-avatar">${inits(nm)}</div>
+    <strong>${nm}</strong>
+    ${!isA&&u.setor?`<span class="badge badge-blue">${u.setor}</span>`:''}
   </div>
-  <button class="btn-top" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i> Sair</button>`;
+  <button class="btn-top" onclick="logout()"><i class="ti ti-logout"></i> Sair</button>`;
 }
 
-/* ===== LOGIN ===== */
 function showLogin(){
   setTop(null);user=null;
-  main().innerHTML=`
-  <div class="wrap screen">
-    <div class="card">
-      <div class="login-hero">
-        <div class="login-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
-        <div style="font-size:18px;font-weight:600;margin-bottom:4px">Diálogo Diário de Segurança</div>
-        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:4px">Identifique-se com CPF e Setor para iniciar</div>
+  M().innerHTML=`<div class="wrap screen"><div class="card">
+    <div class="login-hero">
+      <div class="login-icon-wrap">
+        <div class="login-icon"><i class="ti ti-shield-check"></i></div>
+        <div class="login-ring"></div>
       </div>
-      <div class="card-body">
-        <div class="field"><label>CPF</label><input id="inp-u" placeholder="Digite seu CPF"/></div>
-        <div class="field"><label>Senha</label><input id="inp-p" type="password" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-        <div id="lmsg"></div>
-        <button class="btn btn-primary btn-block" onclick="doLogin()"><i class="ti ti-login" aria-hidden="true"></i> Entrar</button>
-        <div style="text-align:center;margin-top:14px">
-          <button class="btn btn-ghost" onclick="showAdminLogin()" style="font-size:12px;padding:6px 12px">
-            <i class="ti ti-settings" aria-hidden="true"></i> Acesso administrativo
-          </button>
-        </div>
-      </div>
+      <div class="login-title">Diálogo Diário de Segurança</div>
+      <div class="login-sub">Acesse com seu CPF e senha para iniciar</div>
     </div>
-  </div>`;
+    <div class="card-body">
+      <div class="field"><label>CPF</label><input id="inp-u" placeholder="000.000.000-00" autocomplete="username"/></div>
+      <div class="field"><label>Senha</label><input id="inp-p" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <div id="lmsg"></div>
+      <button class="btn btn-primary btn-block" onclick="doLogin()"><i class="ti ti-login"></i> Entrar</button>
+      <div class="divider">ou</div>
+      <button class="btn btn-ghost btn-block" onclick="showAdminLogin()" style="font-size:12px"><i class="ti ti-settings"></i> Acesso administrativo</button>
+    </div>
+  </div></div>`;
 }
 
 function showAdminLogin(){
-  main().innerHTML=`
-  <div class="wrap screen">
-    <div class="card">
-      <div class="card-hd">
-        <div class="card-title"><i class="ti ti-settings" aria-hidden="true"></i> Acesso Admin</div>
-        <button class="btn btn-ghost" onclick="showLogin()" style="padding:5px 10px;font-size:12px"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
-      </div>
-      <div class="card-body">
-        <div class="field"><label>Usuário</label><input id="au" placeholder="admin" value="admin"/></div>
-        <div class="field"><label>Senha</label><input id="ap" type="password" placeholder="admin123" onkeydown="if(event.key==='Enter')adminLogin()"/></div>
-        <div id="amsg"></div>
-        <button class="btn btn-primary btn-block" onclick="adminLogin()"><i class="ti ti-login" aria-hidden="true"></i> Entrar</button>
-      </div>
+  M().innerHTML=`<div class="wrap screen"><div class="card">
+    <div class="card-hd">
+      <div class="card-title"><i class="ti ti-settings"></i> Acesso Admin</div>
+      <button class="btn btn-ghost" onclick="showLogin()" style="padding:5px 10px;font-size:12px"><i class="ti ti-arrow-left"></i> Voltar</button>
     </div>
-  </div>`;
+    <div class="card-body">
+      <div class="field"><label>Usuário</label><input id="au" value="admin"/></div>
+      <div class="field"><label>Senha</label><input id="ap" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()"/></div>
+      <div id="amsg"></div>
+      <button class="btn btn-primary btn-block" onclick="adminLogin()"><i class="ti ti-login"></i> Entrar</button>
+    </div>
+  </div></div>`;
 }
 
 function adminLogin(){
@@ -216,297 +263,237 @@ function adminLogin(){
 }
 
 async function doLogin(){
-  const u=gv('inp-u'),p=gv('inp-p');
-  const m=$('lmsg');
+  const u=gv('inp-u'),p=gv('inp-p'),m=$('lmsg');
   if(!u||!p){m.innerHTML='<div class="alert alert-warn"><i class="ti ti-alert-triangle"></i>Preencha CPF e senha.</div>';return;}
-  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Verificando...</div>';
+  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i> Verificando...</div>';
   try{
-    const r=await fetch(SCRIPT_URL+'?usuarios=1');
-    if(!r.ok)throw new Error('HTTP '+r.status);
+    const r=await fetch(SURL+'?usuarios=1');
+    if(!r.ok)throw new Error('Erro HTTP '+r.status);
     const data=await r.json();
-    const clean=s=>String(s||'').replace(/\D/g,'');
     const found=data.find(x=>clean(x.cpf)===clean(u)&&clean(x.senha)===clean(p));
     if(found){
       user=found;setTop(found);
-      await loadAllData();
-      showDashboard();
+      m.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i> Carregando seus dados...</div>';
+      await loadAll();
+      showDash();
     }else{
       m.innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>CPF ou senha inválidos.</div>';
     }
-  }catch(e){
-    m.innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>${e.message}</div>`;
-  }
+  }catch(e){m.innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>${e.message}</div>`;}
 }
 
-async function loadAllData(){
+async function loadAll(){
   try{
-    const [rp,rr]=await Promise.all([fetch(SCRIPT_URL),fetch(SCRIPT_URL+'?resultados=1')]);
-    const pgs=await rp.json();
-    allPerguntas=pgs;
-    try{const rs=await rr.json();allResultados=Array.isArray(rs)?rs:[];}catch(e){allResultados=[];}
-  }catch(e){allPerguntas=[];allResultados=[];}
+    const [rp,rr]=await Promise.all([fetch(SURL),fetch(SURL+'?resultados=1')]);
+    allP=await rp.json();
+    try{const rs=await rr.json();allR=Array.isArray(rs)?rs:[];}catch(e){allR=[];}
+  }catch(e){allP=[];allR=[];}
 }
 
-function logout(){user=null;allPerguntas=[];allResultados=[];showLogin();}
+function logout(){user=null;allP=[];allR=[];showLogin();}
 
-/* ===== DASHBOARD COLABORADOR ===== */
-function showDashboard(){
+function showDash(){
   const setor=(user.setor||'').trim().toLowerCase();
-  const pool=allPerguntas.filter(q=>!q.setor||q.setor.trim().toLowerCase()===setor||setor==='');
+  const pool=allP.filter(q=>!q.setor||q.setor.trim().toLowerCase()===setor);
   const ddsMap={};
   pool.forEach(q=>{
-    const nome=(q.dds||q.setor||'Geral').trim();
-    if(!ddsMap[nome])ddsMap[nome]={nome,setor:q.setor||'',perguntas:[]};
-    ddsMap[nome].perguntas.push(q);
+    const nm=(q.dds||q.setor||'Geral').trim();
+    if(!ddsMap[nm])ddsMap[nm]={nome:nm,setor:q.setor||''};
   });
-  const ddsList=Object.values(ddsMap);
+  const list=Object.values(ddsMap);
 
-  const userRes=allResultados.filter(r=>String(r.cpf||'').replace(/\D/g,'')===String(user.cpf||'').replace(/\D/g,''));
+  const userR=allR.filter(r=>clean(r.cpf)===clean(user.cpf));
   const resMap={};
-  userRes.forEach(r=>{const k=(r.dds||r.resultado||'');if(r.dds)resMap[r.dds]=r.resultado;});
-  userRes.forEach(r=>{if(r.dds)resMap[r.dds]=r.resultado;});
+  userR.forEach(r=>{if(r.dds)resMap[r.dds]=r.resultado;});
 
-  let pendentes=0,concluidos=0,reprovados=0;
-  ddsList.forEach(d=>{
+  let pend=0,conc=0,repr=0;
+  list.forEach(d=>{
     const res=resMap[d.nome];
-    if(res==='APROVADO')concluidos++;
-    else if(res==='REPROVADO')reprovados++;
-    else pendentes++;
+    if(res==='APROVADO')conc++;
+    else if(res==='REPROVADO')repr++;
+    else pend++;
   });
 
-  let cardsHtml='';
-  ddsList.forEach(d=>{
+  let cards='';
+  list.forEach(d=>{
     const res=resMap[d.nome];
-    let statusBadge,btnLabel,btnClass;
-    if(res==='APROVADO'){
-      statusBadge='<span class="badge badge-green"><i class="ti ti-check"></i> Aprovado</span>';
-      btnLabel='Refazer';btnClass='btn-ghost';
-    }else if(res==='REPROVADO'){
-      statusBadge='<span class="badge badge-red"><i class="ti ti-x"></i> Reprovado</span>';
-      btnLabel='Tentar novamente';btnClass='btn-primary';
-    }else{
-      statusBadge='<span class="badge badge-gray"><i class="ti ti-clock"></i> A fazer</span>';
-      btnLabel='Iniciar';btnClass='btn-primary';
-    }
-    cardsHtml+=`<div class="dds-card">
+    let badge,btnLbl,btnCls,cCls='';
+    if(res==='APROVADO'){badge='<span class="badge badge-green"><i class="ti ti-check"></i> Aprovado</span>';btnLbl='Refazer';btnCls='btn-ghost';cCls='s-ok';}
+    else if(res==='REPROVADO'){badge='<span class="badge badge-red"><i class="ti ti-x"></i> Reprovado</span>';btnLbl='Tentar novamente';btnCls='btn-primary';cCls='s-fail';}
+    else{badge='<span class="badge badge-amber"><i class="ti ti-clock"></i> A fazer</span>';btnLbl='Iniciar';btnCls='btn-primary';}
+    cards+=`<div class="dds-card ${cCls}">
       <div class="dds-card-top">
-        <div class="dds-card-icon"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
-        <div style="flex:1">
-          <div class="dds-card-name">${d.nome}</div>
-          ${d.setor?`<div class="dds-card-setor"><i class="ti ti-building" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> ${d.setor}</div>`:''}
+        <div class="dds-icon"><i class="ti ti-clipboard-list"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="dds-name">${d.nome}</div>
+          ${d.setor?`<div class="dds-setor">${d.setor}</div>`:''}
         </div>
       </div>
-      <div class="dds-card-footer">
-        ${statusBadge}
-        <button class="btn ${btnClass}" onclick="startQuiz('${encodeURIComponent(d.nome)}')" style="padding:6px 12px;font-size:12px">
-          <i class="ti ti-arrow-right" aria-hidden="true"></i> ${btnLabel}
+      <div class="dds-footer">
+        ${badge}
+        <button class="btn ${btnCls}" onclick="startQuiz('${encodeURIComponent(d.nome)}')" style="padding:7px 14px;font-size:12px">
+          <i class="ti ti-arrow-right"></i> ${btnLbl}
         </button>
       </div>
     </div>`;
   });
 
-  if(!cardsHtml)cardsHtml=`<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--color-text-secondary);font-size:13px">
-    <i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:8px" aria-hidden="true"></i>
-    Nenhum DDS disponível para seu setor ainda.
-  </div>`;
+  if(!cards)cards=`<div class="empty-state"><i class="ti ti-inbox"></i><p>Nenhum DDS disponível para seu setor.<br>Aguarde o administrador cadastrar os conteúdos.</p></div>`;
 
-  main().innerHTML=`
-  <div class="wrap-wide screen">
-    <div style="margin-bottom:20px">
-      <div style="font-size:18px;font-weight:600;margin-bottom:2px">Olá, ${user.nome.split(' ')[0]} 👋</div>
-      <div style="font-size:13px;color:var(--color-text-secondary)">Setor: <strong>${user.setor}</strong></div>
+  const h=new Date().getHours();
+  const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+
+  M().innerHTML=`<div class="wrap-wide screen">
+    <div style="margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.5px;margin-bottom:4px">${saud}, ${user.nome.split(' ')[0]} 👋</div>
+        <div style="font-size:13px;color:var(--t2)">Setor: <strong style="color:var(--t1)">${user.setor}</strong> &nbsp;·&nbsp; ${list.length} DDS disponíveis</div>
+      </div>
     </div>
     <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num" style="color:#723b13">${pendentes}</div>
-        <div class="stat-lbl">Pendentes</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" style="color:#057a55">${concluidos}</div>
-        <div class="stat-lbl">Concluídos</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" style="color:#c81e1e">${reprovados}</div>
-        <div class="stat-lbl">Reprovados</div>
-      </div>
+      <div class="stat-card s-amber"><div class="stat-num" style="color:var(--amber)">${pend}</div><div class="stat-lbl">Pendentes</div></div>
+      <div class="stat-card s-green"><div class="stat-num" style="color:var(--green)">${conc}</div><div class="stat-lbl">Concluídos</div></div>
+      <div class="stat-card s-red"><div class="stat-num" style="color:var(--red)">${repr}</div><div class="stat-lbl">Reprovados</div></div>
     </div>
-    <div class="section-title"><i class="ti ti-list" aria-hidden="true"></i> Meus DDS</div>
-    <div class="dds-grid">${cardsHtml}</div>
+    <div class="section-title"><i class="ti ti-list"></i> Meus DDS</div>
+    <div class="dds-grid">${cards}</div>
   </div>`;
 }
 
-function startQuiz(ddsEncoded){
-  const ddsNome=decodeURIComponent(ddsEncoded);
-  const setor=(user.setor||'').trim().toLowerCase();
-  const pool=allPerguntas.filter(q=>{
-    const qDDS=(q.dds||q.setor||'Geral').trim();
-    return qDDS===ddsNome;
-  });
-  if(pool.length===0){
-    alert('Nenhuma pergunta cadastrada para este DDS.');return;
-  }
-  quizPerguntas=pool.sort(()=>0.5-Math.random()).slice(0,10);
-  quizRespostas={};quizIdx=0;quizEnded=false;quizDDS=ddsNome;
-  renderQuiz();
+function startQuiz(enc){
+  const nm=decodeURIComponent(enc);
+  const pool=allP.filter(q=>(q.dds||q.setor||'Geral').trim()===nm);
+  if(!pool.length){alert('Nenhuma pergunta cadastrada para este DDS.');return;}
+  qzP=pool.sort(()=>0.5-Math.random()).slice(0,10);
+  qzR={};qzI=0;qzEnd=false;qzDDS=nm;
+  renderQ();
 }
 
-/* ===== QUIZ ===== */
-function renderQuiz(){
-  if(quizEnded){renderResult();return;}
-  const total=quizPerguntas.length;
-  const resp=Object.keys(quizRespostas).length;
-  const pct=total?Math.round(resp/total*100):0;
-  const q=quizPerguntas[quizIdx];
-  if(!q)return;
+function renderQ(){
+  if(qzEnd){renderResult();return;}
+  const tot=qzP.length,resp=Object.keys(qzR).length,pct=tot?Math.round(resp/tot*100):0;
+  const q=qzP[qzI];if(!q)return;
   const opts=[['a','A'],['b','B'],['c','C'],['d','D']];
-  let optsH='';
+  let oH='';
   opts.forEach(([k,L])=>{
     if(!q[k])return;
-    const sel=quizRespostas[quizIdx]===L;
-    optsH+=`<div class="opt${sel?' sel':''}" onclick="pickOpt(${quizIdx},'${L}')">
-      <div class="opt-key">${L}</div>
-      <div class="opt-text">${q[k]}</div>
+    const sel=qzR[qzI]===L;
+    oH+=`<div class="opt${sel?' sel':''}" onclick="pickOpt(${qzI},'${L}')">
+      <div class="opt-key">${L}</div><div class="opt-text">${q[k]}</div>
     </div>`;
   });
-  const isLast=quizIdx===total-1;
-  const qmapH=quizPerguntas.map((_,i)=>{
-    const cur=i===quizIdx;
-    const ans=quizRespostas[i];
-    const bg=cur?'#1a56db':ans?'#057a55':'var(--color-background-secondary)';
-    const bd=cur?'#1a56db':ans?'#057a55':'var(--color-border-secondary)';
-    const cl=cur?'#fff':ans?'#fff':'var(--color-text-secondary)';
-    return `<div class="qm" onclick="quizIdx=${i};renderQuiz()" style="background:${bg};border-color:${bd};color:${cl}">${i+1}</div>`;
+  const isLast=qzI===tot-1;
+  const mapH=qzP.map((_,i)=>{
+    const cur=i===qzI,ans=qzR[i];
+    const bg=cur?'var(--blue)':ans?'var(--green)':'rgba(255,255,255,.05)';
+    const bd=cur?'var(--blue)':ans?'var(--green)':'rgba(255,255,255,.1)';
+    const cl=cur||ans?'#fff':'var(--t3)';
+    return `<div class="qm" onclick="qzI=${i};renderQ()" style="background:${bg};border-color:${bd};color:${cl}">${i+1}</div>`;
   }).join('');
 
-  main().innerHTML=`
-  <div class="wrap screen">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <button class="btn btn-ghost" onclick="showDashboard()" style="padding:6px 10px;font-size:12px">
-        <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
-      </button>
-      <div style="font-size:13px;font-weight:500;flex:1">${quizDDS}</div>
-      <span class="badge badge-blue">${total} questões</span>
+  M().innerHTML=`<div class="wrap screen">
+    <div class="quiz-strip">
+      <button class="btn btn-ghost" onclick="showDash()" style="padding:6px 10px;font-size:12px;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+      <div class="quiz-strip-name">${qzDDS}</div>
+      <span class="badge badge-blue">${tot} questões</span>
     </div>
-    <div class="card">
-      <div class="card-body">
-        <div class="prog-wrap">
-          <div class="prog-info"><span>${resp} de ${total} respondidas</span><span>${pct}%</span></div>
-          <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
-        </div>
-        <div class="q-label">Questão ${quizIdx+1} de ${total}</div>
-        <div class="q-text">${q.pergunta||'—'}</div>
-        ${optsH}
-        <div class="q-nav">
-          <button class="btn btn-ghost" onclick="quizIdx=Math.max(0,quizIdx-1);renderQuiz()" ${quizIdx===0?'disabled':''}>
-            <i class="ti ti-arrow-left" aria-hidden="true"></i> Anterior
-          </button>
-          ${isLast
-            ?`<button class="btn btn-green" onclick="confirmFinalizar()">Finalizar <i class="ti ti-send" aria-hidden="true"></i></button>`
-            :`<button class="btn btn-primary" onclick="quizIdx++;renderQuiz()">Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i></button>`
-          }
-        </div>
+    <div class="card"><div class="card-body">
+      <div class="prog-wrap">
+        <div class="prog-info"><span>${resp} de ${tot} respondidas</span><span>${pct}%</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
       </div>
-    </div>
-    <div class="qmap" style="margin-top:12px">${qmapH}</div>
+      <div class="q-label">Questão ${qzI+1} / ${tot}</div>
+      <div class="q-text">${q.pergunta||'—'}</div>
+      ${oH}
+      <div class="q-nav">
+        <button class="btn btn-ghost" onclick="qzI=Math.max(0,qzI-1);renderQ()" ${qzI===0?'disabled':''}>
+          <i class="ti ti-arrow-left"></i> Anterior
+        </button>
+        ${isLast
+          ?`<button class="btn btn-green" onclick="confirmFin()">Finalizar <i class="ti ti-send"></i></button>`
+          :`<button class="btn btn-primary" onclick="qzI++;renderQ()">Próxima <i class="ti ti-arrow-right"></i></button>`}
+      </div>
+    </div></div>
+    <div class="qmap">${mapH}</div>
   </div>`;
 }
 
-function pickOpt(qi,val){quizRespostas[qi]=val;renderQuiz();}
+function pickOpt(qi,val){qzR[qi]=val;renderQ();}
 
-function confirmFinalizar(){
-  const miss=quizPerguntas.length-Object.keys(quizRespostas).length;
-  if(miss>0&&!confirm(`${miss} pergunta(s) sem resposta. Finalizar mesmo assim?`))return;
-  finalizarQuiz();
+function confirmFin(){
+  const miss=qzP.length-Object.keys(qzR).length;
+  if(miss>0&&!confirm(miss+' pergunta(s) sem resposta. Finalizar mesmo assim?'))return;
+  finQuiz();
 }
 
-async function finalizarQuiz(){
+async function finQuiz(){
   let ac=0;
-  quizPerguntas.forEach((q,i)=>{if(quizRespostas[i]===(q.correta||'').toUpperCase())ac++;});
-  quizEnded=true;
+  qzP.forEach((q,i)=>{if(qzR[i]===(q.correta||'').toUpperCase())ac++;});
+  qzEnd=true;
   const res=ac>=7?'APROVADO':'REPROVADO';
   try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({tipo:'resultado',cpf:user.cpf,nome:user.nome,setor:user.setor,dds:quizDDS,acertos:ac,resultado:res})});
+    await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({tipo:'resultado',cpf:user.cpf,nome:user.nome,setor:user.setor,dds:qzDDS,acertos:ac,resultado:res})});
   }catch(e){}
   renderResult(ac,res);
 }
 
 function renderResult(ac,res){
-  const total=quizPerguntas.length;
-  if(ac===undefined){
-    ac=0;quizPerguntas.forEach((q,i)=>{if(quizRespostas[i]===(q.correta||'').toUpperCase())ac++;});
-    res=ac>=7?'APROVADO':'REPROVADO';
-  }
-  const pct=Math.round(ac/total*100);
-  const ok=res==='APROVADO';
-  main().innerHTML=`
-  <div class="wrap screen">
-    <div class="card">
-      <div style="text-align:center;padding:28px 18px">
-        <div class="result-ring ${ok?'r-ok':'r-fail'}">${pct}%</div>
-        <div style="font-size:20px;font-weight:600;color:${ok?'#057a55':'#c81e1e'};margin-bottom:4px">${res}</div>
-        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px">${ac} acertos em ${total} questões — ${quizDDS}</div>
-        <div class="stats-row" style="max-width:280px;margin:0 auto 20px">
-          <div class="stat-card"><div class="stat-num" style="color:#057a55">${ac}</div><div class="stat-lbl">Acertos</div></div>
-          <div class="stat-card"><div class="stat-num" style="color:#c81e1e">${total-ac}</div><div class="stat-lbl">Erros</div></div>
-          <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-lbl">Aproveit.</div></div>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="renderGabarito()"><i class="ti ti-list-check" aria-hidden="true"></i> Ver gabarito</button>
-          <button class="btn btn-ghost" onclick="showDashboard()"><i class="ti ti-home" aria-hidden="true"></i> Meus DDS</button>
-        </div>
+  const tot=qzP.length;
+  if(ac===undefined){ac=0;qzP.forEach((q,i)=>{if(qzR[i]===(q.correta||'').toUpperCase())ac++;});res=ac>=7?'APROVADO':'REPROVADO';}
+  const pct=Math.round(ac/tot*100),ok=res==='APROVADO';
+  M().innerHTML=`<div class="wrap screen"><div class="card">
+    <div style="text-align:center;padding:36px 22px 28px">
+      <div class="result-ring ${ok?'r-ok':'r-fail'}">${pct}%</div>
+      <div style="font-size:22px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};letter-spacing:-.5px;margin-bottom:6px">${res}</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:24px">${ac} acertos em ${tot} questões &nbsp;·&nbsp; <span style="font-family:'JetBrains Mono',monospace;font-size:12px">${qzDDS}</span></div>
+      <div class="stats-row" style="max-width:300px;margin:0 auto 24px">
+        <div class="stat-card s-green"><div class="stat-num" style="color:var(--green)">${ac}</div><div class="stat-lbl">Acertos</div></div>
+        <div class="stat-card s-red"><div class="stat-num" style="color:var(--red)">${tot-ac}</div><div class="stat-lbl">Erros</div></div>
+        <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-lbl">Aproveit.</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="renderGab()"><i class="ti ti-list-check"></i> Ver gabarito</button>
+        <button class="btn btn-ghost" onclick="showDash()"><i class="ti ti-home"></i> Meus DDS</button>
       </div>
     </div>
-  </div>`;
+  </div></div>`;
 }
 
-function renderGabarito(){
+function renderGab(){
   const opts=[['a','A'],['b','B'],['c','C'],['d','D']];
   let html='';
-  quizPerguntas.forEach((q,i)=>{
-    const corr=(q.correta||'').toUpperCase();
-    const resp=quizRespostas[i];
-    const ok=resp===corr;
-    html+=`<div style="margin-bottom:18px;padding-bottom:18px;border-bottom:0.5px solid var(--color-border-tertiary)">
-      <div style="font-size:10px;font-weight:500;color:${ok?'#057a55':'#c81e1e'};text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;font-family:'IBM Plex Mono',monospace">
-        Q${i+1} · ${ok?'Correta ✓':'Errada ✗'}</div>
-      <div style="font-size:14px;font-weight:500;margin-bottom:10px;line-height:1.45">${q.pergunta||'—'}</div>`;
+  qzP.forEach((q,i)=>{
+    const corr=(q.correta||'').toUpperCase(),resp=qzR[i],ok=resp===corr;
+    html+=`<div class="gab-block">
+      <div style="font-size:10px;font-weight:700;color:${ok?'var(--green)':'var(--red)'};text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;font-family:'JetBrains Mono',monospace">Q${i+1} · ${ok?'Correta ✓':'Errada ✗'}</div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:12px;line-height:1.5;color:var(--t1)">${q.pergunta||'—'}</div>`;
     opts.forEach(([k,L])=>{
       if(!q[k])return;
       const isC=L===corr,isR=L===resp;
-      html+=`<div class="opt${isC?' correct':isR?' wrong':''}" style="cursor:default;margin-bottom:5px">
-        <div class="opt-key">${L}</div>
-        <div class="opt-text">${q[k]}</div>
+      html+=`<div class="opt${isC?' correct':isR?' wrong':''}" style="cursor:default;margin-bottom:6px">
+        <div class="opt-key">${L}</div><div class="opt-text">${q[k]}</div>
       </div>`;
     });
     html+='</div>';
   });
-  main().innerHTML=`
-  <div class="wrap screen">
-    <div class="card">
-      <div class="card-hd">
-        <div class="card-title"><i class="ti ti-list-check" aria-hidden="true"></i> Gabarito — ${quizDDS}</div>
-        <button class="btn btn-ghost" onclick="renderResult()" style="padding:5px 10px;font-size:12px">
-          <i class="ti ti-arrow-left" aria-hidden="true"></i> Voltar
-        </button>
-      </div>
-      <div class="card-body">${html}</div>
+  M().innerHTML=`<div class="wrap screen"><div class="card">
+    <div class="card-hd">
+      <div class="card-title"><i class="ti ti-list-check"></i> Gabarito — ${qzDDS}</div>
+      <button class="btn btn-ghost" onclick="renderResult()" style="padding:5px 10px;font-size:12px"><i class="ti ti-arrow-left"></i> Voltar</button>
     </div>
-  </div>`;
+    <div class="card-body">${html}</div>
+  </div></div>`;
 }
 
-/* ===== ADMIN ===== */
 function showAdmin(){
-  main().innerHTML=`
-  <div class="wrap-wide screen">
-    <div class="card">
-      <div class="tabs">
-        <button class="tab active" id="tab-u" onclick="atab('u')"><i class="ti ti-users" aria-hidden="true"></i> Usuários</button>
-        <button class="tab" id="tab-p" onclick="atab('p')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Perguntas (10)</button>
-      </div>
-      <div id="abody" class="card-body"></div>
+  M().innerHTML=`<div class="wrap-wide screen"><div class="card">
+    <div class="tabs">
+      <button class="tab active" id="tab-u" onclick="atab('u')"><i class="ti ti-users"></i> Usuários</button>
+      <button class="tab" id="tab-p" onclick="atab('p')"><i class="ti ti-clipboard-list"></i> Perguntas (10)</button>
     </div>
-  </div>`;
+    <div id="abody" class="card-body"></div>
+  </div></div>`;
   atab('u');
 }
 
@@ -515,125 +502,105 @@ function atab(t){
   const b=$('abody');
   if(t==='u'){
     b.innerHTML=`
-      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:14px">A senha do funcionário será o CPF (somente números).</div>
+      <div class="info-box"><i class="ti ti-info-circle"></i>A senha do funcionário será o CPF (somente números).</div>
       <div class="field"><label>Nome completo</label><input id="u-n" placeholder="Ex: João da Silva"/></div>
       <div class="row2">
-        <div class="field"><label>CPF <span style="font-size:10px;color:var(--color-text-secondary)">(será a senha)</span></label><input id="u-c" placeholder="000.000.000-00"/></div>
+        <div class="field"><label>CPF (será a senha)</label><input id="u-c" placeholder="000.000.000-00"/></div>
         <div class="field"><label>Setor</label><input id="u-s" placeholder="Ex: Produção"/></div>
       </div>
       <div id="umsg"></div>
-      <button class="btn btn-primary" onclick="cadUser()"><i class="ti ti-user-plus" aria-hidden="true"></i> Salvar Usuário</button>`;
+      <button class="btn btn-primary" onclick="cadUser()"><i class="ti ti-user-plus"></i> Salvar Usuário</button>`;
   }else{
-    wizPerguntas=[];wizStep=0;
-    renderWiz();
+    wizQ=[];wizS=0;renderWiz();
   }
 }
 
 function renderWiz(){
-  const b=$('abody');
-  const total=10;
-  const steps=Array.from({length:total},(_,i)=>{
-    const s=i<wizStep?'done':i===wizStep?'active':'todo';
-    return `<div class="wiz-dot ${s}">${i<wizStep?'<i class="ti ti-check" style="font-size:10px"></i>':(i+1)}</div>${i<total-1?'<div class="wiz-line"></div>':''}`;
+  const b=$('abody'),tot=10;
+  const steps=Array.from({length:tot},(_,i)=>{
+    const s=i<wizS?'done':i===wizS?'active':'todo';
+    return `<div class="wiz-dot ${s}">${i<wizS?'<i class="ti ti-check" style="font-size:10px"></i>':(i+1)}</div>${i<tot-1?'<div class="wiz-line"></div>':''}`;
   }).join('');
 
-  if(wizStep===total){
+  if(wizS===tot){
     b.innerHTML=`
-      <div style="text-align:center;padding:20px 0 10px">
-        <i class="ti ti-check-circle" style="font-size:40px;color:#057a55;display:block;margin-bottom:10px" aria-hidden="true"></i>
-        <div style="font-size:16px;font-weight:500;margin-bottom:4px">10 perguntas prontas!</div>
-        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px">Revise abaixo e envie tudo de uma vez.</div>
+      <div style="text-align:center;padding:24px 0 12px">
+        <div style="width:56px;height:56px;background:var(--green-sub);border:1px solid rgba(16,185,129,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 20px var(--green-glow)">
+          <i class="ti ti-check" style="font-size:26px;color:var(--green)"></i>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px">10 perguntas prontas!</div>
+        <div style="font-size:13px;color:var(--t2);margin-bottom:24px">Revise abaixo e envie tudo de uma vez para o Google Sheets.</div>
       </div>
-      <div id="wiz-preview" style="margin-bottom:16px"></div>
+      <div id="wiz-prev" style="margin-bottom:18px"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-green" onclick="enviarPerguntas()"><i class="ti ti-send" aria-hidden="true"></i> Enviar todas (10) para o Sheets</button>
-        <button class="btn btn-ghost" onclick="wizStep=0;wizPerguntas=[];renderWiz()"><i class="ti ti-refresh" aria-hidden="true"></i> Recomeçar</button>
+        <button class="btn btn-green" onclick="enviarQ()"><i class="ti ti-send"></i> Enviar todas (10) para o Sheets</button>
+        <button class="btn btn-ghost" onclick="wizS=0;wizQ=[];renderWiz()"><i class="ti ti-refresh"></i> Recomeçar</button>
       </div>
-      <div id="wiz-msg" style="margin-top:10px"></div>`;
-    let prev='';
-    wizPerguntas.forEach((p,i)=>{
-      prev+=`<div style="padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
-        <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);font-family:'IBM Plex Mono',monospace;margin-bottom:3px">Q${i+1} · <span class="badge badge-green" style="font-size:10px">${p.correta}</span></div>
-        <div style="font-size:13px;font-weight:500">${p.pergunta}</div>
-      </div>`;
-    });
-    $('wiz-preview').innerHTML=prev;
+      <div id="wiz-msg" style="margin-top:12px"></div>`;
+    $('wiz-prev').innerHTML=wizQ.map((p,i)=>`
+      <div class="review-item">
+        <div class="review-num">${i+1}</div>
+        <div class="review-text"><strong>${p.pergunta}</strong> <span class="badge badge-green" style="font-size:10px;margin-left:6px">${p.correta}</span></div>
+      </div>`).join('');
     return;
   }
 
-  const cur=wizPerguntas[wizStep]||{setor:'',dds:'',pergunta:'',a:'',b:'',c:'',d:'',correta:'A'};
+  const cur=wizQ[wizS]||{setor:'',dds:'',pergunta:'',a:'',b:'',c:'',d:'',correta:'A'};
   b.innerHTML=`
-    <div style="margin-bottom:14px">
-      <div style="font-size:13px;font-weight:500;margin-bottom:10px">Questão ${wizStep+1} de 10</div>
+    <div style="margin-bottom:18px">
+      <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:10px">Questão ${wizS+1} de 10 <span style="font-size:11px;font-weight:400;color:var(--t3);margin-left:8px">${Math.round(wizS/10*100)}% concluído</span></div>
       <div class="wiz-step">${steps}</div>
     </div>
-    ${wizStep===0?`
-    <div class="row2">
-      <div class="field"><label>Setor <span style="font-size:10px;color:var(--color-text-secondary)">(vazio = todos)</span></label><input id="w-setor" value="${cur.setor}" placeholder="Ex: Produção"/></div>
+    ${wizS===0?`<div class="row2">
+      <div class="field"><label>Setor (vazio = todos)</label><input id="w-setor" value="${cur.setor}" placeholder="Ex: Produção"/></div>
       <div class="field"><label>Tema DDS</label><input id="w-dds" value="${cur.dds}" placeholder="Ex: Uso de EPI"/></div>
-    </div>`:`
-    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">
-      <i class="ti ti-tag" style="vertical-align:-2px;margin-right:4px" aria-hidden="true"></i>
-      <strong>Setor:</strong> ${wizPerguntas[0]&&wizPerguntas[0].setor||'Todos'} &nbsp;·&nbsp; <strong>DDS:</strong> ${wizPerguntas[0]&&wizPerguntas[0].dds||'—'}
-    </div>`}
-    <div class="field"><label>Pergunta ${wizStep+1}</label><input id="w-perg" value="${cur.pergunta}" placeholder="Digite a pergunta aqui"/></div>
+    </div>`:`<div class="info-box"><i class="ti ti-tag"></i><strong>Setor:</strong> ${wizQ[0]&&wizQ[0].setor||'Todos'} &nbsp;·&nbsp; <strong>DDS:</strong> ${wizQ[0]&&wizQ[0].dds||'—'}</div>`}
+    <div class="field"><label>Pergunta ${wizS+1}</label><input id="w-perg" value="${cur.pergunta}" placeholder="Digite a pergunta aqui"/></div>
     <div class="row2">
       <div class="field"><label>Alternativa A</label><input id="w-a" value="${cur.a}" placeholder="Opção A"/></div>
       <div class="field"><label>Alternativa B</label><input id="w-b" value="${cur.b}" placeholder="Opção B"/></div>
     </div>
     <div class="row2">
-      <div class="field"><label>Alternativa C <span style="font-size:10px">(opcional)</span></label><input id="w-c" value="${cur.c}" placeholder="Opção C"/></div>
-      <div class="field"><label>Alternativa D <span style="font-size:10px">(opcional)</span></label><input id="w-d" value="${cur.d}" placeholder="Opção D"/></div>
+      <div class="field"><label>Alternativa C (opcional)</label><input id="w-c" value="${cur.c}" placeholder="Opção C"/></div>
+      <div class="field"><label>Alternativa D (opcional)</label><input id="w-d" value="${cur.d}" placeholder="Opção D"/></div>
     </div>
     <div class="field" style="max-width:180px"><label>Resposta correta</label>
-      <select id="w-correta">
-        ${['A','B','C','D'].map(v=>`<option value="${v}" ${cur.correta===v?'selected':''}>${v}</option>`).join('')}
-      </select>
+      <select id="w-correta">${['A','B','C','D'].map(v=>`<option value="${v}" ${cur.correta===v?'selected':''}>${v}</option>`).join('')}</select>
     </div>
     <div id="wmsg"></div>
-    <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
-      ${wizStep>0?`<button class="btn btn-ghost" onclick="wizStep--;renderWiz()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Anterior</button>`:''}
-      <button class="btn btn-primary" onclick="wizProx()">
-        ${wizStep<9?'Próxima <i class="ti ti-arrow-right" aria-hidden="true"></i>':'Revisar e enviar <i class="ti ti-check" aria-hidden="true"></i>'}
-      </button>
+    <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">
+      ${wizS>0?`<button class="btn btn-ghost" onclick="wizS--;renderWiz()"><i class="ti ti-arrow-left"></i> Anterior</button>`:''}
+      <button class="btn btn-primary" onclick="wizNext()">${wizS<9?'Próxima <i class="ti ti-arrow-right"></i>':'Revisar <i class="ti ti-check"></i>'}</button>
     </div>`;
 }
 
-function wizProx(){
-  const setor=wizStep===0?gv('w-setor'):(wizPerguntas[0]&&wizPerguntas[0].setor||'');
-  const dds=wizStep===0?gv('w-dds'):(wizPerguntas[0]&&wizPerguntas[0].dds||'');
-  const perg=gv('w-perg'),a=gv('w-a'),b=gv('w-b'),c=gv('w-c'),d=gv('w-d');
-  const correta=gv('w-correta');
-  if(!perg||!a||!b){
-    $('wmsg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha a pergunta e as alternativas A e B.</div>';
-    return;
-  }
-  wizPerguntas[wizStep]={setor,dds,pergunta:perg,a,b,c,d,correta};
-  wizStep++;
-  renderWiz();
+function wizNext(){
+  const setor=wizS===0?gv('w-setor'):(wizQ[0]&&wizQ[0].setor||'');
+  const dds=wizS===0?gv('w-dds'):(wizQ[0]&&wizQ[0].dds||'');
+  const perg=gv('w-perg'),a=gv('w-a'),b=gv('w-b'),c=gv('w-c'),d=gv('w-d'),correta=gv('w-correta');
+  if(!perg||!a||!b){$('wmsg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha a pergunta e as alternativas A e B.</div>';return;}
+  wizQ[wizS]={setor,dds,pergunta:perg,a,b,c,d,correta};
+  wizS++;renderWiz();
 }
 
-async function enviarPerguntas(){
+async function enviarQ(){
   const m=$('wiz-msg');
-  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Enviando 10 perguntas...</div>';
+  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i> Enviando 10 perguntas...</div>';
   let ok=0;
-  for(const p of wizPerguntas){
-    try{
-      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'pergunta',...p})});
-      ok++;
-    }catch(e){}
+  for(const p of wizQ){
+    try{await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'pergunta',...p})});ok++;}catch(e){}
   }
-  m.innerHTML=`<div class="alert alert-success"><i class="ti ti-check"></i>${ok} de ${wizPerguntas.length} perguntas enviadas com sucesso!</div>`;
-  setTimeout(()=>{wizPerguntas=[];wizStep=0;renderWiz();},2500);
+  m.innerHTML=`<div class="alert alert-success"><i class="ti ti-check"></i>${ok} de ${wizQ.length} perguntas enviadas!</div>`;
+  setTimeout(()=>{wizQ=[];wizS=0;renderWiz();},2500);
 }
 
 async function cadUser(){
   const n=gv('u-n'),c=gv('u-c'),s=gv('u-s');
   if(!n||!c||!s){$('umsg').innerHTML='<div class="alert alert-error"><i class="ti ti-alert-circle"></i>Preencha todos os campos.</div>';return;}
-  $('umsg').innerHTML='<div class="alert alert-info"><i class="ti ti-loader"></i>Salvando...</div>';
+  $('umsg').innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i> Salvando...</div>';
   try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'usuario',nome:n,cpf:c,setor:s})});
-    $('umsg').innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Usuário salvo!</div>';
+    await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'usuario',nome:n,cpf:c,setor:s})});
+    $('umsg').innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Usuário salvo com sucesso!</div>';
     ['u-n','u-c','u-s'].forEach(i=>{const e=$(i);if(e)e.value='';});
   }catch(e){$('umsg').innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>${e.message}</div>`;}
 }
