@@ -1,6 +1,6 @@
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
 --bg:#0f172a;--surface:#1e293b;--card:rgba(30,41,59,0.85);--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
 --blue:#2563eb;--blue2:#3b82f6;--blue-glow:rgba(37,99,235,0.35);--blue-sub:rgba(37,99,235,0.12);--blue-sub2:rgba(59,130,246,0.18);
@@ -17,7 +17,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:600px;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--t4);border-radius:99px}
-
 .topbar{background:rgba(15,23,42,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-dot{width:30px;height:30px;background:linear-gradient(135deg,#2563eb,#3b82f6);border-radius:var(--r);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px var(--blue-glow)}
@@ -30,27 +29,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-hei
 .top-avatar{width:28px;height:28px;border-radius:99px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
 .btn-top{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:6px 12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:var(--tr)}
 .btn-top:hover{background:var(--glass2);border-color:var(--border2);color:var(--t1)}
-
 .main{flex:1;padding:32px 20px 60px;display:flex;align-items:flex-start;justify-content:center}
 .wrap{width:100%;max-width:480px}
 .wrap-wide{width:100%;max-width:900px}
-
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r4);backdrop-filter:blur(16px);box-shadow:var(--sh);overflow:hidden}
 .card-hd{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .card-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px}
 .card-title i{font-size:15px;color:var(--blue2)}
 .card-body{padding:22px}
-
 .field{margin-bottom:14px}
 .field label{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
 .field input,.field select{width:100%;background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--t1);outline:none;transition:var(--tr)}
 .field input::placeholder{color:var(--t3)}
-.field input:hover,.field select:hover{border-color:var(--border2)}
 .field input:focus,.field select:focus{border-color:var(--blue);box-shadow:var(--sh-blue);background:rgba(15,23,42,.8)}
 .field select option{background:#1e293b;color:var(--t1)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border:none;border-radius:var(--r2);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);white-space:nowrap;position:relative;overflow:hidden}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border:none;border-radius:var(--r2);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);white-space:nowrap}
 .btn:active{transform:scale(0.97)!important}
 .btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 2px 12px var(--blue-glow)}
 .btn-primary:hover{box-shadow:0 4px 20px var(--blue-glow);transform:translateY(-1px)}
@@ -60,43 +54,35 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-hei
 .btn-green:hover{box-shadow:0 4px 20px var(--green-glow);transform:translateY(-1px)}
 .btn-block{width:100%}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
-
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px}
 .badge-blue{background:var(--blue-sub2);color:var(--blue2);border:1px solid rgba(59,130,246,.2)}
 .badge-green{background:var(--green-sub);color:var(--green);border:1px solid rgba(16,185,129,.2)}
 .badge-red{background:var(--red-sub);color:var(--red);border:1px solid rgba(239,68,68,.2)}
 .badge-amber{background:var(--amber-sub);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
 .badge-gray{background:rgba(255,255,255,.06);color:var(--t2);border:1px solid var(--border)}
-
 .alert{padding:11px 14px;border-radius:var(--r2);font-size:13px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;margin-bottom:12px}
 .alert i{font-size:14px;flex-shrink:0;margin-top:1px}
 .alert-success{background:var(--green-sub);color:var(--green);border:1px solid rgba(16,185,129,.2)}
 .alert-error{background:var(--red-sub);color:#f87171;border:1px solid rgba(239,68,68,.2)}
 .alert-info{background:var(--blue-sub);color:var(--blue2);border:1px solid rgba(37,99,235,.2)}
 .alert-warn{background:var(--amber-sub);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
-
 .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px}
 .tab{padding:12px 14px;font-size:13px;font-weight:500;color:var(--t3);border-bottom:2px solid transparent;cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;font-family:'Inter',sans-serif;transition:var(--tr);display:flex;align-items:center;gap:6px}
 .tab:hover{color:var(--t2)}
 .tab.active{color:var(--blue2);border-bottom-color:var(--blue)}
-
 .hidden{display:none!important}
 .screen{animation:up .25s cubic-bezier(.4,0,.2,1)}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulseRing{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.04)}}
 .spin{display:inline-block;animation:spin .8s linear infinite}
-
 .login-hero{text-align:center;padding:36px 22px 12px}
 .login-icon-wrap{position:relative;width:64px;height:64px;margin:0 auto 16px}
 .login-icon{width:64px;height:64px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px var(--blue-glow)}
 .login-icon i{font-size:30px;color:#fff}
 .login-ring{position:absolute;inset:-6px;border:1px solid rgba(59,130,246,.3);border-radius:24px;animation:pulseRing 2.5s ease-in-out infinite}
-.login-title{font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-.4px;margin-bottom:5px}
-.login-sub{font-size:13px;color:var(--t2);margin-bottom:4px}
 .divider{display:flex;align-items:center;gap:12px;margin:16px 0;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:16px;text-align:center;transition:var(--tr);position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
@@ -106,17 +92,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-hei
 .stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
 .stat-num{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-1px;line-height:1;margin-bottom:5px}
 .stat-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px}
-
 .section-title{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-
 .dds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:24px}
 .dds-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r4);padding:18px;display:flex;flex-direction:column;gap:14px;transition:all .3s cubic-bezier(.4,0,.2,1);cursor:pointer;position:relative;overflow:hidden}
 .dds-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 1px rgba(59,130,246,.15)}
-.dds-card.s-ok{border-color:rgba(16,185,129,.2)}
+.dds-card.s-ok{border-color:rgba(16,185,129,.25)}
 .dds-card.s-ok .dds-icon{background:var(--green-sub);border-color:rgba(16,185,129,.2)}
 .dds-card.s-ok .dds-icon i{color:var(--green)}
-.dds-card.s-fail{border-color:rgba(239,68,68,.2)}
+.dds-card.s-fail{border-color:rgba(239,68,68,.25)}
 .dds-card.s-fail .dds-icon{background:var(--red-sub);border-color:rgba(239,68,68,.2)}
 .dds-card.s-fail .dds-icon i{color:var(--red)}
 .dds-card-top{display:flex;align-items:flex-start;gap:12px}
@@ -125,14 +109,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-hei
 .dds-name{font-size:14px;font-weight:600;color:var(--t1);line-height:1.4}
 .dds-setor{font-size:11px;color:var(--t3);margin-top:3px}
 .dds-footer{display:flex;align-items:center;justify-content:space-between}
-
 .prog-wrap{margin-bottom:20px}
 .prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:8px}
 .prog-track{height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:99px;transition:width .4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--blue-glow)}
 .q-label{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono',monospace;margin-bottom:8px}
 .q-text{font-size:15px;font-weight:500;color:var(--t1);line-height:1.6;margin-bottom:18px}
-
 .opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;cursor:pointer;transition:var(--tr);background:var(--glass);position:relative;overflow:hidden}
 .opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:var(--tr)}
 .opt:hover{border-color:var(--border-blue);background:var(--blue-sub)}
@@ -149,23 +131,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-hei
 .opt.wrong .opt-key{background:var(--red);border-color:var(--red);color:#fff}
 .opt-text{font-size:13px;color:var(--t2);line-height:1.4}
 .opt.sel .opt-text,.opt.correct .opt-text{color:var(--t1)}
-
 .q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 .qmap{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:14px}
 .qm{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;border:1px solid;transition:var(--tr)}
 .qm:hover{transform:scale(1.1)}
-
 .result-ring{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;position:relative}
 .result-ring::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid;opacity:.4;animation:pulseRing 2.5s ease-in-out infinite}
 .r-ok{background:var(--green-sub);color:var(--green);border:2px solid rgba(16,185,129,.4);box-shadow:0 0 20px var(--green-glow)}
 .r-ok::after{border-color:var(--green)}
 .r-fail{background:var(--red-sub);color:var(--red);border:2px solid rgba(239,68,68,.4);box-shadow:0 0 20px var(--red-glow)}
 .r-fail::after{border-color:var(--red)}
-
 .wiz-step{display:flex;align-items:center;gap:4px;margin-bottom:18px;flex-wrap:wrap}
 .wiz-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;border:1.5px solid;transition:var(--tr);flex-shrink:0}
-.wiz-dot.done{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 8px var(--green-glow)}
-.wiz-dot.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 8px var(--blue-glow)}
+.wiz-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.wiz-dot.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .wiz-dot.todo{background:transparent;border-color:var(--t4);color:var(--t4)}
 .wiz-line{flex:1;height:1px;background:var(--border);min-width:4px;max-width:16px}
 .info-box{background:var(--blue-sub);border:1px solid rgba(37,99,235,.2);border-radius:var(--r2);padding:12px 14px;font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.6;display:flex;gap:8px}
@@ -176,19 +155,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-hei
 .review-item:last-child{border-bottom:none}
 .review-num{width:22px;height:22px;border-radius:50%;background:var(--blue-sub2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue2);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:1px}
 .review-text{font-size:13px;color:var(--t2);line-height:1.45;flex:1}
-.review-text strong{color:var(--t1);font-weight:500}
 .gab-block{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--border)}
 .gab-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .empty-state{grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--t3)}
 .empty-state i{font-size:40px;display:block;margin-bottom:12px;opacity:.5}
-.empty-state p{font-size:13px;line-height:1.6}
-@media(max-width:640px){.main{padding:20px 12px 50px}.card-body{padding:16px}.row2{grid-template-columns:1fr}.dds-grid{grid-template-columns:1fr}.stats-row{gap:8px}.stat-num{font-size:22px}.topbar{padding:0 14px}.brand-tag{display:none}.tabs{padding:0 12px}.tab{padding:10px 10px;font-size:12px}}
+@media(max-width:640px){.main{padding:20px 12px 50px}.card-body{padding:16px}.row2{grid-template-columns:1fr}.dds-grid{grid-template-columns:1fr}.stats-row{gap:8px}.stat-num{font-size:22px}.topbar{padding:0 14px}.brand-tag{display:none}.tabs{padding:0 12px}}
 </style>
 
 <div id="app">
   <div class="topbar">
     <div class="brand">
-      <div class="brand-dot"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+      <div class="brand-dot"><i class="ti ti-shield-check"></i></div>
       <span class="brand-name">DDS Sistema</span>
       <span class="brand-tag">SEGURANÇA</span>
     </div>
@@ -228,11 +205,11 @@ function showLogin(){
         <div class="login-icon"><i class="ti ti-shield-check"></i></div>
         <div class="login-ring"></div>
       </div>
-      <div class="login-title">Diálogo Diário de Segurança</div>
-      <div class="login-sub">Acesse com seu CPF e senha para iniciar</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-.4px;margin-bottom:5px">Diálogo Diário de Segurança</div>
+      <div style="font-size:13px;color:var(--t2)">Acesse com seu CPF e senha para iniciar</div>
     </div>
     <div class="card-body">
-      <div class="field"><label>CPF</label><input id="inp-u" placeholder="000.000.000-00" autocomplete="username"/></div>
+      <div class="field"><label>CPF</label><input id="inp-u" placeholder="000.000.000-00"/></div>
       <div class="field"><label>Senha</label><input id="inp-p" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
       <div id="lmsg"></div>
       <button class="btn btn-primary btn-block" onclick="doLogin()"><i class="ti ti-login"></i> Entrar</button>
@@ -273,7 +250,7 @@ async function doLogin(){
     const found=data.find(x=>clean(x.cpf)===clean(u)&&clean(x.senha)===clean(p));
     if(found){
       user=found;setTop(found);
-      m.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i> Carregando seus dados...</div>';
+      m.innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i> Carregando...</div>';
       await loadAll();
       showDash();
     }else{
@@ -284,13 +261,32 @@ async function doLogin(){
 
 async function loadAll(){
   try{
-    const [rp,rr]=await Promise.all([fetch(SURL),fetch(SURL+'?resultados=1')]);
+    const [rp,rr]=await Promise.all([
+      fetch(SURL),
+      fetch(SURL+'?resultados=1')
+    ]);
     allP=await rp.json();
-    try{const rs=await rr.json();allR=Array.isArray(rs)?rs:[];}catch(e){allR=[];}
+    try{
+      const rs=await rr.json();
+      allR=Array.isArray(rs)?rs:[];
+    }catch(e){allR=[];}
   }catch(e){allP=[];allR=[];}
 }
 
 function logout(){user=null;allP=[];allR=[];showLogin();}
+
+function buildResMap(){
+  // Pega o resultado MAIS RECENTE por DDS para o usuário logado
+  const map={};
+  const myR=allR.filter(r=>clean(r.cpf)===clean(user.cpf));
+  // ordena por data crescente para o último sobrescrever
+  myR.sort((a,b)=>new Date(a.data)-new Date(b.data));
+  myR.forEach(r=>{
+    const ddsKey=String(r.dds||'').trim();
+    if(ddsKey) map[ddsKey]=String(r.resultado||'').trim().toUpperCase();
+  });
+  return map;
+}
 
 function showDash(){
   const setor=(user.setor||'').trim().toLowerCase();
@@ -301,10 +297,7 @@ function showDash(){
     if(!ddsMap[nm])ddsMap[nm]={nome:nm,setor:q.setor||''};
   });
   const list=Object.values(ddsMap);
-
-  const userR=allR.filter(r=>clean(r.cpf)===clean(user.cpf));
-  const resMap={};
-  userR.forEach(r=>{if(r.dds)resMap[r.dds]=r.resultado;});
+  const resMap=buildResMap();
 
   let pend=0,conc=0,repr=0;
   list.forEach(d=>{
@@ -318,9 +311,16 @@ function showDash(){
   list.forEach(d=>{
     const res=resMap[d.nome];
     let badge,btnLbl,btnCls,cCls='';
-    if(res==='APROVADO'){badge='<span class="badge badge-green"><i class="ti ti-check"></i> Aprovado</span>';btnLbl='Refazer';btnCls='btn-ghost';cCls='s-ok';}
-    else if(res==='REPROVADO'){badge='<span class="badge badge-red"><i class="ti ti-x"></i> Reprovado</span>';btnLbl='Tentar novamente';btnCls='btn-primary';cCls='s-fail';}
-    else{badge='<span class="badge badge-amber"><i class="ti ti-clock"></i> A fazer</span>';btnLbl='Iniciar';btnCls='btn-primary';}
+    if(res==='APROVADO'){
+      badge='<span class="badge badge-green"><i class="ti ti-check"></i> Aprovado</span>';
+      btnLbl='Refazer';btnCls='btn-ghost';cCls='s-ok';
+    }else if(res==='REPROVADO'){
+      badge='<span class="badge badge-red"><i class="ti ti-x"></i> Reprovado</span>';
+      btnLbl='Tentar novamente';btnCls='btn-primary';cCls='s-fail';
+    }else{
+      badge='<span class="badge badge-amber"><i class="ti ti-clock"></i> A fazer</span>';
+      btnLbl='Iniciar';btnCls='btn-primary';
+    }
     cards+=`<div class="dds-card ${cCls}">
       <div class="dds-card-top">
         <div class="dds-icon"><i class="ti ti-clipboard-list"></i></div>
@@ -338,17 +338,15 @@ function showDash(){
     </div>`;
   });
 
-  if(!cards)cards=`<div class="empty-state"><i class="ti ti-inbox"></i><p>Nenhum DDS disponível para seu setor.<br>Aguarde o administrador cadastrar os conteúdos.</p></div>`;
+  if(!cards)cards=`<div class="empty-state"><i class="ti ti-inbox"></i><p>Nenhum DDS disponível para seu setor.</p></div>`;
 
   const h=new Date().getHours();
   const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
 
   M().innerHTML=`<div class="wrap-wide screen">
-    <div style="margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
-      <div>
-        <div style="font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.5px;margin-bottom:4px">${saud}, ${user.nome.split(' ')[0]} 👋</div>
-        <div style="font-size:13px;color:var(--t2)">Setor: <strong style="color:var(--t1)">${user.setor}</strong> &nbsp;·&nbsp; ${list.length} DDS disponíveis</div>
-      </div>
+    <div style="margin-bottom:28px">
+      <div style="font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.5px;margin-bottom:4px">${saud}, ${user.nome.split(' ')[0]} 👋</div>
+      <div style="font-size:13px;color:var(--t2)">Setor: <strong style="color:var(--t1)">${user.setor}</strong> &nbsp;·&nbsp; ${list.length} DDS disponíveis</div>
     </div>
     <div class="stats-row">
       <div class="stat-card s-amber"><div class="stat-num" style="color:var(--amber)">${pend}</div><div class="stat-lbl">Pendentes</div></div>
@@ -365,7 +363,9 @@ function startQuiz(enc){
   const pool=allP.filter(q=>(q.dds||q.setor||'Geral').trim()===nm);
   if(!pool.length){alert('Nenhuma pergunta cadastrada para este DDS.');return;}
   qzP=pool.sort(()=>0.5-Math.random()).slice(0,10);
-  qzR={};qzI=0;qzEnd=false;qzDDS=nm;
+  qzR={};qzI=0;qzEnd=false;
+  // ← CORREÇÃO PRINCIPAL: salva o nome exato do DDS
+  qzDDS=nm;
   renderQ();
 }
 
@@ -431,16 +431,54 @@ async function finQuiz(){
   qzP.forEach((q,i)=>{if(qzR[i]===(q.correta||'').toUpperCase())ac++;});
   qzEnd=true;
   const res=ac>=7?'APROVADO':'REPROVADO';
+
+  // ← CORREÇÃO: usa XMLHttpRequest que não tem problema de CORS com Apps Script
+  const payload=JSON.stringify({
+    tipo:'resultado',
+    cpf:user.cpf,
+    nome:user.nome,
+    setor:user.setor,
+    dds:qzDDS,          // ← campo DDS enviado corretamente
+    acertos:ac,
+    resultado:res
+  });
+
+  // Tenta com fetch primeiro, fallback para XMLHttpRequest
   try{
-    await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({tipo:'resultado',cpf:user.cpf,nome:user.nome,setor:user.setor,dds:qzDDS,acertos:ac,resultado:res})});
-  }catch(e){}
+    const r=await fetch(SURL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:payload
+    });
+  }catch(e){
+    // fallback XHR
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST',SURL,true);
+    xhr.setRequestHeader('Content-Type','text/plain');
+    xhr.send(payload);
+  }
+
+  // Atualiza cache local imediatamente para o dashboard refletir na hora
+  allR.push({
+    cpf:user.cpf,
+    nome:user.nome,
+    setor:user.setor,
+    dds:qzDDS,
+    acertos:ac,
+    resultado:res,
+    data:new Date().toISOString()
+  });
+
   renderResult(ac,res);
 }
 
 function renderResult(ac,res){
   const tot=qzP.length;
-  if(ac===undefined){ac=0;qzP.forEach((q,i)=>{if(qzR[i]===(q.correta||'').toUpperCase())ac++;});res=ac>=7?'APROVADO':'REPROVADO';}
+  if(ac===undefined){
+    ac=0;qzP.forEach((q,i)=>{if(qzR[i]===(q.correta||'').toUpperCase())ac++;});
+    res=ac>=7?'APROVADO':'REPROVADO';
+  }
   const pct=Math.round(ac/tot*100),ok=res==='APROVADO';
   M().innerHTML=`<div class="wrap screen"><div class="card">
     <div style="text-align:center;padding:36px 22px 28px">
@@ -525,11 +563,11 @@ function renderWiz(){
   if(wizS===tot){
     b.innerHTML=`
       <div style="text-align:center;padding:24px 0 12px">
-        <div style="width:56px;height:56px;background:var(--green-sub);border:1px solid rgba(16,185,129,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 20px var(--green-glow)">
+        <div style="width:56px;height:56px;background:var(--green-sub);border:1px solid rgba(16,185,129,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
           <i class="ti ti-check" style="font-size:26px;color:var(--green)"></i>
         </div>
         <div style="font-size:16px;font-weight:700;margin-bottom:4px">10 perguntas prontas!</div>
-        <div style="font-size:13px;color:var(--t2);margin-bottom:24px">Revise abaixo e envie tudo de uma vez para o Google Sheets.</div>
+        <div style="font-size:13px;color:var(--t2);margin-bottom:24px">Revise e envie tudo de uma vez.</div>
       </div>
       <div id="wiz-prev" style="margin-bottom:18px"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -540,7 +578,7 @@ function renderWiz(){
     $('wiz-prev').innerHTML=wizQ.map((p,i)=>`
       <div class="review-item">
         <div class="review-num">${i+1}</div>
-        <div class="review-text"><strong>${p.pergunta}</strong> <span class="badge badge-green" style="font-size:10px;margin-left:6px">${p.correta}</span></div>
+        <div class="review-text">${p.pergunta} <span class="badge badge-green" style="font-size:10px;margin-left:6px">${p.correta}</span></div>
       </div>`).join('');
     return;
   }
@@ -548,7 +586,7 @@ function renderWiz(){
   const cur=wizQ[wizS]||{setor:'',dds:'',pergunta:'',a:'',b:'',c:'',d:'',correta:'A'};
   b.innerHTML=`
     <div style="margin-bottom:18px">
-      <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:10px">Questão ${wizS+1} de 10 <span style="font-size:11px;font-weight:400;color:var(--t3);margin-left:8px">${Math.round(wizS/10*100)}% concluído</span></div>
+      <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:10px">Questão ${wizS+1} de 10</div>
       <div class="wiz-step">${steps}</div>
     </div>
     ${wizS===0?`<div class="row2">
@@ -585,10 +623,13 @@ function wizNext(){
 
 async function enviarQ(){
   const m=$('wiz-msg');
-  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i> Enviando 10 perguntas...</div>';
+  m.innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i> Enviando...</div>';
   let ok=0;
   for(const p of wizQ){
-    try{await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'pergunta',...p})});ok++;}catch(e){}
+    try{
+      await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'pergunta',...p})});
+      ok++;
+    }catch(e){}
   }
   m.innerHTML=`<div class="alert alert-success"><i class="ti ti-check"></i>${ok} de ${wizQ.length} perguntas enviadas!</div>`;
   setTimeout(()=>{wizQ=[];wizS=0;renderWiz();},2500);
@@ -600,7 +641,7 @@ async function cadUser(){
   $('umsg').innerHTML='<div class="alert alert-info"><i class="ti ti-loader spin"></i> Salvando...</div>';
   try{
     await fetch(SURL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'usuario',nome:n,cpf:c,setor:s})});
-    $('umsg').innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Usuário salvo com sucesso!</div>';
+    $('umsg').innerHTML='<div class="alert alert-success"><i class="ti ti-check"></i>Usuário salvo!</div>';
     ['u-n','u-c','u-s'].forEach(i=>{const e=$(i);if(e)e.value='';});
   }catch(e){$('umsg').innerHTML=`<div class="alert alert-error"><i class="ti ti-alert-circle"></i>${e.message}</div>`;}
 }
